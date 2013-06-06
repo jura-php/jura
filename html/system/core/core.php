@@ -8,7 +8,7 @@ require J_SYSTEMPATH . "core" . DS . "Request" . EXT;
 Request::init();
 
 //TODO: Place it on a Error class.. Create error handlers..
-if (Request::env() == "local")
+if (Request::env() == J_LOCAL_ENV)
 {
 	error_reporting(-1);
 }
@@ -22,6 +22,7 @@ require J_SYSTEMPATH . "core" . DS . "URI" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Config" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Router" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Route" . EXT;
+require J_SYSTEMPATH . "core" . DS . "Crypt" . EXT;
 
 Router::register("*", "(:all)", function ()
 {

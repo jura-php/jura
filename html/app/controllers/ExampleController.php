@@ -15,5 +15,11 @@ class ExampleController
 	{
 		return "You're seen " . $what;
 	}
+
+	function cryptTest($param = "example")
+	{
+		echo "Encoded: " . Crypt::encode($param) . "<br>";
+		echo "decoded: " . Crypt::decode(Crypt::encode($param)) . "<br>";
+	}
 }
 ?>

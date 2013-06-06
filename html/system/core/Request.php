@@ -143,16 +143,25 @@ class Request
 		return isset(self::$get[$key]);
 	}
 
-	public static function post($key, $default = "")
+	public static function post($key, $default = "", $checkPayload = false)
 	{
 		if (isset(self::$post[$key]))
 		{
 			return self::$post[$key];
 		}
-		else
+		else if ($checkPayload)
 		{
-			return $default;
+			$payload = @file_get_contents('php://input');
+            if ($payload && $payload = json_decode($payload))
+            {
+                    if (isset($payload->{$key}))
+                    {
+                    	return $payload->{$key};
+                    }
+            }
 		}
+
+		return $default;
 	}
 
 	public static function hasPost($key)
