@@ -26,7 +26,8 @@ class Route
 
 	public function call()
 	{
-		//TODO: Call filters, events, etc..
+		//TODO: Call filters, cache etc..
+
 		return $this->response();
 	}
 
@@ -45,44 +46,58 @@ class Route
 
 		if (!is_null($uses))
 		{
-			//return Controller::call($delegate, $this->parameters);
-
-			//TODO: When local, check if file exists
-
-			list($name, $method) = explode("@", $uses);
-
-			$pieces = explode(DS, $name);
-			$className = $pieces[count($pieces) - 1] = ucfirst(array_last($pieces)) . "Controller";
-			$path = J_APPPATH . "controllers" . DS . trim(implode(DS, $pieces), DS) . EXT;
-
-			if (Request::isLocal())
+			//controller
+			if (strpos($uses, "@") > -1)
 			{
-				if (!file_exists($path))
+				list($name, $method) = explode("@", $uses);
+
+				$pieces = explode(DS, $name);
+				$className = $pieces[count($pieces) - 1] = ucfirst(array_last($pieces)) . "Controller";
+				$path = J_APPPATH . "controllers" . DS . trim(implode(DS, $pieces), DS) . EXT;
+
+				if (Request::isLocal())
 				{
-					echo "File <b>" . $path . "</b> doesn't exists"; //TODO: Put this on error class
-					die();
+					if (!file_exists($path))
+					{
+						echo "File <b>" . $path . "</b> doesn't exists"; //TODO: Put this on error class
+						die();
+					}
 				}
+
+				require $path;
+
+				$class = new $className();
+
+				if (Request::isLocal())
+				{
+					if (!method_exists($class, $method))
+					{
+						echo "Method <b>" . $method . "</b> doesn't exists on class <b>" . $className . "</b>"; //TODO: Put this on error class..
+						die();
+					}
+				}
+
+				return call_user_func_array(array(&$class, $method), $route->parameters);
 			}
-
-			require $path;
-
-			$class = new $className();
-
-			if (Request::isLocal())
+			//view
+			else
 			{
-				if (!method_exists($class, $method))
-				{
-					echo "Method <b>" . $method . "</b> doesn't exists on class <b>" . $className . "</b>"; //TODO:...
-					die();
-				}
-			}
+				$path = J_APPPATH . "views" . DS . $uses . EXT;
 
-			return call_user_func_array(array(&$class, $method), $route->parameters);
+				if (Request::isLocal())
+				{
+					if (!file_exists($path))
+					{
+						echo "File <b>" . $path . "</b> doesn't exists"; //TODO: Put this on error class
+						die();
+					}
+				}
+
+				require $path;
+			}
 		}
 
-		// If the route does not have a delegate, then it must be a Closure
-		// instance or have a Closure in its action array, so we will try
-		// to locate the Closure and call it directly.
+		//closure function
 		$handler = array_first($route->action, function($key, $value)
 		{
 			return is_callable($value);

@@ -1,18 +1,20 @@
 <?php
 class Config
 {
-	public static function load($name, $loadGeneric = false)
+	private static $items = array();
+
+	public static function load($group, $loadGeneric = false, $storeItems = false)
 	{
 		//TODO: Carregar os configs de manager, se for..
 
-		$envConfigPath = J_APPPATH . "config" . DS . strtolower(Request::env()) . DS . $name . EXT;
+		$envConfigPath = J_APPPATH . "config" . DS . strtolower(Request::env()) . DS . $group . EXT;
 		$exists = file_exists($envConfigPath);
 		$result = null;
 		$resultEnv = null;
 
 		if ($loadGeneric || !$exists)
 		{
-			$result = require J_APPPATH . "config" . DS . $name . EXT;
+			$result = require J_APPPATH . "config" . DS . $group . EXT;
 		}
 
 		if ($exists)
@@ -24,13 +26,26 @@ class Config
 		{
 			if ($resultEnv && is_array($resultEnv))
 			{
-				return array_merge($result, $resultEnv);
+				$result = array_merge($result, $resultEnv);
 			}
-			else
+
+			if ($storeItems)
 			{
-				return $result;
+				self::$items[$group] = $result;
 			}
+
+			return $result;
 		}
+	}
+
+	public static function item($group, $name)
+	{
+		if (isset(self::$items[$group][$name]))
+		{
+			return self::$items[$group][$name];
+		}
+
+		return false;
 	}
 }
 ?>

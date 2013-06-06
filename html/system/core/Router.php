@@ -22,7 +22,6 @@ class Router
 	{
 		Config::load("routes");
 
-
 		$routes = (array)self::method($method);
 
 		if (array_key_exists($uri, $routes))
@@ -74,6 +73,8 @@ class Router
 
 				continue;
 			}
+
+			$uri = trim($uri, "/");
 
 			if ($uri == "")
 			{

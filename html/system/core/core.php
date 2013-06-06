@@ -3,7 +3,41 @@
 ini_set('default_charset','UTF-8');
 chdir(J_PATH);
 
+function j_autoload($name)
+{
+	//System core
+	$file = J_SYSTEMPATH . "core" . DS . $name . EXT;
+	if (file_exists($file))
+	{
+		return include $file;
+	}
+
+	//System library
+	$file = J_SYSTEMPATH . "library" . DS . $name . EXT;
+	if (file_exists($file))
+	{
+		return include $file;
+	}
+
+	//App models
+	$file = J_APPPATH . "models" . DS . $name . EXT;
+	if (file_exists($file))
+	{
+		return include $file;
+	}
+}
+spl_autoload_register("j_autoload");
+
 require J_SYSTEMPATH . "core" . DS . "helpers" . EXT;
+require J_SYSTEMPATH . "core" . DS . "Event" . EXT;
+
+function j_shutdown()
+{
+	Event::fire(J_EVENT_SHUTDOWN);
+}
+register_shutdown_function("j_shutdown");
+
+
 require J_SYSTEMPATH . "core" . DS . "Request" . EXT;
 Request::init();
 
@@ -22,7 +56,6 @@ require J_SYSTEMPATH . "core" . DS . "URI" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Config" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Router" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Route" . EXT;
-require J_SYSTEMPATH . "core" . DS . "Crypt" . EXT;
 
 Router::register("*", "(:all)", function ()
 {
@@ -31,10 +64,13 @@ Router::register("*", "(:all)", function ()
 
 Request::$route = Router::route(Request::method(), URI::current());
 
+Event::fire(J_EVENT_RESPONSE_START);
+
 $response = Request::$route->call();
 
-echo "response: " . $response . "<br>";
+echo $response;
 
+Event::fire(J_EVENT_RESPONSE_END);
 
 //Fazer verificações de sanidade quando em development, verificar se as pastas existem, se tem 777 na pasta storage, etc...
 //Fazer verificação de versão mínima do PHP (5.3), se local
