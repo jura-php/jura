@@ -39,7 +39,7 @@ class Router
 
 	public static function register($method, $route, $action)
 	{
-		if (str_contains($method, ","))
+		if (Str::contains($method, ","))
 		{
 			$method = explode(",", $method);
 			foreach ($method as $v)
@@ -50,7 +50,7 @@ class Router
 			return;
 		}
 
-		if (str_contains($route, ","))
+		if (Str::contains($route, ","))
 		{
 			$route = explode(",", $route);
 			foreach ($route as $v)
@@ -78,7 +78,7 @@ class Router
 
 			if ($uri == "")
 			{
-				$url = "/";
+				$uri = "/";
 			}
 
 			if ($uri{0} == '(')
@@ -131,7 +131,7 @@ class Router
 	{
 		foreach (self::method($method) as $route => $action)
 		{
-			if (str_contains($route, "("))
+			if (Str::contains($route, "("))
 			{
 				list($search, $replace) = array_divide(self::$optional);
 

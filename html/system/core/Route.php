@@ -57,7 +57,7 @@ class Route
 
 				if (Request::isLocal())
 				{
-					if (!file_exists($path))
+					if (!File::exists($path))
 					{
 						echo "File <b>" . $path . "</b> doesn't exists"; //TODO: Put this on error class
 						die();
@@ -86,7 +86,7 @@ class Route
 
 				if (Request::isLocal())
 				{
-					if (!file_exists($path))
+					if (!File::exists($path))
 					{
 						echo "File <b>" . $path . "</b> doesn't exists"; //TODO: Put this on error class
 						die();

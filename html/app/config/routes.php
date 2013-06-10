@@ -1,5 +1,13 @@
 <?php
 
+Router::register("GET", "/", "index"); //view
+
+
+
+
+
+
+
 Router::register("GET", "test", function () {
 	return "called test!";
 });
@@ -14,7 +22,7 @@ Router::register("GET", "here/(:all?)", function ($param = "bacon") {
 });
 
 
-Event::listen(J_EVENT_RESPONSE_START, function () {
+/*Event::listen(J_EVENT_RESPONSE_START, function () {
 	echo "event: Start example..<br>";
 });
 
@@ -24,6 +32,6 @@ Event::listen(J_EVENT_RESPONSE_END, function () {
 
 Event::listen(J_EVENT_SHUTDOWN, function () {
 	echo "<br>event: Shutdown example..<br>";
-});
+});*/
 
 ?>

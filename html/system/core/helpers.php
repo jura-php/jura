@@ -12,30 +12,6 @@ function js_string($value)
 	return str_replace("'", "\\" . "'", $value);
 }
 
-function str_uri($string)
-{
-	$string = str_replace('&', '-and-', strtolower($string));
-    $string = str_replace(' ', '-', $string);
-    $string = str_replace('--', '-', $string);
-    $string = remove_accents($string);
-
-	return trim($string);
-}
-
-function remove_accents($string)
-{
- 	static $replaceDict = array(
-    'Š'=>'S', 'š'=>'s', 'Ð'=>'Dj','Ž'=>'Z', 'ž'=>'z', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A',
-    'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E', 'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I',
-    'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U', 'Ú'=>'U',
-    'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss','à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a',
-    'å'=>'a', 'æ'=>'a', 'ç'=>'c', 'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i',
-    'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u',
-    'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y', 'ƒ'=>'f');
-
-	return strtr($string, $replaceDict);
-}
-
 function benchmark($message = "")
 {
 	static $previousTime = 0;
@@ -57,42 +33,6 @@ function benchmark($message = "")
 function elapsed_time()
 {
 	return microtime(true) - J_START;
-}
-
-function str_limit($string, $maxLength = 100)
-{
-	$size = strlen($string);
-
-	if ($size < $maxLength)
-	{
-		return $string;
-	}
-	else
-	{
-		return substr($string, 0, $maxLength - 3) . "...";
-	}
-}
-
-//TODO: Detectar quando a string for utf8, se não utilizar o padrão..
-
-function strtolowerutf8($text)
-{
-    return mb_convert_case($text, MB_CASE_LOWER, "UTF-8");
-}
-
-function strtoupperutf8($text)
-{
-    return mb_convert_case($text, MB_CASE_UPPER, "UTF-8");
-}
-
-function ucwordutf8($text)
-{
-    return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
-}
-
-function ucfirstutf8($text)
-{
-	return strtolowerutf8($text{0}) . substr($text, 1);
 }
 
 function sql_php_date($mysqlDate)
@@ -424,82 +364,7 @@ function magic_quotes()
 	return function_exists('get_magic_quotes_gpc') and get_magic_quotes_gpc();
 }
 
-/**
- * Determine if a given string begins with a given value.
- *
- * @param  string  $haystack
- * @param  string  $needle
- * @return bool
- */
-function starts_with($haystack, $needle)
-{
-	return strpos($haystack, $needle) === 0;
-}
 
-/**
- * Determine if a given string ends with a given value.
- *
- * @param  string  $haystack
- * @param  string  $needle
- * @return bool
- */
-function ends_with($haystack, $needle)
-{
-	return $needle == substr($haystack, strlen($haystack) - strlen($needle));
-}
-
-/**
- * Determine if a given string contains a given sub-string.
- *
- * @param  string        $haystack
- * @param  string|array  $needle
- * @return bool
- */
-function str_contains($haystack, $needle)
-{
-	foreach ((array) $needle as $n)
-	{
-		if (strpos($haystack, $n) !== false) return true;
-	}
-
-	return false;
-}
-
-/**
- * Cap a string with a single instance of the given string.
- *
- * @param  string  $value
- * @param  string  $cap
- * @return string
- */
-function str_finish($value, $cap)
-{
-	return rtrim($value, $cap).$cap;
-}
-
-function str_remove_invisible($str, $urlEncoded = TRUE)
-{
-	$nonDisplayables = array();
-
-	// every control character except newline (dec 10)
-	// carriage return (dec 13), and horizontal tab (dec 09)
-
-	if ($urlEncoded)
-	{
-		$nonDisplayables[] = '/%0[0-8bcef]/';	// url encoded 00-08, 11, 12, 14, 15
-		$nonDisplayables[] = '/%1[0-9a-f]/';	// url encoded 16-31
-	}
-
-	$nonDisplayables[] = '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/S';	// 00-08, 11, 12, 14-31, 127
-
-	do
-	{
-		$str = preg_replace($nonDisplayables, '', $str, -1, $count);
-	}
-	while ($count);
-
-	return $str;
-}
 
 /**
  * Calculate the human-readable file size (with proper units).

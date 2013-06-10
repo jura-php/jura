@@ -1,4 +1,8 @@
 <?php
+//Hides server critial information
+header('Server: ');
+header('X-Powered-By: ');
+header("Content-Type: UTF-8");
 
 ini_set('default_charset','UTF-8');
 chdir(J_PATH);
@@ -57,8 +61,23 @@ require J_SYSTEMPATH . "core" . DS . "Config" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Router" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Route" . EXT;
 
+require J_SYSTEMPATH . "core" . DS . "Cache" . EXT;
+Cache::init();
+
+Router::register("GET", "allJS", function ()
+{
+	return Resources::allJS();
+});
+
+Router::register("GET", "allCSS", function ()
+{
+	return Resources::allCSS();
+});
+
 Router::register("*", "(:all)", function ()
 {
+	header("Status: 404");
+
 	return "404";
 });
 
@@ -78,6 +97,6 @@ Event::fire(J_EVENT_RESPONSE_END);
 //Fazer atalhos da Route::get, Reoute::post, etc...
 //Fazer um install.sh que cria as pastas e arquivos de exemplo no app/ dando 777 no storage, etc...
 
-echo "<br><br>" . round(elapsed_time() * 1000000) / 1000 . "ms";
+//echo "<br><br>" . round(elapsed_time() * 1000000) / 1000 . "ms";
 
 ?>
