@@ -5,6 +5,7 @@ class Request
 
 	private static $env;
 	private static $method;
+	private static $rootURL = null;
 	private static $pathInfo = null;
 	private static $isSecure = null;
 	private static $isLocal = null;
@@ -53,10 +54,11 @@ class Request
 		$_GET = null;
 		$_POST = null;
 		$_SERVER = null;
+		$_REQUEST = null;
 
 		//Detect environment
 		$list = require J_APPPATH . "config" . DS . "environments" . EXT;
-		$host = self::$server["HTTP_HOST"];
+		$host = array_get(self::$server, "HTTP_HOST", "localhost");
 		$host2 = gethostname();
 		$env = "";
 		$envWithWildcard = array_first($list);
@@ -208,6 +210,29 @@ class Request
 		return array_get(self::$server, "REQUEST_URI", "");
 	}
 
+	public static function rootURL()
+	{
+		if (is_null(self::$rootURL))
+		{
+			$protocol = strtolower(array_get(self::$server, "SERVER_PROTOCOL", "http"));
+			$protocol = substr($protocol, 0, strpos($protocol, "/")) . (static::isSecure() ? "s" : "");
+
+			$port = array_get(self::$server, "SERVER_PORT", "80");
+			$port = ($port == "80") ? "" : (":" . $port);
+
+			$uri = self::fullURI();
+			$pathInfo = self::pathInfo();
+			if ($pathInfo != "/")
+			{
+				$uri = substr($uri, 0, strpos($uri, $pathInfo));
+			}
+
+			self::$rootURL = Str::finish($protocol . "://" . array_get(self::$server, "SERVER_NAME", "localhost") . $port . $uri, "/");
+		}
+
+		return self::$rootURL;
+	}
+
 	public static function isSecure()
 	{
 		if (is_null(self::$isSecure))
@@ -230,7 +255,7 @@ class Request
 		}
 
 		//Remove control chars
-		$value = str_remove_invisible($value);
+		$value = Str::removeInvisible($value);
 
 		//Standardize newlines
 		if (strpos($value, "\r") !== false)
