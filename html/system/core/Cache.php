@@ -2,6 +2,7 @@
 class Cache
 {
 	private static $path;
+	private static $expirationTime = -1;
 
 	public static function init()
 	{
@@ -22,9 +23,9 @@ class Cache
 		}
 	}
 
-	public static function get($uri)
+	public static function get($key)
 	{
-		$path = static::$path . Str::toURIParam($uri) . ".cache";
+		$path = static::$path . Str::toURIParam($key) . ".cache";
 
 		if (!File::exists($path))
 		{
@@ -32,40 +33,34 @@ class Cache
 		}
 
 		$data = File::get($path);
-		$data = unserialize($data);
 
-		if (time() > $data["expirationTime"])
+		if (time() > substr($data, 0, 10))
 		{
 			static::remove($path);
 
 			return false;
 		}
 
-		return $data["data"];
+		return substr($data, 10);
 	}
 
-	//2 days of lifetime by default
-	public static function save($uri, $data, $lifeTime = 172800)
+	//2 days of expirationTime by default
+	public static function save($key, $data, $expirationTime = 172800)
 	{
-		$path = static::$path . Str::toURIParam($uri) . ".cache";
+		$path = static::$path . Str::toURIParam($key) . ".cache";
 
 		static::remove($path);
 
-		$content = array(
-			"expirationTime" => time() + $lifeTime,
-			"data" => $data
-		);
-
-		return File::put($path, serialize($content));
+		return File::put($path, (time() + $expirationTime) . $data);
 	}
 
-	public static function remove($uri, $asMask = false)
+	public static function remove($key, $asMask = false)
 	{
-		$uri = Str::toURIParam($uri);
+		$key = Str::toURIParam($key);
 
 		if (!$asMask)
 		{
-			$path = static::$path . $uri . ".cache";
+			$path = static::$path . $key . ".cache";
 
 			return File::delete($path);
 		}
@@ -76,7 +71,7 @@ class Cache
 
 			foreach ($files as $file)
 			{
-				if (Str::contains($file, $uri))
+				if (Str::contains($file, $key))
 				{
 					File::delete(static::$path . $file);
 					$delete = true;

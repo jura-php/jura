@@ -26,9 +26,39 @@ class Route
 
 	public function call()
 	{
-		//TODO: Call filters, cache etc..
+		$cacheEnabled = array_get($this->action, "cacheEnabled");
 
-		return $this->response();
+		if ($cacheEnabled && ($data = Cache::get(URI::current())))
+		{
+			$headersEnd = strpos($data, "\n\n");
+			if ($headersEnd > 0)
+			{
+				$headers = explode("\n", substr($data, 0, $headersEnd));
+				foreach ($headers as $header)
+				{
+					header($header);
+				}
+			}
+
+			$data = substr($data, $headersEnd + 2);
+
+			return $data;
+		}
+
+		$response = $this->response();
+
+		if ($cacheEnabled)
+		{
+			$headersList = implode("\n", headers_list());
+
+			Cache::save(URI::current(), $headersList . "\n\n" . $response, array_get($this->action, "cacheExpirationTime"));
+		}
+		else
+		{
+			Cache::remove(URI::current());
+		}
+
+		return $response;
 	}
 
 	public function response()
@@ -97,11 +127,13 @@ class Route
 			}
 		}
 
+		$handler = array_get($route->action, "handler");
+
 		//closure function
-		$handler = array_first($route->action, function($key, $value)
+		/*$handler = array_first($route->action, function($key, $value)
 		{
 			return is_callable($value);
-		});
+		});*/
 
 		if (!is_null($handler))
 		{

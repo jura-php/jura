@@ -57,6 +57,7 @@ else
 }
 
 require J_SYSTEMPATH . "core" . DS . "URI" . EXT;
+require J_SYSTEMPATH . "core" . DS . "URL" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Config" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Router" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Route" . EXT;
@@ -85,9 +86,7 @@ Request::$route = Router::route(Request::method(), URI::current());
 
 Event::fire(J_EVENT_RESPONSE_START);
 
-$response = Request::$route->call();
-
-echo $response;
+echo Request::$route->call();
 
 Event::fire(J_EVENT_RESPONSE_END);
 

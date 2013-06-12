@@ -3,7 +3,7 @@ class Html
 {
 	public static function headers()
 	{
-		$root = Request::rootURL();
+		$root = URL::root();
 
 		if (URI::isManager())
 		{

@@ -37,7 +37,7 @@ class Router
 		}
 	}
 
-	public static function register($method, $route, $action)
+	public static function register($method, $route, $action, $enableCache = false, $cacheExpirationTime = 172800)
 	{
 		if (Str::contains($method, ","))
 		{
@@ -95,29 +95,20 @@ class Router
 				$routes[$method] = array();
 			}
 
-			if (is_array($action))
+			if (is_string($action))
 			{
-				$routes[$method][$uri] = $action;
+				$action = array("uses" => $action);
 			}
-			else
+			else if (is_callable($action))
 			{
-				$routes[$method][$uri] = self::action($action);
+				$action = array("handler" => $action);
 			}
-		}
-	}
 
-	private static function action($action)
-	{
-		if (is_string($action))
-		{
-			$action = array('uses' => $action);
-		}
-		else if (is_callable($action))
-		{
-			$action = array($action);
-		}
+			$action["cacheEnabled"] = $enableCache;
+			$action["cacheExpirationTime"] = $cacheExpirationTime;
 
-		return (array)$action;
+			$routes[$method][$uri] = (array)$action;
+		}
 	}
 
 	private static function method($method)
