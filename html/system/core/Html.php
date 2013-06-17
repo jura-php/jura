@@ -5,11 +5,6 @@ class Html
 	{
 		$root = URL::root();
 
-		if (URI::isManager())
-		{
-			$root .= "manager/";
-		}
-
 		echo "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
 		<link rel=\"stylesheet\" href=\"" . $root . "allCSS/\">
 		<script type='text/javascript' src='" . $root . "allJS/'></script>
