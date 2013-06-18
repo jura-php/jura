@@ -19,6 +19,12 @@ Router::register("GET", "here/(:all?)", function ($param = "bacon") {
 	return "here is the param: " . $param;
 });
 
+Router::register("GET", "dbtest/", function () {
+	$rs = DB::query("select * from test where name = ?;", "Ramon Fritsch");
+
+	return $rs->fields["name"];
+});
+
 
 /*Event::listen(J_EVENT_RESPONSE_START, function () {
 	echo "event: Start example..<br>";

@@ -1,9 +1,14 @@
 <?php
 class Response
 {
-	public static function accessControl($allow = "*")
+	public static function accessControlHeader($allow = "*")
 	{
 		header("Access-Control-Allow-Origin: " . $allow);
+	}
+
+	public static function jsonHeader()
+	{
+		header("Content-Type: application/json; charset=utf-8");
 	}
 
 	public static function redirect($route = "/", $useJSFallback = true)

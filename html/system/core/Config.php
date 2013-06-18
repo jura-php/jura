@@ -31,18 +31,36 @@ class Config
 
 			if ($storeItems)
 			{
-				self::$items[$group] = $result;
+				static::$items[$group] = $result;
 			}
 
 			return $result;
 		}
 	}
 
+	public static function loadOnce($group)
+	{
+		if (!isset(static::$items[$group]))
+		{
+			static::load($group, false, true);
+		}
+	}
+
+	public static function group($group)
+	{
+		if (isset(static::$items[$group]))
+		{
+			return static::$items[$group];
+		}
+
+		return null;
+	}
+
 	public static function item($group, $name)
 	{
-		if (isset(self::$items[$group][$name]))
+		if (isset(static::$items[$group][$name]))
 		{
-			return self::$items[$group][$name];
+			return static::$items[$group][$name];
 		}
 
 		return false;

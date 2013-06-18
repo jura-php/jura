@@ -2,15 +2,13 @@
 //TODO:
 
 return array(
-	J_LOCAL_ENV => array(
-		"mysql" => array(
+	"mysql" => array(
+		"type" => "mysql",
+		"host" => "localhost",
+		"user" => "root",
+		"pass" => "",
+		"database" => "j"
+	)
+);
 
-		)
-	),
-	"production" => array(
-		"mysql" => array()
-		{
-
-		}
-	))
 ?>

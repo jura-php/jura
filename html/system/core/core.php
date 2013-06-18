@@ -16,6 +16,13 @@ function j_autoload($name)
 		return include $file;
 	}
 
+	//System database
+	$file = J_SYSTEMPATH . "database" . DS . $name . EXT;
+	if (file_exists($file))
+	{
+		return include $file;
+	}
+
 	//System library
 	$file = J_SYSTEMPATH . "library" . DS . $name . EXT;
 	if (file_exists($file))
