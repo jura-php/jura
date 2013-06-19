@@ -82,6 +82,30 @@ Router::register("GET", "allCSS", function ()
 	return Resources::allCSS();
 });
 
+Router::register("GET", "download", function () {
+	$path = J_PATH . Request::get("path");
+
+	$allowedDirectories = array("app/storage/", "app/img/", "app/inc/");
+	$allowed = false;
+
+	foreach ($allowedDirectories as $dir)
+	{
+		if (strpos($path, $dir) !== false)
+		{
+			$allowed = true;
+			break;
+		}
+	}
+
+	if (!$allowed)
+	{
+		echo "Directory not allowed."; //TODO: Error class
+		die();
+	}
+
+	Response::download($path, Request::get("name"));
+});
+
 Router::register("*", "(:all)", function ()
 {
 	header("Status: 404");
