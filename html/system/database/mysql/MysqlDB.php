@@ -26,7 +26,7 @@ class MysqlDB
 
 		if (!@mysql_select_db($params["database"], $this->res))
 		{
-			echo "Can't select database <b>'" . $params["host"] . "'</b>"; //TODO: Error class...
+			echo "Can't select database <b>'" . $params["database"] . "'</b>"; //TODO: Error class...
 			exit();
 		}
 

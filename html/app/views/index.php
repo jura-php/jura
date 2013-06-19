@@ -7,7 +7,7 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>Tweets</h1>
+			<h1>Lista</h1>
 			<div class="list">
 				TODO
 			</div>
