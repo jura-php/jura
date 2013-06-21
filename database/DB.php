@@ -5,8 +5,6 @@ class DB
 
 	public static function conn($name = null)
 	{
-		Config::loadOnce("databases");
-
 		if (is_null($name))
 		{
 			$keys = array_keys(Config::group("databases"));

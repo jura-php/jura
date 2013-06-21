@@ -48,6 +48,8 @@ class Config
 
 	public static function group($group)
 	{
+		static::loadOnce($group);
+
 		if (isset(static::$items[$group]))
 		{
 			return static::$items[$group];
@@ -58,6 +60,8 @@ class Config
 
 	public static function item($group, $name)
 	{
+		static::loadOnce($group);
+
 		if (isset(static::$items[$group][$name]))
 		{
 			return static::$items[$group][$name];

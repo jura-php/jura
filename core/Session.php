@@ -40,6 +40,10 @@ class Session
 
 	public static function setCookie($key, $value, $expire = 31536000, $path = '/')
 	{
+		$encriptKey = Config::item("application", "key");
+
+		echo $encriptKey . "-";
+
 		setcookie($key, $value, time() + $expire, $path);
 		$_COOKIE[$key] = $value;
 	}
