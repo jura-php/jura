@@ -11,10 +11,7 @@ OK	- Fazer rota para forçar download
 - Fazer interface de session/cookie
 - Fazer um controller base RESTful, que é só colocar o método na frente do nome da função para pegar
 - Fazer libraries.. (E-mail, Twitter 1.1, HTTPRequest, etc..)
-- Fazer classe de erro
-
-
-
+- Fazer classe de erro, expondo config de show errors para local, production manda e-mail e mostra um erro 500... etc..
 
 
 

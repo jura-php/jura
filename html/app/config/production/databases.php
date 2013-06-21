@@ -3,9 +3,9 @@
 return array(
 	"mysql" => array(
 		"type" => "mysql",
-		"host" => "localhost",
+		"host" => "joy-interactive.com",
 		"user" => "root",
-		"pass" => "",
+		"pass" => "brocolis11",
 		"database" => "j"
 	)
 );
