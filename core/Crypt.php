@@ -1,76 +1,46 @@
 <?php
 class Crypt {
-	private static $hashTable;
-
-	private static function hashTable()
-	{
-		if (!self::$hashTable)
-		{
-			self::$hashTable = array("f", "4", "G", "a", "D", "8", "P", "K", "Z", "u", "Y", "x", "c", "M", "y", "w", "r", "7", "5", "0", "S", "g", "F", "Q", "o", "R", "E", "h", "m", "t", "C", "s", "z", "9", "e", "V");	
-		}
-
-		return self::$hashTable;
-	}
-
 	public static function encode($string)
 	{
-		$string = (string)$string;
+		$key = Config::item("application", "key");
+		$key = mb_substr($key, 0, mcrypt_get_key_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC));
+	    $ivSize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC);
+	    $ivCode = mcrypt_create_iv($ivSize, MCRYPT_DEV_URANDOM);
+	    $encrypted = static::to64(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $string, MCRYPT_MODE_CBC, $ivCode));
 
-		$arr = self::hashTable();
-		$t = sizeof($arr) - 1;
-		$r = "";
-		$l = strlen($string);
-
-		for ($i = 0; $i < $l; $i++)
-		{
-			$c1 = 0;
-			$c2 = ord($string{$i});
-
-			while ($c2 > $t) {
-				$c2 -= $t;
-				$c1++;
-			}
-
-			if (($i % 2) == 0)
-			{
-				$r .= $arr[$c1] . $arr[$c2];
-			}
-			else
-			{
-				$r .= $arr[$t - $c1] . $arr[$t - $c2];
-			}
-		}
-
-		return $r;
+	    return $encrypted . "|" . static::to64($ivCode);
 	}
 
 	public static function decode($string)
 	{
-		$arr = self::hashTable();
-		$t = sizeof($arr) - 1;
-		$k = array_flip($arr);
-		$n = 0;
-		$r = "";
-		$l = strlen($string);
+		$key = Config::item("application", "key");
+		$key  = mb_substr($key, 0, mcrypt_get_key_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC));
+	    list($string, $ivCode) = explode("|", $string);
+	    $string = static::from64($string);
+	    $ivCode = static::from64($ivCode);
+	    $string = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $string, MCRYPT_MODE_CBC, $ivCode);
 
-		for ($i = 0; $i < $l; $i++)
-		{
-			$c1 = $string{$i++};
-			$c2 = $string{$i};
+	    return rtrim($string, "\0");
+	}
 
-			if (($n % 2) == 0)
-			{
-				$r .= chr(($k[$c1] * $t) + $k[$c2]);
-			}
-			else 
-			{
-				$r .= chr((($t - $k[$c1]) * $t) + ($t - $k[$c2]));
-			}
+	private static function to64($string)
+	{
+		$string = base64_encode($string);
+	    $string = preg_replace('/\//', '_', $string);
+	    $string = preg_replace('/\+/', '.', $string);
+	    $string = preg_replace('/\=/', '-', $string);
 
-			$n++;
-		}
+	    return trim($string, '-');
+	}
 
-		return $r;
+	private static function from64($string)
+	{
+		$string = preg_replace('/\_/', '/', $string);
+	    $string = preg_replace('/\./', '+', $string);
+	    $string = preg_replace('/\-/', '=', $string);
+	    $string = base64_decode($string);
+
+	    return $string;
 	}
 }
 ?>

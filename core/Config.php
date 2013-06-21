@@ -3,38 +3,42 @@ class Config
 {
 	private static $items = array();
 
-	public static function load($group, $loadGeneric = false, $storeItems = false)
+	public static function load($group, $save = true)
 	{
-		//TODO: Carregar os configs de manager, se for..
+		$paths = array();
 
-		$envConfigPath = J_APPPATH . "config" . DS . strtolower(Request::env()) . DS . $group . EXT;
-		$exists = file_exists($envConfigPath);
-		$result = null;
-		$resultEnv = null;
-
-		if ($loadGeneric || !$exists)
+		if (URI::isManager())
 		{
-			$result = require J_APPPATH . "config" . DS . $group . EXT;
+			$paths[] = J_APPPATH . DS . "manager" . DS . "config" . DS . strtolower(Request::env()) . DS . $group . EXT;
+			$paths[] = J_APPPATH . DS . "manager" . DS . "config" . DS . $group . EXT;
 		}
 
-		if ($exists)
+		$paths[] = J_APPPATH . "config" . DS . strtolower(Request::env()) . DS . $group . EXT;
+		$paths[] = J_APPPATH . "config" . DS . $group . EXT;
+
+		$items = array();
+
+		foreach ($paths as $path)
 		{
-			$resultEnv = require $envConfigPath;
+			if (file_exists($path))
+			{
+				$result = require $path;
+
+				if (is_array($result))
+				{
+					$items = array_merge($items, $result);
+				}
+			}
 		}
 
-		if ($result && is_array($result))
+		if (count($items) > 0)
 		{
-			if ($resultEnv && is_array($resultEnv))
+			if ($save)
 			{
-				$result = array_merge($result, $resultEnv);
+				static::$items[$group] = $items;
 			}
 
-			if ($storeItems)
-			{
-				static::$items[$group] = $result;
-			}
-
-			return $result;
+			return $items;
 		}
 	}
 
@@ -42,7 +46,7 @@ class Config
 	{
 		if (!isset(static::$items[$group]))
 		{
-			static::load($group, false, true);
+			static::load($group);
 		}
 	}
 

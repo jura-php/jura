@@ -20,7 +20,7 @@ class Router
 
 	public static function route($method, $uri)
 	{
-		Config::load("routes");
+		Config::load("routes", false);
 
 		$routes = (array)self::method($method);
 
