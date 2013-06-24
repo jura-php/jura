@@ -88,6 +88,11 @@ class MysqlDB
 		}
 	}
 
+	public function quoteID($identifier)
+	{
+		return trim("`" . $identifier . "`", "`");
+	}
+
 	public function close()
 	{
 		@mysql_close($this->res);
