@@ -3,6 +3,8 @@ class MysqlDB
 {
 	public $res;
 
+	private $fieldsInfoCache;
+
 	public function __construct($params)
 	{
 		Event::listen(J_EVENT_SHUTDOWN, function () {
@@ -64,6 +66,11 @@ class MysqlDB
 		return new MysqlRecordSet($query, $this);
 	}
 
+	public function queryORM($query, &$orm)
+	{
+		return new MysqlRecordSet($query, $this, $orm);
+	}
+
 	public function escape($value)
 	{
 		if (is_string($value))
@@ -90,7 +97,35 @@ class MysqlDB
 
 	public function quoteID($identifier)
 	{
-		return trim("`" . $identifier . "`", "`");
+		return "`" . trim($identifier, "`") . "`";
+	}
+
+	public function fieldsInfo($tableName)
+	{
+		if (!isset($this->fieldsInfoCache[$tableName]))
+		{
+			$fieldsInfo = array();
+			$sql = "SHOW COLUMNS FROM " . $tableName . ";";
+			$res = mysql_query($sql);
+			while ($d = mysql_fetch_assoc($res))
+			{
+				$info = array();
+
+				$info["name"] = $d["Field"];
+				$info["nullAccept"] = ($d["Null"] == "YES");
+				$info["keyType"] = $d["Key"];
+				$info["default"] = $d["Default"];
+				$info["autoIncrement"] = (strpos($d["Extra"], "auto_increment") !== false);
+				$info["type"] = $d["Type"];
+
+				$fieldsInfo[] = $info;
+			}
+			mysql_free_result($res);
+
+			$this->fieldsInfoCache[$tableName] = $fieldsInfo;
+		}
+
+		return $this->fieldsInfoCache[$tableName];
 	}
 
 	public function close()

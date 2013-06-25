@@ -1,29 +1,38 @@
 <?php
 
-//TODO: Where com OR ou AND..
+//OK: Where com OR ou AND..
+//OK: Retorno da query com um recordset associando um objeto a cada move[Next][First]()...
+
 //TODO: Joins
-//TODO: Retorno da query com um recordset associando um objeto a cada move[Next][First]()...
 
 class ORM
 {
-	private $tableName;
+	private static $lastSQL = "";
+
+	public $tableName;
 	private $connName;
 
 	private $method;
 
 	private $selectFields;
 	private $wheres;
+	private $currentWhere;
 	private $orderBys;
 	private $groupBys;
 	private $limit;
 	private $offset;
 
-	/*private $fields;
-	private $dirtyFields;*/
+	private $fields;
+	private $dirtyFields;
 
 	public static function make($tableName, $connName = null)
 	{
 		return new ORM($tableName, $connName);
+	}
+
+	public static function lastSQL()
+	{
+		return static::$lastSQL;
 	}
 
 	public function __construct($tableName, $connName = null)
@@ -36,11 +45,12 @@ class ORM
 
 	public function reset()
 	{
-		/*$this->fields = null;
-		$this->dirtyFields = null;*/
+		$this->fields = null;
+		$this->dirtyFields = null;
 
 		$this->selectFields = "*";
 		$this->wheres = null;
+		$this->currentWhere = null;
 		$this->orderBys = null;
 		$this->groupBys = null;
 		$this->limit = 0;
@@ -63,7 +73,7 @@ class ORM
 		return $this->run();
 	}
 
-	public function findMany()
+	public function find()
 	{
 		$this->method = "SELECT";
 
@@ -86,9 +96,9 @@ class ORM
 
 				$sql = $this->method . " " . $fields . " FROM " . DB::conn($this->connName)->quoteID($this->tableName) . " ";
 
-				if (count($this->wheres) > 0)
+				if (!is_null($this->wheres))
 				{
-					$sql .= "WHERE " . join(" AND ", $this->wheres);
+					$sql .= "WHERE " . $this->buildWheres($this->wheres) . " ";
 				}
 
 				if (count($this->groupBys) > 0)
@@ -113,13 +123,91 @@ class ORM
 					$sql .= $this->limit;
 				}
 
-				echo $sql;
-			break;
+				static::$lastSQL = $sql;
+
+				return DB::conn($this->connName)->queryORM($sql, $this);
+
+				break;
+			case "INSERT":
+				$fieldsInfo = DB::conn($this->connName)->fieldsInfo($this->tableName);
+				$fields = array();
+				$values = array();
+				foreach ($fieldsInfo as $v)
+				{
+					$name = $v["name"];
+					if (isset($this->dirtyFields[$name]))
+					{
+						$fields[] = DB::conn($this->connName)->quoteID($name);
+						$values[] = DB::conn($this->connName)->escape($this->fields[$name]);
+					}
+				}
+
+				$sql = "INSERT INTO " . $this->tableName . " (" . join(", ", $fields) . ") VALUES (" . join(", ", $values) . ");";
+
+				static::$lastSQL = $sql;
+
+				$rs = DB::conn($this->connName)->query($sql);
+
+				$this->setField("id", $rs->insertID);
+
+				return $rs->success;
+
+				break;
+			case "UPDATE":
+				$sql = "UPDATE " . $this->tableName . " SET ";
+
+				$fieldsInfo = DB::conn($this->connName)->fieldsInfo($this->tableName);
+				$fields = array();
+				foreach ($fieldsInfo as $v)
+				{
+					$name = $v["name"];
+					if (isset($this->dirtyFields[$name]))
+					{
+						$fields[] = DB::conn($this->connName)->quoteID($name) . " = " . DB::conn($this->connName)->escape($this->fields[$name]);
+					}
+				}
+
+				$sql .= join(", ", $fields) . " ";
+				$sql .= "WHERE id = " . DB::conn($this->connName)->escape($this->fields["id"]) . " LIMIT 1;";
+
+				static::$lastSQL = $sql;
+
+				$rs = DB::conn($this->connName)->query($sql);
+
+				return $rs->success;
+
+				break;
+			case "DELETE":
+				$sql = "DELETE FROM " . $this->tableName . " WHERE id = " . DB::conn($this->connName)->escape($this->fields["id"]) . " LIMIT 1;";
+
+				static::$lastSQL = $sql;
+
+				$rs = DB::conn($this->connName)->query($sql);
+
+				return $rs->success;
+
+				break;
+		}
+	}
+
+	private function buildWheres(&$wheres)
+	{
+		$list = $wheres["wheres"];
+		$outs = array();
+
+		foreach ($list as $v)
+		{
+			if (is_array($v))
+			{
+				$outs[] = "(" . $this->buildWheres($v) . ")";
+			}
+			else
+			{
+				$outs[] = $v;
+			}
 		}
 
-		//TODO: Build select query and return a RS
-
-		//DB::conn($this->connName)
+		return join(" " . $wheres["concat"] . " ", $outs);
 	}
 
 	public function select($fields)
@@ -132,11 +220,19 @@ class ORM
 		}
 
 		$this->selectFields = array_merge($this->selectFields, $fields);
+
+		return $this;
 	}
 
 	public function where($name, $method, $value)
 	{
-		return $this->wheres[] = DB::conn($this->connName)->quoteID($name) . $method . $value;
+		$this->initWheres();
+
+		$db = DB::conn($this->connName);
+
+		$this->currentWhere["wheres"][] = $db->quoteID($name) . " " . $method . " " . $db->escape($value);
+
+		return $this;
 	}
 
 	public function whereEqual($name, $value)
@@ -151,34 +247,82 @@ class ORM
 
 	public function whereRaw($raw)
 	{
-		return $this->wheres[] = $raw;
+		$this->initWheres();
+
+		$this->currentWhere["wheres"][] = $raw;
+
+		return $this;
+	}
+
+	private function initWheres()
+	{
+		if (is_null($this->wheres))
+		{
+			$this->wheres = array(
+				"concat" => "AND",
+				"wheres" => array()
+			);
+
+			$this->currentWhere = &$this->wheres;
+		}
+	}
+
+	public function whereGroup($concat, $callback)
+	{
+		$concat = Str::upper($concat);
+		if ($concat != "AND" && $concat != "OR")
+		{
+			return false;
+		}
+
+		$this->initWheres();
+
+		$where = array(
+			"concat" => $concat,
+			"wheres" => array()
+		);
+
+		$oldWhere = &$this->currentWhere;
+		$this->currentWhere = &$where;
+
+		call_user_func_array($callback, array($this));
+
+		$oldWhere["wheres"][] = $this->currentWhere;
+		$this->currentWhere = &$oldWhere;
+
+		return $this;
 	}
 
 
 	public function orderByAsc($name)
 	{
 		$this->orderBys[] = DB::conn($this->connName)->quoteID($name) . " ASC";
+		return $this;
 	}
 
 	public function orderByDesc($name)
 	{
 		$this->orderBys[] = DB::conn($this->connName)->quoteID($name) . " DESC";
+		return $this;
 	}
 
 	public function orderByExpr($expr)
 	{
 		$this->orderBys[] = $expr;
+		return $this;
 	}
 
 
 	public function groupBy($name)
 	{
 		$this->groupBys[] = DB::conn($this->connName)->quoteID($name);
+		return $this;
 	}
 
 	public function groupByExpr($expr)
 	{
 		$this->groupBys[] = $expr;
+		return $this;
 	}
 
 
@@ -206,9 +350,7 @@ class ORM
 		return $this->setField($key, $value);
 	}
 
-
-
-	/*public function setField($name, $value)
+	public function setField($name, $value)
 	{
 		if (is_null($this->fields))
 		{
@@ -242,6 +384,7 @@ class ORM
 		return $this->fields[$name];
 	}
 
+
 	public function insert()
 	{
 		$this->method = "INSERT";
@@ -271,6 +414,6 @@ class ORM
 		$this->method = "DELETE";
 
 		return $this->run();
-	}*/
+	}
 }
 ?>

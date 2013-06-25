@@ -3,6 +3,8 @@ class MysqlRecordSet
 {
 	public $conn;
 	public $res;
+	private $orm;
+	private $rowOrm;
 
 	public $BOF;
 	public $EOF;
@@ -13,12 +15,14 @@ class MysqlRecordSet
 
 	public $fields;
 
-	public $inserID;
+	public $insertID;
 
-	public function __construct($query, &$conn)
+	public function __construct($query, &$conn, &$orm = null)
 	{
 		$this->conn = $conn;
 		$this->res = null;
+		$this->orm = $orm;
+		$this->rowOrm = null;
 
 		$this->success = false;
 		$this->fields = null;
@@ -26,6 +30,7 @@ class MysqlRecordSet
 		$this->BOF = true;
 		$this->index = 0;
 		$this->count = 0;
+		$this->insertID = 0;
 
 		$type = strtolower(substr(trim(str_replace("\n", " ", $query)), 0, 7));
 
@@ -47,7 +52,7 @@ class MysqlRecordSet
 			}
 			else if ($typeIsInsert)
 			{
-				$this->insertID = mysql_insert_id($this->res);
+				$this->insertID = mysql_insert_id($this->conn->res);
 			}
 		}
 		else
@@ -94,6 +99,22 @@ class MysqlRecordSet
 		$this->fetch();
 	}
 
+	public function all()
+	{
+		$all = array();
+
+		$this->moveFirst();
+
+		while (!$this->EOF)
+		{
+			$all[] = $this->fields;
+
+			$this->moveNext();
+		}
+
+		return $all;
+	}
+
 	public function __get($key)
 	{
 		if ($key == "fields" && $this->BOF && $this->EOF)
@@ -101,6 +122,21 @@ class MysqlRecordSet
 			echo "SQL error: <br>Trying to access a field of an empty RecordSet"; //TODO: Error class
 
 			return null;
+		}
+
+		if ($key == "orm")
+		{
+			if (is_null($this->rowOrm))
+			{
+				$this->rowOrm = ORM::make($this->orm->tableName);
+
+				foreach ($this->fields as $k => $v)
+				{
+					$this->rowOrm->$k = $v;
+				}
+			}
+
+			return $this->rowOrm;
 		}
 
 		return $this->$key;
@@ -123,6 +159,8 @@ class MysqlRecordSet
 		{
 			$this->EOF = false;
 		}
+
+		$this->rowOrm = null;
 	}
 }
 ?>
