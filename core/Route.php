@@ -83,7 +83,7 @@ class Route
 
 				$pieces = explode(DS, $name);
 				$className = $pieces[count($pieces) - 1] = ucfirst(array_last($pieces)) . "Controller";
-				$path = J_APPPATH . "controllers" . DS . trim(implode(DS, $pieces), DS) . EXT;
+				$path = J_APIPATH . "controllers" . DS . trim(implode(DS, $pieces), DS) . EXT;
 
 				if (Request::isLocal())
 				{
@@ -112,7 +112,7 @@ class Route
 			//view
 			else
 			{
-				$path = J_APPPATH . "views" . DS . $uses . EXT;
+				$path = J_APIPATH . "views" . DS . $uses . EXT;
 
 				if (Request::isLocal())
 				{

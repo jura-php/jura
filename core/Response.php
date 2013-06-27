@@ -6,9 +6,11 @@ class Response
 		header("Access-Control-Allow-Origin: " . $allow);
 	}
 
-	public static function jsonHeader()
+	public static function json($data)
 	{
 		header("Content-Type: application/json; charset=utf-8");
+
+		return json_encode($data);
 	}
 
 	public static function download($path, $name = null, $headers = array())

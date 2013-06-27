@@ -6,35 +6,32 @@ class Resources
 		header("Content-Type: application/x-javascript; charset=utf-8");
 
 		$files = array();
+		$config = Config::item("application", "js");
+		$path = J_APIPATH . "inc" . DS;
 
-		$path = J_SYSTEMPATH . "inc" . DS;
-		$files[] = $path . "jquery.js";
-
-		if (URI::isManager())
+		if ($config == "*")
 		{
-			//TODO:
-
-		}
-		else
-		{
-			$path = J_APPPATH . "inc" . DS;
-
 			$listFiles = File::lsdir($path, ".js");
 			foreach ($listFiles as $file)
 			{
 				$files[] = $path . $file;
 			}
 		}
+		else
+		{
+			foreach ($config as $file)
+			{
+				$files[] = $path . $file;
+			}
+		}
 
 		$data = "";
-		if (!($data = static::cacheData($files)))
+		$key = static::cacheKey($files);
+		if (!($data = Cache::get($key)))
 		{
-			$key = URI::current();
-			$size = 0;
 			foreach ($files as $file)
 			{
 				$data .= File::get($file) . "\n";
-				$size += File::modified($file) / 100000;
 			}
 
 			//Remove comments
@@ -43,9 +40,6 @@ class Resources
 			$data = preg_replace('!\n\s+!', "\n", $data);
 
 			Cache::remove($key, true);
-
-			$key .= md5($size);
-
 			Cache::save($key, $data);
 		}
 
@@ -57,20 +51,11 @@ class Resources
 		header("Content-Type: text/css; charset=utf-8");
 
 		$files = array();
+		$config = Config::item("application", "css");
+		$path = J_APIPATH . "inc" . DS;
 
-		$path = J_SYSTEMPATH . "inc" . DS;
-		$files[] = $path . "reset.css";
-		$files[] = $path . "pure.grids.css";
-
-		if (URI::isManager())
+		if ($config == "*")
 		{
-			//TODO:
-
-		}
-		else
-		{
-			$path = J_APPPATH . "inc" . DS;
-
 			$listFiles = File::lsdir($path, ".css");
 			foreach ($listFiles as $file)
 			{
@@ -83,13 +68,18 @@ class Resources
 				$files[] = $path . $file;
 			}
 		}
+		else
+		{
+			foreach ($config as $file)
+			{
+				$files[] = $path . $file;
+			}
+		}
 
 		$data = "";
-		if (!($data = static::cacheData($files)))
+		$key = static::cacheKey($files);
+		if (!($data = Cache::get($key)))
 		{
-			$key = URI::current();
-			$size = 0;
-
 			//Check included .less files
 			$lessIncluded = array();
 			$lessContents = array();
@@ -111,8 +101,6 @@ class Resources
 								{
 									$fileContent = File::get($file2);
 									$lessContents[$file2] = $fileContent;
-
-									$size += File::modified($file2) / 100000;
 								}
 								else
 								{
@@ -148,8 +136,6 @@ class Resources
 				{
 					$data .= File::get($file) . "\n";
 				}
-
-				$size += File::modified($file) / 100000;
 			}
 
 			//Remove comments
@@ -169,28 +155,24 @@ class Resources
 			$data = str_replace("  ", " ", $data);
 
 			Cache::remove($key, true);
-
-			$key .= md5($size);
-
-			Cache::save($key, $data); //TODO: Uncomment this
+			Cache::save($key, $data);
 		}
 
 		return $data;
 	}
 
-	public static function cacheData($files)
+	private static function cacheKey($files)
 	{
-		$key = URI::current();
 		$size = 0;
+		$names = "";
 
 		foreach ($files as $file)
 		{
+			$names .= basename($file) . "-";
 			$size += File::modified($file) / 100000;
 		}
 
-		$key .= md5($size);
-
-		return Cache::get($key);
+		return URI::current() . md5($names . $size);
 	}
 
 }

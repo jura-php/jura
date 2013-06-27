@@ -30,11 +30,22 @@ function j_autoload($name)
 		return include $file;
 	}
 
-	//App models
-	$file = J_APPPATH . "models" . DS . $name . EXT;
-	if (file_exists($file))
+	if (URI::isManager())
 	{
-		return include $file;
+		$file = J_SYSTEMPATH . "manager/classes" . DS . $name . EXT;
+		if (file_exists($file))
+		{
+			return include $file;
+		}
+	}
+	else
+	{
+		//App models
+		$file = J_APIPATH . "models" . DS . $name . EXT;
+		if (file_exists($file))
+		{
+			return include $file;
+		}
 	}
 }
 spl_autoload_register("j_autoload");
@@ -112,6 +123,11 @@ Router::register("*", "(:all)", function ()
 
 	return "404";
 });
+
+if (URI::isManager())
+{
+	ManagerStructure::routes();
+}
 
 Request::$route = Router::route(Request::method(), URI::current());
 

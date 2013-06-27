@@ -224,6 +224,23 @@ class ORM
 		return $this;
 	}
 
+	public function selectRaw($field, $alias = null)
+	{
+		$expr = $field;
+
+		if (!is_null($alias))
+		{
+			$expr .= " as " . DB::conn($this->connName)->quoteID($alias);
+		}
+
+		if ($this->selectFields == "*")
+		{
+			$this->selectFields = array();
+		}
+
+		$this->selectFields[] = $expr;
+	}
+
 	public function where($name, $method, $value)
 	{
 		$this->initWheres();
@@ -336,6 +353,68 @@ class ORM
 	{
 		$this->offset = $count;
 		return $this;
+	}
+
+	public function count($name)
+	{
+		return $this->execDBFunc("count", $name);
+	}
+
+	public function max($name)
+	{
+		return $this->execDBFunc("max", $name);
+	}
+
+	public function min($name)
+	{
+		return $this->execDBFunc("min", $name);
+	}
+
+	public function avg($name)
+	{
+		return $this->execDBFunc("avg", $name);
+	}
+
+	public function sum($name)
+	{
+		return $this->execDBFunc("sum", $name);
+	}
+
+	private function execDBFunc($func, $name)
+	{
+		$alias = Str::lower($func);
+		$func = Str::upper($func);
+
+		if ($name != "*")
+		{
+			$name = DB::conn($this->connName)->quoteID($name);
+		}
+
+		$this->selectRaw($func . "(" . $name . ")", $alias);
+
+		$rs = $this->findFirst();
+		$result = 0;
+
+		if (!$rs->EOF)
+		{
+			$result = $rs->fields[$alias];
+		}
+
+		array_pop($this->selectFields);
+
+		if (count($this->selectFields) == 0)
+		{
+			$this->selectFields = "*";
+		}
+
+		if ((int)$result == (float)$result)
+		{
+			return (int)$result;
+		}
+		else
+		{
+			return (float)$result;
+		}
 	}
 
 	//CRUD...
