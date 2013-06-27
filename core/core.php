@@ -32,7 +32,13 @@ function j_autoload($name)
 
 	if (URI::isManager())
 	{
-		$file = J_SYSTEMPATH . "manager/classes" . DS . $name . EXT;
+		$file = J_SYSTEMPATH . "manager/" . DS . $name . EXT;
+		if (file_exists($file))
+		{
+			return include $file;
+		}
+
+		$file = J_SYSTEMPATH . "manager/formFields/" . DS . $name . EXT;
 		if (file_exists($file))
 		{
 			return include $file;
@@ -76,7 +82,10 @@ else
 
 require J_SYSTEMPATH . "core" . DS . "URI" . EXT;
 require J_SYSTEMPATH . "core" . DS . "URL" . EXT;
+
 require J_SYSTEMPATH . "core" . DS . "Config" . EXT;
+define("J_TP", Config::item("application", "tablePrefix"));
+
 require J_SYSTEMPATH . "core" . DS . "Router" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Route" . EXT;
 

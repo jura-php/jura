@@ -94,7 +94,7 @@ class ORM
 					$fields = join(", ", $fields);
 				}
 
-				$sql = $this->method . " " . $fields . " FROM " . DB::conn($this->connName)->quoteID($this->tableName) . " ";
+				$sql = $this->method . " " . $fields . " FROM " . DB::conn($this->connName)->quoteID(J_TP . $this->tableName) . " ";
 
 				if (!is_null($this->wheres))
 				{
@@ -129,7 +129,7 @@ class ORM
 
 				break;
 			case "INSERT":
-				$fieldsInfo = DB::conn($this->connName)->fieldsInfo($this->tableName);
+				$fieldsInfo = DB::conn($this->connName)->fieldsInfo(J_TP . $this->tableName);
 				$fields = array();
 				$values = array();
 				foreach ($fieldsInfo as $v)
@@ -142,7 +142,7 @@ class ORM
 					}
 				}
 
-				$sql = "INSERT INTO " . $this->tableName . " (" . join(", ", $fields) . ") VALUES (" . join(", ", $values) . ");";
+				$sql = "INSERT INTO " . J_TP . $this->tableName . " (" . join(", ", $fields) . ") VALUES (" . join(", ", $values) . ");";
 
 				static::$lastSQL = $sql;
 
@@ -154,9 +154,9 @@ class ORM
 
 				break;
 			case "UPDATE":
-				$sql = "UPDATE " . $this->tableName . " SET ";
+				$sql = "UPDATE " . J_TP . $this->tableName . " SET ";
 
-				$fieldsInfo = DB::conn($this->connName)->fieldsInfo($this->tableName);
+				$fieldsInfo = DB::conn($this->connName)->fieldsInfo(J_TP . $this->tableName);
 				$fields = array();
 				foreach ($fieldsInfo as $v)
 				{
@@ -178,7 +178,7 @@ class ORM
 
 				break;
 			case "DELETE":
-				$sql = "DELETE FROM " . $this->tableName . " WHERE id = " . DB::conn($this->connName)->escape($this->fields["id"]) . " LIMIT 1;";
+				$sql = "DELETE FROM " . J_TP . $this->tableName . " WHERE id = " . DB::conn($this->connName)->escape($this->fields["id"]) . " LIMIT 1;";
 
 				static::$lastSQL = $sql;
 
