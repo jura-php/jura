@@ -1,5 +1,5 @@
 <?php
-class ManagerStructure
+class Structure
 {
 	private static $modules = null;
 	private static $modulesObjects = null;
@@ -16,17 +16,31 @@ class ManagerStructure
 		//Load login routes.. login, logoff, etc..
 
 		Router::register("GET", "manager/api/config/", function () {
-			return Response::json(static::config());
+			$config = array();
+
+			$config["api_url"] = URL::to("api/");
+
+			return "window.config = " . json_encode($config);
+		});
+
+		Router::register("GET", "manager/api/structure/", function () {
+			return Response::json(static::modules());
 		});
 	}
 
-	public static function config()
+	public static function modules()
 	{
 		static::loadModules();
 
-		//TODO: Return user login state..
-
 		$config = array();
+
+		//TODO: Return user login state..
+		//TEMP
+		$config["user"] = array(
+				"name" => "Guilherme Medeiros",
+				"gravatar_hash" => "1577c5579fd5b4c5c80aec42b1744728"
+			);
+		//----
 
 		$config["modules"] = static::$modules;
 

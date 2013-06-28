@@ -32,13 +32,13 @@ function j_autoload($name)
 
 	if (URI::isManager())
 	{
-		$file = J_SYSTEMPATH . "manager/" . DS . $name . EXT;
+		$file = J_SYSTEMPATH . "manager/classes/" . DS . $name . EXT;
 		if (file_exists($file))
 		{
 			return include $file;
 		}
 
-		$file = J_SYSTEMPATH . "manager/formFields/" . DS . $name . EXT;
+		$file = J_SYSTEMPATH . "manager/classes/formFields/" . DS . $name . EXT;
 		if (file_exists($file))
 		{
 			return include $file;
@@ -105,7 +105,7 @@ Router::register("GET", "allCSS", function ()
 Router::register("GET", "download", function () {
 	$path = J_PATH . Request::get("path");
 
-	$allowedDirectories = array("app/storage/", "app/img/", "app/inc/");
+	$allowedDirectories = array("api/storage/", "api/img/", "api/inc/");
 	$allowed = false;
 
 	foreach ($allowedDirectories as $dir)
@@ -130,12 +130,18 @@ Router::register("*", "(:all)", function ()
 {
 	header("Status: 404");
 
+	if (Request::isLocal())
+	{
+		echo "URI: " . URI::full() . "\n";
+		echo "Path Info: " . Request::pathInfo() . "\n";
+	}
+
 	return "404";
 });
 
 if (URI::isManager())
 {
-	ManagerStructure::routes();
+	Structure::routes();
 }
 
 Request::$route = Router::route(Request::method(), URI::current());

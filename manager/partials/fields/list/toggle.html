@@ -1,0 +1,173 @@
+<style>
+
+    .toggle {
+        position: relative;
+        padding: 0;
+    }
+
+    /* Position the label over all the elements, except the slide-button
+     * Clicking anywhere on the label will change the switch-state
+     */
+    .toggle label {
+        position: relative;
+        z-index: 3;
+
+        display: block;
+        width: 100%;
+    }
+
+    /* Don't hide the input from screen-readers and keyboard access
+     */
+    .toggle input {
+        position: absolute;
+        opacity: 0;
+        z-index: 5;
+    }
+
+    .toggle p {
+        position: absolute;
+        left: -100px;
+
+        width: 100%;
+        margin: 0;
+        padding-right: 100px;
+
+        text-align: left;
+    }
+
+    .toggle p span {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 5;
+
+        display: block;
+        width: 50%;
+        margin-left: 100px;
+
+        text-align: center;
+    }
+
+    .toggle p span:last-child {
+        left: 50%;
+    }
+
+    .toggle .slide-button {
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 4;
+
+        display: block;
+        width: 50%;
+        height: 100%;
+        padding: 0;
+    }
+
+
+    /* Shared */
+    .toggle,
+    .switch {
+        display: block;
+        height: 30px;
+    }
+
+    .switch *,
+    .toggle * {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -ms-box-sizing: border-box;
+        -o-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    .switch .slide-button,
+    .toggle .slide-button {
+        display: block;
+
+        -webkit-transition: all 0.3s ease-out;
+        -moz-transition: all 0.3s ease-out;
+        -ms-transition: all 0.3s ease-out;
+        -o-transition: all 0.3s ease-out;
+        transition: all 0.3s ease-out;
+    }
+
+    .toggle label,
+    .toggle p,
+    .switch label {
+        line-height: 30px;
+        vertical-align: middle;
+    }
+
+    .toggle input:checked ~ .slide-button {
+        right: 50%;
+    }
+
+    /* Outline the toggles when the inputs are focused */
+    .toggle input:focus ~ .slide-button,
+    .switch input:focus + label {
+        outline: 1px dotted #888;
+    }
+
+    /* Bugfix for older Webkit, including mobile Webkit. Adapted from:
+     * http://css-tricks.com/webkit-sibling-bug/
+     */
+    .switch, .toggle {
+        -webkit-animation: bugfix infinite 1s;
+    }
+
+    @-webkit-keyframes bugfix { from { position: relative; } to { position: relative; } }
+
+
+
+    /* Standalone Themes */
+
+
+    /* Candy Theme
+     * Based on the "Sort Switches / Toggles (PSD)" by Ormal Clarck
+     * http://www.premiumpixels.com/freebies/sort-switches-toggles-psd/
+     */
+
+    .candy {
+        background-color: #ddd;
+        color: #333;
+        text-align: center;
+        border-radius: 2px;
+    }
+
+    .candy input:checked + label {
+        color: #333;
+    }
+
+    .candy .slide-button {
+        background-color: #dd0000;
+        border-radius: 2px;
+    }
+
+    .candy input:checked ~ .slide-button {
+        background-color: #70c66b;
+    }
+
+    .candy p {
+        color: #333;
+        text-shadow: none;
+        font-weight: 100;
+        font-size: 15px;
+    }
+
+    .candy span {
+        color: #fff;
+    }
+
+
+</style>
+
+<label class="checkbox toggle candy">
+    <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-model="data[field.name]" ng-change="save(data)" />
+    <p>
+        <span>On</span>
+        <span>Off</span>
+    </p>
+
+    <a class="slide-button"></a>
+</label>

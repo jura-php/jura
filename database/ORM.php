@@ -220,6 +220,7 @@ class ORM
 		}
 
 		$this->selectFields = array_merge($this->selectFields, $fields);
+		$this->selectFields = array_unique($this->selectFields);
 
 		return $this;
 	}
@@ -239,6 +240,7 @@ class ORM
 		}
 
 		$this->selectFields[] = $expr;
+		$this->selectFields = array_unique($this->selectFields);
 	}
 
 	public function where($name, $method, $value)

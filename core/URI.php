@@ -17,6 +17,7 @@ class URI
 			return self::$uri;
 		}
 
+
 		$uri = trim(Request::pathInfo(), "/");
 		$uri = $uri ? $uri : "/";
 		self::$uri = $uri;
@@ -49,7 +50,7 @@ class URI
 	public static function segments()
 	{
 		self::current();
-		
+
 		return self::$segments;
 	}
 

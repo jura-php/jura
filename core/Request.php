@@ -15,6 +15,8 @@ class Request
 	private static $post;
 	private static $server;
 
+	private static $postPayload = null;
+
 	public static function init()
 	{
 		//Sanitize inputs
@@ -145,22 +147,20 @@ class Request
 		return isset(self::$get[$key]);
 	}
 
-	public static function post($key, $default = "", $checkPayload = false)
+	public static function post($key, $default = "")
 	{
 		if (isset(self::$post[$key]))
 		{
 			return self::$post[$key];
 		}
-		else if ($checkPayload)
+		else
 		{
-			$payload = @file_get_contents('php://input');
-            if ($payload && $payload = json_decode($payload))
-            {
-                    if (isset($payload->{$key}))
-                    {
-                    	return $payload->{$key};
-                    }
-            }
+			static::loadPostPayload();
+
+			if (isset(static::$postPayload->{$key}))
+			{
+				return static::$postPayload->{$key};
+			}
 		}
 
 		return $default;
@@ -168,7 +168,32 @@ class Request
 
 	public static function hasPost($key)
 	{
-		return isset(self::$post[$key]);
+		$has = isset(self::$post[$key]);
+
+		if (!$has)
+		{
+			static::loadPostPayload();
+
+			$has = isset(static::$postPayload->{$key});
+		}
+
+		return $has;
+	}
+
+	private static function loadPostPayload()
+	{
+		if (is_null(static::$postPayload))
+		{
+			$payload = @file_get_contents('php://input');
+			if ($payload && $payload = json_decode($payload))
+			{
+				static::$postPayload = $payload;
+			}
+			else
+			{
+				static::$postPayload = new stdObject();
+			}
+		}
 	}
 
 	public static function req($key, $default = "")

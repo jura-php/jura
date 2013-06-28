@@ -1,0 +1,13 @@
+<ul class="actions">
+    <li><button class="pure-button pure-button-primary" ng-click="save(data)">Salvar</button></li>
+</ul>
+
+<div class="breadcrumb">
+    <h1><i ng-class="module.icon"></i> {{acao}} <a href="#/{{module.uri}}">{{module.title}}</a></h1>
+</div>
+
+<form class="pure-form pure-form-stacked">
+    <fieldset>
+        <div ng-repeat="field in module.fields | fieldsByFlags" ng-include="'partials/fields/edit/'+field.type+'.html'"></div>
+    </fieldset>
+</form>

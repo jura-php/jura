@@ -1,5 +1,5 @@
 <?php
-class ManagerModule
+class Module
 {
 	protected $type = "";
 	protected $title = "";
