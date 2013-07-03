@@ -26,6 +26,10 @@ class Structure
 		Router::register("GET", "manager/api/structure/", function () {
 			return Response::json(static::modules());
 		});
+
+		Router::register("POST", "manager/api/token", function () {
+			return User::generateToken();
+		});
 	}
 
 	public static function modules()

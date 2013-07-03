@@ -1,6 +1,11 @@
 <?php
 class Response
 {
+	public static function code($code = 200, $message = "")
+	{
+		header($code . " " . $message, true, true);
+	}
+
 	public static function accessControlHeader($allow = "*")
 	{
 		header("Access-Control-Allow-Origin: " . $allow);
