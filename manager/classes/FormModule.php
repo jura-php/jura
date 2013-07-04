@@ -49,6 +49,11 @@ class FormModule extends Module
 		Router::register("GET", "manager/api/" . $this->name, function () {
 			//TODO: Fazer paginação
 
+			if (($token = User::validateToken()) !== true)
+			{
+				return $token;
+			}
+
 			$results = array();
 			$listFields = array();
 			$orm = ORM::make($this->tableName)->select("id");
@@ -86,6 +91,11 @@ class FormModule extends Module
 		});
 
 		Router::register("GET", "manager/api/" . $this->name . "/new", function () {
+			if (($token = User::validateToken()) !== true)
+			{
+				return $token;
+			}
+
 			$values = array();
 
 			foreach ($this->fields as $field)
@@ -100,6 +110,11 @@ class FormModule extends Module
 		});
 
 		Router::register("POST", "manager/api/" . $this->name, function () {
+			if (($token = User::validateToken()) !== true)
+			{
+				return $token;
+			}
+
 			$orm = ORM::make($this->tableName);
 
 			foreach ($this->fields as $field)
@@ -116,6 +131,11 @@ class FormModule extends Module
 		});
 
 		Router::register("GET", "manager/api/" . $this->name . "/(:num)", function ($id) {
+			if (($token = User::validateToken()) !== true)
+			{
+				return $token;
+			}
+
 			$fields = array();
 			$orm = ORM::make($this->tableName)->select("id");
 
@@ -149,6 +169,11 @@ class FormModule extends Module
 		});
 
 		Router::register("PUT", "manager/api/" . $this->name . "/(:num)", function ($id) {
+			if (($token = User::validateToken()) !== true)
+			{
+				return $token;
+			}
+
 			$orm = ORM::make($this->tableName);
 
 			foreach ($this->fields as $field)
@@ -165,6 +190,11 @@ class FormModule extends Module
 		});
 
 		Router::register("DELETE", "manager/api/" . $this->name . "/(:num)", function ($id) {
+			if (($token = User::validateToken()) !== true)
+			{
+				return $token;
+			}
+			
 			ORM::make($this->tableName)->delete($id);
 		});
 	}

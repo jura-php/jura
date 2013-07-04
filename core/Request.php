@@ -191,7 +191,7 @@ class Request
 			}
 			else
 			{
-				static::$postPayload = new stdObject();
+				static::$postPayload = new stdClass();
 			}
 		}
 	}
@@ -266,6 +266,16 @@ class Request
 		}
 
 		return self::$isSecure;
+	}
+
+	public static function credentials()
+	{
+		if (!isset(self::$server["PHP_AUTH_USER"]) || !isset(self::$server["PHP_AUTH_PW"]))
+		{
+			return false;
+		}
+
+		return array(self::$server["PHP_AUTH_USER"], self::$server["PHP_AUTH_PW"]);
 	}
 
 	private static function clearValue($value)

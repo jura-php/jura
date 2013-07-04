@@ -27,8 +27,12 @@ class Structure
 			return Response::json(static::modules());
 		});
 
-		Router::register("POST", "manager/api/token", function () {
+		Router::register("GET", "manager/api/token/", function () {
 			return User::generateToken();
+		});
+
+		Router::register("POST", "manager/api/token/renew/", function () {
+			return User::renewToken();
 		});
 	}
 
