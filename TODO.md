@@ -13,7 +13,9 @@ OK	- MAIN GOAL: Configurar um git que pegue o framework como submodule...
 - Fazer libraries.. (E-mail, Twitter 1.1, HTTPRequest, etc..)
 - Fazer classe de erro, expondo config de show errors para local, production manda e-mail e mostra um erro 500... etc..
 
-
+- Fazer um restfy
+- Ajustar a estrutura de pastas conforme demo
+- Fazer um esquema com model, ORM, etc..
 
 
 

@@ -92,6 +92,7 @@ require J_SYSTEMPATH . "core" . DS . "Route" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Cache" . EXT;
 Cache::init();
 
+/*
 Router::register("GET", "allJS", function ()
 {
 	return Resources::allJS();
@@ -100,12 +101,14 @@ Router::register("GET", "allJS", function ()
 Router::register("GET", "allCSS", function ()
 {
 	return Resources::allCSS();
-});
+});*/
+
+//TODO: fazer a rota download/[path]
 
 Router::register("GET", "download", function () {
 	$path = J_PATH . Request::get("path");
 
-	$allowedDirectories = array("api/storage/", "api/img/", "api/inc/");
+	$allowedDirectories = array("api/storage/", "api/img/", "api/inc/"); //TODO: Colocar no config
 	$allowed = false;
 
 	foreach ($allowedDirectories as $dir)

@@ -34,6 +34,8 @@ class Structure
 		Router::register("POST", "manager/api/token/renew/", function () {
 			return User::renewToken();
 		});
+
+		//TODO: Logout
 	}
 
 	public static function modules()
@@ -44,10 +46,11 @@ class Structure
 
 		//TODO: Return user login state..
 		//TEMP
-		$config["user"] = array(
+		$config["user"] = User::profile();
+		/*$config["user"] = array(
 				"name" => "Guilherme Medeiros",
 				"gravatar_hash" => "1577c5579fd5b4c5c80aec42b1744728"
-			);
+			);*/
 		//----
 
 		$config["modules"] = static::$modules;

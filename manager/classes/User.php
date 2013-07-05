@@ -1,6 +1,10 @@
 <?php
+
 class User
 {
+	//TODO: Gravar o token na session
+	//TODO: Poder passar o token pelo header
+
 	public static function generateToken()
 	{
 		//Check user/pass params..
@@ -132,4 +136,5 @@ class User
 		return Request::get("access_token", Request::post("access_token"));
 	}
 }
+
 ?>
