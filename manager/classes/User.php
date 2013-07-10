@@ -7,17 +7,18 @@ class User
 	public static function generateToken()
 	{
 		//Check user/pass params..
-		$credentials = Request::credentials();
-		if (!$credentials)
+		$user = Request::post("user");
+		$pass = Request::post("pass");
+		if (!$user || !$pass)
 		{
 			return static::error(403, "invalid_request");
 		}
 
-		$rs = ORM::make("manager_users")->select(array("id", "password"))->where("username", "=", $credentials[0])->findFirst();
+		$rs = ORM::make("manager_users")->select(array("id", "password"))->where("username", "=", $user)->findFirst();
 
 		if (!$rs->EOF)
 		{
-			if ($rs->fields["password"] == md5($credentials[1]))
+			if ($rs->fields["password"] == md5($pass))
 			{
 				$userID = $rs->fields["id"];
 
