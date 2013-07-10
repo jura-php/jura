@@ -92,19 +92,6 @@ require J_SYSTEMPATH . "core" . DS . "Route" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Cache" . EXT;
 Cache::init();
 
-/*
-Router::register("GET", "allJS", function ()
-{
-	return Resources::allJS();
-});
-
-Router::register("GET", "allCSS", function ()
-{
-	return Resources::allCSS();
-});*/
-
-//TODO: fazer a rota download/[path]
-
 Router::register("GET", "download", function () {
 	$path = J_PATH . Request::get("path");
 
@@ -154,10 +141,6 @@ Event::fire(J_EVENT_RESPONSE_START);
 echo Request::$route->call();
 
 Event::fire(J_EVENT_RESPONSE_END);
-
-//Fazer verificações de sanidade quando em development, verificar se as pastas existem, se tem 777 na pasta storage, etc...
-//Fazer verificação de versão mínima do PHP (5.3), se local
-//Fazer atalhos da Route::get, Reoute::post, etc...
 
 //echo "<br><br>" . round(elapsed_time() * 1000000) / 1000 . "ms";
 

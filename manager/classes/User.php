@@ -41,11 +41,13 @@ class User
 				Session::set("j_manager_token", $orm->token);
 				Session::set("j_manager_token_expiration", time() + 3600);
 
-				return Response::json(array(
+				$response = array(
 					"access_token" => $orm->token,
 					"expires_in" => 3600,
 					"scope" => "all"
-				));
+				);
+
+				return Response::json(array_merge($response, User::profile($userID)));
 			}
 			else
 			{
@@ -103,13 +105,25 @@ class User
 		return $info["error"];
 	}
 
-	public static function profile()
+	public static function profile($userID = 0)
 	{
-		$info = static::token(false);
-
-		if (!isset($info["error"]))
+		if ($userID == 0)
 		{
-			$rs = ORM::make("manager_users")->select(array("name", "username", "email"))->where("id", "=", $info["userID"])->findFirst();	
+			$info = static::token(false);
+
+			if (!isset($info["error"]))
+			{
+				$rs = ORM::make("manager_users")->select(array("name", "username", "email"))->where("id", "=", $info["userID"])->findFirst();	
+
+				if (!$rs->EOF)
+				{
+					return array_merge($rs->fields, array("access_token" => $info["token"]));
+				}
+			}
+		}
+		else
+		{
+			$rs = ORM::make("manager_users")->select(array("name", "username", "email"))->where("id", "=", $userID)->findFirst();	
 
 			if (!$rs->EOF)
 			{
