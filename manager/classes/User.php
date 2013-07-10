@@ -2,8 +2,6 @@
 
 class User
 {
-	//TODO: Poder passar o token pelo header
-
 	public static function generateToken()
 	{
 		//Check user/pass params..
@@ -39,7 +37,6 @@ class User
 				$orm->insert();
 
 				Session::set("j_manager_token", $orm->token);
-				Session::set("j_manager_token_expiration", time() + 3600);
 
 				$response = array(
 					"access_token" => $orm->token,
@@ -88,7 +85,6 @@ class User
 				$rs->orm->update();
 
 				Session::set("j_manager_token", $orm->token);
-				Session::set("j_manager_token_expiration", time() + 3600);
 
 				return Response::json(array(
 						"access_token" => $orm->token,
@@ -108,7 +104,6 @@ class User
 	public static function logout()
 	{
 		Session::clear("j_manager_token");
-		Session::clear("j_manager_token_expiration");
 	}
 
 	public static function profile($userID = 0)
