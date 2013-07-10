@@ -21,34 +21,5 @@
     <script src="js/directives.js"></script>
 
 </head>
-<body>
-
-<div id="side">
-    <div class="user-info">
-        <div class="user-info-image"><img src="http://2.gravatar.com/avatar/{{structure.user.gravatar_hash}}" width="50" height="50" /></div>
-        <div class="user-info-name">{{structure.user.name}}</div>
-        <a href="#" class="user-info-logout">sair <i class="icon-signout"></i></a>
-    </div>
-
-    <div class="pure-menu pure-menu-open">
-        <ul>
-            <li ng-repeat="m in structure.modules | filter:{menu: 'side'}"><a href="#/{{m.uri}}"><i ng-class="m.icon"></i> {{m.title}}</a></li>
-        </ul>
-    </div>
-
-</div>
-
-<div id="main">
-    <div class="pure-menu pure-menu-open pure-menu-horizontal" id="header">
-        <ul>
-            <li><a href="#"><i class="icon-dashboard"></i> Dashboard</a></li>
-            <li><a href="#"><i class="icon-cogs"></i> Sistema</a></li>
-            <li><a href="#"><i class="icon-sitemap"></i> Conteúdo</a></li>
-        </ul>
-    </div>
-
-    <div id="content" ng-view></div>
-</div>
-
-</body>
+<body ng-view></body>
 </html>

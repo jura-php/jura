@@ -1,13 +1,24 @@
-<ul class="actions">
-    <li><button class="pure-button pure-button-primary" ng-click="save(data)">Salvar</button></li>
-</ul>
+<div id="side" ng-include="'partials/includes/side.html'"></div>
 
-<div class="breadcrumb">
-    <h1><i ng-class="module.icon"></i> {{acao}} <a href="#/{{module.uri}}">{{module.title}}</a></h1>
+<div id="main">
+    <div class="pure-menu pure-menu-open pure-menu-horizontal" id="header" ng-include="'partials/includes/header.html'"></div>
+
+    <div id="content">
+
+        <ul class="actions">
+            <li><button class="pure-button pure-button-primary" ng-click="save(data)">Salvar</button></li>
+        </ul>
+
+        <div class="breadcrumb">
+            <h1><i ng-class="module.icon"></i> {{acao}} <a href="#/{{module.uri}}">{{module.title}}</a></h1>
+        </div>
+
+        <form class="pure-form pure-form-stacked">
+            <fieldset>
+                <div ng-repeat="field in module.fields | fieldsByFlags" ng-include="'partials/fields/edit/'+field.type+'.html'"></div>
+            </fieldset>
+        </form>
+
+    </div>
 </div>
 
-<form class="pure-form pure-form-stacked">
-    <fieldset>
-        <div ng-repeat="field in module.fields | fieldsByFlags" ng-include="'partials/fields/edit/'+field.type+'.html'"></div>
-    </fieldset>
-</form>

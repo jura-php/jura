@@ -1,23 +1,34 @@
-<ul class="actions">
-    <li need-flag="d" ng-show="hasAtLeastOneCheckboxChecked()"><button class="pure-button pure-button-error" ng-click="removeSelected()">Remover Selecionados</button></li>
-    <li need-flag="c"><a href="#/{{module.uri}}/new" class="pure-button pure-button-primary">Novo</a></li>
-</ul>
+<div id="side" ng-include="'partials/includes/side.html'"></div>
 
-<div class="breadcrumb">
-    <h1><i ng-class="module.icon"></i> {{module.title}}</h1>
+<div id="main">
+    <div class="pure-menu pure-menu-open pure-menu-horizontal" id="header" ng-include="'partials/includes/header.html'"></div>
+
+    <div id="content">
+
+        <ul class="actions">
+            <li need-flag="d" ng-show="hasAtLeastOneCheckboxChecked()"><button class="pure-button pure-button-error" ng-click="removeSelected()">Remover Selecionados</button></li>
+            <li need-flag="c"><a href="#/{{module.uri}}/new" class="pure-button pure-button-primary">Novo</a></li>
+        </ul>
+
+        <div class="breadcrumb">
+            <h1><i ng-class="module.icon"></i> {{module.title}}</h1>
+        </div>
+
+        <table class="pure-table pure-table-horizontal table" ng-class="{editable: hasFlag(module.flags, 'u')}">
+            <thead>
+                <tr>
+                    <th need-flag="d" width="15"><input type="checkbox" ng-model="all_checkboxes" ng-change="toggleAllCheckboxes()" /></th>
+                    <th ng-repeat="f in module.fields | fieldsByFlags">{{f.label}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="data in data">
+                    <td need-flag="d" width="15"><input type="checkbox" ng-model="checkboxes[data.id]" /></td>
+                    <td ng-repeat="field in module.fields | fieldsByFlags" ng-click="edit($event)" ng-include="'partials/fields/list/'+field.type+'.html'"></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
 </div>
 
-<table class="pure-table pure-table-horizontal table" ng-class="{editable: hasFlag(module.flags, 'u')}">
-    <thead>
-        <tr>
-            <th need-flag="d" width="15"><input type="checkbox" ng-model="all_checkboxes" ng-change="toggleAllCheckboxes()" /></th>
-            <th ng-repeat="f in module.fields | fieldsByFlags">{{f.label}}</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr ng-repeat="data in data">
-            <td need-flag="d" width="15"><input type="checkbox" ng-model="checkboxes[data.id]" /></td>
-            <td ng-repeat="field in module.fields | fieldsByFlags" ng-click="edit($event)" ng-include="'partials/fields/list/'+field.type+'.html'"></td>
-        </tr>
-    </tbody>
-</table>

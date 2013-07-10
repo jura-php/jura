@@ -3,7 +3,32 @@
 /* Controllers */
 
 angular.module('manager.controllers', [])
-    .controller('read', ['$rootScope', '$scope', '$routeParams', '$timeout', 'Restangular', function($rootScope, $scope, $routeParams, $timeout, Restangular) {
+
+    .controller('login', ['$rootScope', '$scope', '$routeParams', '$http', '$location', 'Restangular', function($rootScope, $scope, $routeParams, $http, $location, Restangular) {
+
+        if(!$rootScope.structure.user) return;
+
+        $scope.form = {};
+
+        $scope.send = function(){
+            $scope.form.error = '';
+
+            $http.post(config.api_url + 'token/', $scope.form)
+                .success(function(user){
+                    $rootScope.structure.user = user;
+                    $location.path('/users');
+                })
+                .error(function(error){
+                    $scope.form.error = error.error_description;
+                })
+        }
+
+    }])
+
+
+    .controller('read', ['$rootScope', '$scope', '$routeParams', '$timeout', '$location', 'Restangular', function($rootScope, $scope, $routeParams, $timeout, $location, Restangular) {
+
+        if(!$rootScope.structure.user) return;
 
         var table = $routeParams.table;
         var module = _.where($rootScope.structure.modules, {uri: table})[0];
@@ -54,6 +79,8 @@ angular.module('manager.controllers', [])
 
     .controller('edit', ['$rootScope', '$scope', '$routeParams', '$location', 'Restangular', function($rootScope, $scope, $routeParams, $location, Restangular) {
 
+        if(!$rootScope.structure.user) return;
+
         var table = $routeParams.table;
         var id = $routeParams.id;
         var module = _.where($rootScope.structure.modules, {uri: table})[0];
@@ -75,6 +102,8 @@ angular.module('manager.controllers', [])
 
 
     .controller('new', ['$rootScope', '$scope', '$routeParams', '$location', 'Restangular', function($rootScope, $scope, $routeParams, $location, Restangular) {
+
+        if(!$rootScope.structure.user) return;
 
         var table = $routeParams.table;
         var module = _.where($rootScope.structure.modules, {uri: table})[0];

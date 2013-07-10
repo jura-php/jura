@@ -11,6 +11,12 @@ button {
     font-family: inherit;
 }
 
+.form-error {
+    display: block;
+    color: rgb(202, 60, 60);
+    padding: 8px 0;
+}
+
 /**
  * Purecss
  */
@@ -222,3 +228,12 @@ button {
             background: #E6E6E6;
             text-align: center;
         }
+
+
+
+#login {
+    overflow: hidden;
+    width: 400px;
+    padding-top: 100px;
+    margin: 0 auto;
+}

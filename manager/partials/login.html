@@ -1,0 +1,25 @@
+<div id="login">
+
+    <form class="pure-form pure-form-stacked" ng-submit="send()" name="form_login">
+        <fieldset>
+            <legend>Login</legend>
+
+            <label>
+                Usuário:
+                <input type="text" class="pure-input-1" ng-model="form.user" required />
+            </label>
+
+            <label>
+                Senha:
+                <input type="password" class="pure-input-1" ng-model="form.pass" required />
+            </label>
+
+            <div class="form-error">{{form.error}}</div>
+
+            <button type="submit" class="pure-button pure-button-primary">Login</button>
+        </fieldset>
+    </form>
+
+</div>
+
+
