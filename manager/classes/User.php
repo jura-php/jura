@@ -105,6 +105,12 @@ class User
 		return $info["error"];
 	}
 
+	public static function logout()
+	{
+		Session::clear("j_manager_token");
+		Session::clear("j_manager_token_expiration");
+	}
+
 	public static function profile($userID = 0)
 	{
 		if ($userID == 0)
@@ -117,7 +123,7 @@ class User
 
 				if (!$rs->EOF)
 				{
-					return array_merge($rs->fields, array("access_token" => $info["token"]));
+					return array_merge($rs->fields, array("access_token" => $info["token"], "gravatar_hash" => md5($rs->fields["email"])));
 				}
 			}
 		}
@@ -127,7 +133,7 @@ class User
 
 			if (!$rs->EOF)
 			{
-				return $rs->fields;
+				return array_merge($rs->fields, array("gravatar_hash" => md5($rs->fields["email"])));
 			}
 		}
 

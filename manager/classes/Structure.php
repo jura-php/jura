@@ -34,6 +34,10 @@ class Structure
 		Router::register("POST", "manager/api/token/renew/", function () {
 			return User::renewToken();
 		});
+
+		Router::register("GET", "manager/api/logout/", function () {
+			return User::logout();
+		});
 	}
 
 	public static function modules()
