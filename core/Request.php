@@ -59,7 +59,7 @@ class Request
 		$_REQUEST = null;
 
 		//Detect environment
-		$list = require J_APIPATH . "config" . DS . "environments" . EXT;
+		$list = require J_APPPATH . "config" . DS . "environments" . EXT;
 		$host = array_get(self::$server, "HTTP_HOST", "localhost");
 		$host2 = gethostname();
 		$env = "";

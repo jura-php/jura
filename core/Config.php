@@ -9,12 +9,12 @@ class Config
 
 		if (URI::isManager())
 		{
-			$paths[] = J_APIPATH . DS . "manager" . DS . "config" . DS . strtolower(Request::env()) . DS . $group . EXT;
-			$paths[] = J_APIPATH . DS . "manager" . DS . "config" . DS . $group . EXT;
+			$paths[] = J_MANAGERPATH . DS . "config" . DS . strtolower(Request::env()) . DS . $group . EXT;
+			$paths[] = J_MANAGERPATH . DS . "config" . DS . $group . EXT;
 		}
 
-		$paths[] = J_APIPATH . "config" . DS . strtolower(Request::env()) . DS . $group . EXT;
-		$paths[] = J_APIPATH . "config" . DS . $group . EXT;
+		$paths[] = J_APPPATH . "config" . DS . strtolower(Request::env()) . DS . $group . EXT;
+		$paths[] = J_APPPATH . "config" . DS . $group . EXT;
 
 		$items = array();
 

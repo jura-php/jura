@@ -7,7 +7,7 @@ class Resources
 
 		$files = array();
 		$config = Config::item("application", "js");
-		$path = J_APIPATH . "inc" . DS;
+		$path = J_APPPATH . "inc" . DS;
 
 		if ($config == "*")
 		{
@@ -52,7 +52,7 @@ class Resources
 
 		$files = array();
 		$config = Config::item("application", "css");
-		$path = J_APIPATH . "inc" . DS;
+		$path = J_APPPATH . "inc" . DS;
 
 		if ($config == "*")
 		{

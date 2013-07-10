@@ -6,7 +6,7 @@ class Cache
 
 	public static function init()
 	{
-		static::$path = J_APIPATH . "storage" . DS . "cache" . DS;
+		static::$path = J_APPPATH . "storage" . DS . "cache" . DS;
 
 		if (Request::isLocal())
 		{

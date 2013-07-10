@@ -47,7 +47,7 @@ function j_autoload($name)
 	else
 	{
 		//App models
-		$file = J_APIPATH . "models" . DS . $name . EXT;
+		$file = J_APPPATH . "models" . DS . $name . EXT;
 		if (file_exists($file))
 		{
 			return include $file;
@@ -108,7 +108,7 @@ Router::register("GET", "allCSS", function ()
 Router::register("GET", "download", function () {
 	$path = J_PATH . Request::get("path");
 
-	$allowedDirectories = array("api/storage/", "api/img/", "api/inc/"); //TODO: Colocar no config
+	$allowedDirectories = array("app/storage/"); //TODO: Colocar no config
 	$allowed = false;
 
 	foreach ($allowedDirectories as $dir)

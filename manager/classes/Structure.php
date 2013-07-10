@@ -34,8 +34,6 @@ class Structure
 		Router::register("POST", "manager/api/token/renew/", function () {
 			return User::renewToken();
 		});
-
-		//TODO: Logout
 	}
 
 	public static function modules()
@@ -46,12 +44,13 @@ class Structure
 
 		//TODO: Return user login state..
 		//TEMP
-		$config["user"] = User::profile();
 		/*$config["user"] = array(
 				"name" => "Guilherme Medeiros",
 				"gravatar_hash" => "1577c5579fd5b4c5c80aec42b1744728"
 			);*/
 		//----
+
+		$config["user"] = User::profile();
 
 		$config["modules"] = static::$modules;
 
@@ -62,14 +61,14 @@ class Structure
 	{
 		if (is_null(static::$modules))
 		{
-			$modules = include J_APIPATH . "manager/config/modules.php";
+			$modules = include J_MANAGERPATH . "config/modules.php";
 			$objects = array();
 
 			foreach ($modules as &$module)
 			{
 				$className = $module["class"];
 
-				include_once J_APIPATH . "manager/modules/" . $className . ".php";
+				include_once J_MANAGERPATH . "modules/" . $className . ".php";
 				$c = new $className();
 				$objects[] = $c;
 				$module = $c->config($module);
