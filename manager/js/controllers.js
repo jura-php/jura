@@ -6,7 +6,7 @@ angular.module('manager.controllers', [])
 
     .controller('login', ['$rootScope', '$scope', '$routeParams', '$http', '$location', 'Restangular', function($rootScope, $scope, $routeParams, $http, $location, Restangular) {
 
-        if(!$rootScope.structure.user) return;
+        if ($rootScope.structure && $rootScope.structure.user) return;
 
         $scope.form = {};
 
