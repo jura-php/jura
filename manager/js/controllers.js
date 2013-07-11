@@ -5,11 +5,7 @@
 angular.module('manager.controllers', [])
 
     .controller('login', ['$rootScope', '$scope', '$routeParams', '$http', '$location', 'Restangular', function($rootScope, $scope, $routeParams, $http, $location, Restangular) {
-
-        if ($rootScope.structure && $rootScope.structure.user) return;
-
         $scope.form = {};
-
         $scope.send = function(){
             $scope.form.error = '';
 
@@ -22,9 +18,7 @@ angular.module('manager.controllers', [])
                     $scope.form.error = error.error_description;
                 })
         }
-
     }])
-
 
     .controller('read', ['$rootScope', '$scope', '$routeParams', '$timeout', '$location', 'Restangular', function($rootScope, $scope, $routeParams, $timeout, $location, Restangular) {
 
