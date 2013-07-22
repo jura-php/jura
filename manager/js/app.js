@@ -38,15 +38,20 @@ angular.module('manager', ['manager.filters', 'manager.services', 'manager.direc
             })
 
         $rootScope.hasFlag = function(flags, need) {
-
             if(!flags || !need) return;
 
             var has = true;
             _.each(need.toString().toLowerCase().split(""), function(flag){
                 if(_.indexOf(flags.toString().toLowerCase(), flag) == -1) has = false;
             })
-
             return has;
+        }
+
+        $rootScope.logout = function() {
+            $http.get(config.api_url + 'logout')
+                .success(function(structure){
+                    $location.path('/login');
+                })
         }
 
     }]);
