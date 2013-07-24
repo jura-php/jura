@@ -11,6 +11,7 @@ class Field
 	public $required;
 	public $validationPattern;
 	public $validationTitle;
+	public $validationLength;
 
 	public function __construct($name, $label = null)
 	{
@@ -22,7 +23,8 @@ class Field
 
 		$this->required = true;
 		$this->validationPattern = ".*";
-		$this->validationTitle = "Preencha o campo"; //TODO: Usar linguagem
+		$this->validationTitle = "Preencha o #LABEL# corretamente"; //TODO: Usar linguagem
+		$this->validationLength = 255;
 	}
 
 	public function hasFlag($flag)
@@ -32,21 +34,20 @@ class Field
 
 	public function config()
 	{
-		$config = array();
+		$validationTitle = str_replace("#LABEL#", $this->label, $this->validationTitle);
 
-		$config["type"] = $this->type;
-		$config["name"] = $this->name;
-		$config["label"] = $this->label;
-		$config["flags"] = $this->flags;
-
-		$validation = array();
-		$validation["required"] = $this->required;
-		$validation["pattern"] = $this->validationPattern;
-		$validation["title"] = $this->validationTitle;
-
-		$config["validation"] = $validation;
-
-		return $config;
+		return array(
+			"type" => $this->type,
+			"name" => $this->name,
+			"label" => $this->label,
+			"flags" => $this->flags,
+			"validation" => array(
+				"required" => $this->required,
+				"pattern" => $this->validationPattern,
+				"title" => $this->validationTitle,
+				"length" => $this->validationLength
+			)
+		);
 	}
 
 	public function format($value)
