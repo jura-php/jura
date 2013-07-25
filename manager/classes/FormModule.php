@@ -141,10 +141,13 @@ class FormModule extends Module
 
 			foreach ($this->fields as $field)
 			{
-				if ($field->hasFlag("R") || $field->hasFlag("U"))
+				if (!($field instanceof ItemsField) || $field->multiple == false)
 				{
-					$fields[] = $field;
-					$orm->select($field->name);
+					if ($field->hasFlag("R") || $field->hasFlag("U"))
+					{
+						$fields[] = $field;
+						$orm->select($field->name);
+					}
 				}
 			}
 

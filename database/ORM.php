@@ -93,6 +93,11 @@ class ORM
 
 				if (is_array($fields))
 				{
+					foreach ($fields as $k => $v)
+					{
+						$fields[$k] = DB::conn($this->connName)->quoteID($v);
+					}
+
 					$fields = join(", ", $fields);
 				}
 
