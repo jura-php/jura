@@ -17,26 +17,6 @@ angular.module('manager', ['manager.filters', 'manager.services', 'manager.direc
 
     .run(['$rootScope', '$location', '$http', '$routeParams', 'Restangular', function($rootScope, $location, $http, $routeParams, Restangular){
 
-        Restangular.setErrorInterceptor(function(response){
-            $location.path('/login');
-        })
-
-        $rootScope.$watch('structure.user', function(user){
-            if(!user) return;
-            Restangular.setDefaultRequestParams({access_token: user.access_token});
-        })
-
-        $http.get(config.api_url + 'structure')
-            .success(function(structure){
-                $rootScope.structure = structure;
-
-                if(!structure.user) {
-                    $location.path('/login');
-                } else {
-                    $location.path('/users');
-                }
-            })
-
         $rootScope.hasFlag = function(flags, need) {
             if(!flags || !need) return;
 
@@ -53,5 +33,27 @@ angular.module('manager', ['manager.filters', 'manager.services', 'manager.direc
                     $location.path('/login');
                 })
         }
+
+        Restangular.setErrorInterceptor(function(response){
+            $location.path('/login');
+        })
+
+        $rootScope.$watch('structure.user', function(user){
+            if(!user) return;
+            Restangular.setDefaultRequestParams({access_token: user.access_token});
+        })
+
+        return $http.get(config.api_url + 'structure')
+            .success(function(structure){
+                $rootScope.structure = structure;
+
+                if(!structure.user) {
+                    $location.path('/login');
+                } else {
+                    $location.path('/users');
+                }
+            })
+
+
 
     }]);
