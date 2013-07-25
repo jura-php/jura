@@ -189,13 +189,13 @@ class FormModule extends Module
 			$orm->update($id);
 		});
 
-		Router::register("DELETE", "manager/api/" . $this->name . "/(:num)", function ($id) {
+		Router::register("DELETE", "manager/api/" . $this->name . "/(:any)", function ($ids) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
 			}
-			
-			ORM::make($this->tableName)->delete($id);
+
+			ORM::make($this->tableName)->delete(explode('-', $ids));
 		});
 	}
 

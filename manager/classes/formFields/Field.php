@@ -62,7 +62,7 @@ class Field
 
 	public function validation($type)
 	{
-		
+
 	}
 }
 ?>

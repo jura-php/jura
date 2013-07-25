@@ -6,6 +6,7 @@ class ItemsField extends Field
 		parent::__construct($name, $label);
 
 		$this->type = 'items';
+		$this->multiple = false;
 		$this->items = [];
 		$this->resource_url = 'resource_items/' . $name;
 
@@ -19,12 +20,19 @@ class ItemsField extends Field
 		$this->items = $arr;
 	}
 
-	public function config(){
+	public function config()
+	{
 		$arr = parent::config();
 
 		return array_merge([
+			'multiple' => $this->multiple,
 			'resource_url' => $this->resource_url
 		], $arr);
+	}
+
+	public function multiple($table_relationship)
+	{
+		$this->multiple = true;
 	}
 }
 ?>

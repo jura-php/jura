@@ -25,6 +25,8 @@ class ORM
 	private $fields;
 	private $dirtyFields;
 
+	private $deleteIDs;
+
 	public static function make($tableName, $connName = null)
 	{
 		return new ORM($tableName, $connName);
@@ -178,13 +180,29 @@ class ORM
 
 				break;
 			case "DELETE":
-				$sql = "DELETE FROM " . J_TP . $this->tableName . " WHERE id = " . DB::conn($this->connName)->escape($this->fields["id"]) . " LIMIT 1;";
+				$ids = $this->deleteIDs;
 
-				static::$lastSQL = $sql;
+				$this->deleteIDs = null;
 
-				$rs = DB::conn($this->connName)->query($sql);
+				if (count($ids) > 0)
+				{
+					$conn = DB::conn($this->connName);
 
-				return $rs->success;
+					foreach ($ids as $k => $id)
+					{
+						$ids[$k] = $conn->escape($id);
+					}
+
+					$sql = "DELETE FROM " . J_TP . $this->tableName . " WHERE id in (" . implode(",", $ids) . ") LIMIT " . count($ids) . ";";
+
+					static::$lastSQL = $sql;
+
+					$rs = DB::conn($this->connName)->query($sql);
+
+					return $rs->success;
+				}
+
+				return false;
 
 				break;
 		}
@@ -485,14 +503,18 @@ class ORM
 		return $this->run();
 	}
 
-	public function delete($id = null)
+	public function delete($ids = null)
 	{
-		if (!is_null($id))
+		if (!is_array($ids))
 		{
-			$this->setField("id", $id);
+			return $this->delete((array)$ids);
 		}
 
+		$responses = array();
+
 		$this->method = "DELETE";
+
+		$this->deleteIDs = $ids;
 
 		return $this->run();
 	}
