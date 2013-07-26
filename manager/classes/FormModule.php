@@ -55,15 +55,19 @@ class FormModule extends Module
 			}
 
 			$results = array();
-			$listFields = array();
+			$fields = array();
 			$orm = ORM::make($this->tableName)->select("id");
 
 			foreach ($this->fields as $field)
 			{
 				if ($field->hasFlag("L"))
 				{
-					$listFields[] = $field;
-					$orm = $orm->select($field->name);
+					$fields[] = $field;
+
+					if ($field->includeOnSQL())
+					{
+						$orm = $orm->select($field->name);
+					}
 				}
 			}
 
@@ -72,9 +76,11 @@ class FormModule extends Module
 			{
 				$values = array();
 
-				foreach ($listFields as $field)
+				$orm = $rs->orm;
+
+				foreach ($fields as $field)
 				{
-					$values[$field->name] = $field->format($rs->fields[$field->name]);
+					$values[$field->name] = $field->value($orm, "L");
 				}
 
 				if (!isset($values["id"]))
@@ -102,7 +108,7 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("C"))
 				{
-					$values[$field->name] = $field->format($field->defaultValue);
+					$values[$field->name] = $field->format($field->defaultValue, "C");
 				}
 			}
 
@@ -123,11 +129,20 @@ class FormModule extends Module
 				{
 					$value = Request::post($field->name, $field->defaultValue, true);
 					$value = $field->unformat($value);
-					$orm->setField($field->name, $value);
+
+					$field->save($orm, $value, "C");
 				}
 			}
 
 			$orm->insert();
+
+			foreach ($this->fields as $field)
+			{
+				if ($field->hasFlag("C"))
+				{
+					$field->afterSave($orm, "C");	
+				}
+			}
 		});
 
 		Router::register("GET", "manager/api/" . $this->name . "/(:num)", function ($id) {
@@ -138,15 +153,17 @@ class FormModule extends Module
 
 			$fields = array();
 			$orm = ORM::make($this->tableName)->select("id");
+			$hasUpdateFlag = false;
 
 			foreach ($this->fields as $field)
 			{
-				if (!($field instanceof ItemsField) || $field->multiple == false)
+				if ($field->hasFlag("R") || $field->hasFlag("U"))
 				{
-					if ($field->hasFlag("R") || $field->hasFlag("U"))
+					$fields[] = $field;
+
+					if ($field->includeOnSQL())
 					{
-						$fields[] = $field;
-						$orm->select($field->name);
+						$orm->select($field->name);	
 					}
 				}
 			}
@@ -154,16 +171,20 @@ class FormModule extends Module
 			$rs = $orm->findFirst($id);
 
 			$values = array();
+			$values["id"] = (int)$rs->fields["id"];
 
+			$orm = $rs->orm;
+			
 			foreach ($fields as $field)
 			{
-				$value = $rs->fields[$field->name];
-				$values[$field->name] = $field->format($value);
-			}
+				$flag = "R";
 
-			if (!isset($values["id"]))
-			{
-				$values["id"] = (int)$rs->fields["id"];
+				if ($field->hasFlag("U"))
+				{
+					$flag = "U";
+				}
+
+				$values[$field->name] = $field->value($orm, $flag);
 			}
 
 			//TODO: Check if id exists..
@@ -185,11 +206,20 @@ class FormModule extends Module
 				{
 					$value = Request::post($field->name, $field->defaultValue);
 					$value = $field->unformat($value);
-					$orm->setField($field->name, $value);
+
+					$field->save($orm, $value, "U");
 				}
 			}
 
 			$orm->update($id);
+
+			foreach ($this->fields as $field)
+			{
+				if ($field->hasFlag("U"))
+				{
+					$field->afterSave($orm, "U");
+				}
+			}
 		});
 
 		Router::register("DELETE", "manager/api/" . $this->name . "/(:any)", function ($ids) {

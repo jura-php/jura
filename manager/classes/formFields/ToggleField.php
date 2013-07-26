@@ -11,7 +11,7 @@ class ToggleField extends Field
 
 	//TODO: Extends this class from NumberField
 
-	public function format($value)
+	public function format($value, $flag)
 	{
 		return (string)$value;
 	}

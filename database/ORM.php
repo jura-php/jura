@@ -67,7 +67,9 @@ class ORM
 		if (!is_null($id))
 		{
 			$this->setField("id", $id);
+			$this->where("id", "=", $id);
 		}
+
 		$this->method = "SELECT";
 
 		$this->limit(1);
@@ -130,6 +132,8 @@ class ORM
 					$sql .= $this->limit;
 				}
 
+				//echo $sql . "\n";
+
 				static::$lastSQL = $sql;
 
 				return DB::conn($this->connName)->queryORM($sql, $this);
@@ -188,6 +192,11 @@ class ORM
 				$ids = $this->deleteIDs;
 
 				$this->deleteIDs = null;
+
+				if (is_null($ids))
+				{
+					$ids = array($this->fields["id"]);
+				}
 
 				if (count($ids) > 0)
 				{
@@ -510,7 +519,7 @@ class ORM
 
 	public function delete($ids = null)
 	{
-		if (!is_array($ids))
+		if (!is_null($ids) && !is_array($ids))
 		{
 			return $this->delete((array)$ids);
 		}

@@ -50,7 +50,7 @@ class Field
 		);
 	}
 
-	public function format($value)
+	public function format($value, $flag)
 	{
 		return $value;
 	}
@@ -61,6 +61,36 @@ class Field
 	}
 
 	public function validation($type)
+	{
+
+	}
+
+	public function includeOnSQL()
+	{
+		return true;
+	}
+
+	public function save($orm, $value, $flag)
+	{
+		if ($this->includeOnSQL())
+		{
+			if ($this->validationLength > 0)
+			{
+				$value = substr($value, 0, $this->validationLength);
+			}
+
+			$orm->setField($this->name, $value);		
+		}
+	}
+
+	public function value($orm, $flag)
+	{
+		$value = $orm->field($this->name);
+
+		return $this->format($value, $flag);
+	}
+
+	public function afterSave($orm, $flag)
 	{
 
 	}
