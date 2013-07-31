@@ -4,6 +4,7 @@ class MysqlDB
 	public $res;
 
 	private $fieldsInfoCache;
+	private $lastQuery;
 
 	public function __construct($params)
 	{
@@ -63,12 +64,19 @@ class MysqlDB
 			$query = $newQuery;
 		}
 
+		$this->lastQuery = $query;
+
 		return new MysqlRecordSet($query, $this);
 	}
 
 	public function queryORM($query, &$orm)
 	{
 		return new MysqlRecordSet($query, $this, $orm);
+	}
+
+	public function lastQuery()
+	{
+		return $this->lastQuery;
 	}
 
 	public function escape($value)
