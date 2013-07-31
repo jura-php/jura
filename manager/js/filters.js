@@ -11,4 +11,11 @@ angular.module('manager.filters', []).
                 return $rootScope.hasFlag(item.flags, actionFlag);
             })
         }
-    }]);
+    }]).
+
+    filter('label', function(){
+        return function(data) {
+            if(!this.field) return;
+            return data.replace('#LABEL#', this.field.label.toLowerCase());
+        }
+    })

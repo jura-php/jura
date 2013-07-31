@@ -1,6 +1,5 @@
 'use strict';
 
-
 // Declare app level module which depends on filters, and services
 angular.module('manager', ['manager.filters', 'manager.services', 'manager.directives', 'manager.controllers', 'restangular'])
     .config(['$routeProvider', 'RestangularProvider', function($routeProvider, Restangular) {
@@ -43,17 +42,29 @@ angular.module('manager', ['manager.filters', 'manager.services', 'manager.direc
             Restangular.setDefaultRequestParams({access_token: user.access_token});
         })
 
-        return $http.get(config.api_url + 'structure')
-            .success(function(structure){
-                $rootScope.structure = structure;
-
-                if(!structure.user) {
-                    $location.path('/login');
-                } else {
-                    $location.path('/users');
-                }
-            })
-
-
-
     }]);
+
+
+
+$(function(){
+    $.get(config.api_url + 'structure')
+        .success(function(structure){
+
+            angular.module('structure', [])
+                .run(['$rootScope', '$location', function($rootScope, $location){
+                    if(!structure.user) {
+                        $location.path('/login');
+                    } else {
+                        $location.path('/users');
+                    }
+
+                    $rootScope.structure = structure;
+                }])
+
+
+            angular.bootstrap(document, ['manager', 'structure']);
+
+        })
+})
+
+

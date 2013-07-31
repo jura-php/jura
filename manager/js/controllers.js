@@ -87,6 +87,9 @@ angular.module('manager.controllers', [])
         }
 
         $scope.save = function(model){
+            console.log($scope.form.$valid)
+            if(!$scope.form.$valid) return;
+
             model.put().then(function(){
                 console.log(model)
                 $location.path(table);
@@ -113,6 +116,9 @@ angular.module('manager.controllers', [])
         }
 
         $scope.save = function(model){
+            console.log($scope.form.$valid)
+            if(!$scope.form.$valid) return;
+
             model.post().then(function(){
                 $location.path(table);
             })
