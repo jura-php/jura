@@ -3,6 +3,21 @@ class DB
 {
 	private static $connections = array();
 
+	public static function init()
+	{
+		if (!defined("J_TP"))
+		{
+			$keys = array_keys(Config::group("databases"));
+			if (count($keys) > 0)
+			{
+				$name = $keys[0];
+				$config = Config::item("databases", $name);
+
+				define("J_TP", $config["tablePrefix"]);
+			}
+		}
+	}
+
 	public static function conn($name = null)
 	{
 		if (is_null($name))

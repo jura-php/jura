@@ -84,7 +84,9 @@ require J_SYSTEMPATH . "core" . DS . "URI" . EXT;
 require J_SYSTEMPATH . "core" . DS . "URL" . EXT;
 
 require J_SYSTEMPATH . "core" . DS . "Config" . EXT;
-define("J_TP", Config::item("application", "tablePrefix"));
+
+require J_SYSTEMPATH . "database" . DS . "DB" . EXT;
+DB::init();
 
 require J_SYSTEMPATH . "core" . DS . "Router" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Route" . EXT;
@@ -92,15 +94,19 @@ require J_SYSTEMPATH . "core" . DS . "Route" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Cache" . EXT;
 Cache::init();
 
-Router::register("GET", "download", function () {
-	$path = J_PATH . Request::get("path");
+Router::register("GET", "download/(:all)", function () {
+	$pieces = explode("/", Request::pathInfo());
+	array_shift($pieces); //(empty space)
+	array_shift($pieces); //download
 
-	$allowedDirectories = array("app/storage/"); //TODO: Colocar no config
+	$path = implode(DS, $pieces);
+
+	$allowedPaths = Config::item("application", "downloadPaths");
 	$allowed = false;
 
-	foreach ($allowedDirectories as $dir)
+	foreach ($allowedPaths as $dir)
 	{
-		if (strpos($path, $dir) !== false)
+		if (Str::startsWith($path, $dir))
 		{
 			$allowed = true;
 			break;
@@ -109,24 +115,25 @@ Router::register("GET", "download", function () {
 
 	if (!$allowed)
 	{
-		echo "Directory not allowed."; //TODO: Error class
-		die();
+		Response::code(403);
+
+		return;
 	}
 
-	Response::download($path, Request::get("name"));
+	Response::download(J_PATH . DS . $path, Request::get("name"));
 });
 
 Router::register("*", "(:all)", function ()
 {
-	header("Status: 404");
+	Response::code(404);
 
 	if (Request::isLocal())
 	{
-		echo "URI: " . URI::full() . "\n";
+		echo "URI: " . URI::full() . "<br>\n";
 		echo "Path Info: " . Request::pathInfo() . "\n";
 	}
 
-	return "404";
+	return;
 });
 
 if (URI::isManager())

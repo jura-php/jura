@@ -23,7 +23,7 @@ class Field
 
 		$this->required = true;
 		$this->validationPattern = ".*";
-		$this->validationTitle = "Preencha o #LABEL# corretamente"; //TODO: Usar linguagem
+		$this->validationTitle = "Preencha o campo '#LABEL#' corretamente"; //TODO: Usar linguagem
 		$this->validationLength = 255;
 	}
 
@@ -44,7 +44,7 @@ class Field
 			"validation" => array(
 				"required" => $this->required,
 				"pattern" => $this->validationPattern,
-				"title" => $this->validationTitle,
+				"title" => $validationTitle,
 				"length" => $this->validationLength
 			)
 		);
@@ -65,7 +65,7 @@ class Field
 
 	}
 
-	public function includeOnSQL()
+	protected function includeOnSQL()
 	{
 		return true;
 	}
@@ -79,7 +79,7 @@ class Field
 				$value = substr($value, 0, $this->validationLength);
 			}
 
-			$orm->setField($this->name, $value);		
+			$orm->setField($this->name, $value);
 		}
 	}
 

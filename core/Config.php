@@ -12,9 +12,14 @@ class Config
 			$paths[] = J_MANAGERPATH . DS . "config" . DS . strtolower(Request::env()) . DS . $group . EXT;
 			$paths[] = J_MANAGERPATH . DS . "config" . DS . $group . EXT;
 		}
+		else
+		{
+			$paths[] = J_APPPATH . "config" . DS . strtolower(Request::env()) . DS . $group . EXT;
+			$paths[] = J_APPPATH . "config" . DS . $group . EXT;
+		}
 
-		$paths[] = J_APPPATH . "config" . DS . strtolower(Request::env()) . DS . $group . EXT;
-		$paths[] = J_APPPATH . "config" . DS . $group . EXT;
+		$paths[] = J_PATH . "config" . DS . strtolower(Request::env()) . DS . $group . EXT;
+		$paths[] = J_PATH . "config" . DS . $group . EXT;
 
 		$items = array();
 

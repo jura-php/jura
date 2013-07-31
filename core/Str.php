@@ -111,7 +111,7 @@ class Str
 
 	public static function startsWith($haystack, $needle)
 	{
-		return strpos($kaystack, $needle) == 0;
+		return strpos($haystack, $needle) == 0;
 	}
 
 	public static function endsWith($haystack, $needle)

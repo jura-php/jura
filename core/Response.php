@@ -3,7 +3,24 @@ class Response
 {
 	public static function code($code = 200, $message = "")
 	{
-		header($code . " " . $message, true, true);
+		if ($message == "")
+		{
+			switch ($code)
+			{
+				case 403:
+					$message = "Forbidden";
+
+					break;
+				case 404:
+					$message = "Not Found";
+
+					break;
+			}
+		}
+
+		header($code . " " . $message, true, $code);
+
+		echo "<h1>" . $code . "</h1><h2>" . $message . "</h2>\n";
 	}
 
 	public static function accessControlHeader($allow = "*")
@@ -20,6 +37,11 @@ class Response
 
 	public static function download($path, $name = null, $headers = array())
 	{
+		if (!file_exists($path))
+		{
+			return Response::code(404);
+		}
+
 		if (is_null($name))
 		{
 			$name = basename($path);

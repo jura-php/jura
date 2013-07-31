@@ -46,14 +46,6 @@ class Structure
 
 		$config = array();
 
-		//TODO: Return user login state..
-		//TEMP
-		/*$config["user"] = array(
-				"name" => "Guilherme Medeiros",
-				"gravatar_hash" => "1577c5579fd5b4c5c80aec42b1744728"
-			);*/
-		//----
-
 		$config["user"] = User::profile();
 
 		$config["modules"] = static::$modules;
