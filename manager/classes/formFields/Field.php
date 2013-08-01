@@ -65,7 +65,7 @@ class Field
 
 	}
 
-	protected function includeOnSQL()
+	public function includeOnSQL()
 	{
 		return true;
 	}

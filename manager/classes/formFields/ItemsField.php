@@ -118,7 +118,7 @@ class ItemsField extends Field
 		return $value;
 	}
 
-	protected function includeOnSQL()
+	public function includeOnSQL()
 	{
 		return !$this->multiple;
 	}
