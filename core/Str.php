@@ -12,7 +12,7 @@ class Str
 			$pattern = '^/$';
 		}
 
-		return preg_match('#' . $pattern . '#', $value);
+		return preg_match('#' . $pattern . '#', $string);
 	}
 
 	public static function removeAccents($string)
