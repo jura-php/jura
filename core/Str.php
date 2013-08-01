@@ -106,7 +106,7 @@ class Str
 
 	public static function ucfirst($string)
 	{
-		return static::lower($text{0}) . substr($text, 1);
+		return static::upper($string{0}) . substr($string, 1);
 	}
 
 	public static function startsWith($haystack, $needle)
@@ -134,7 +134,7 @@ class Str
 		return rtrim($string, $cap) . $cap;
 	}
 
-	public static function removeInvisible($string, $urnEncoded = true)
+	public static function removeInvisible($string, $urlEncoded = true)
 	{
 		$nonDisplayables = array();
 
@@ -151,11 +151,11 @@ class Str
 
 		do
 		{
-			$str = preg_replace($nonDisplayables, '', $str, -1, $count);
+			$string = preg_replace($nonDisplayables, '', $string, -1, $count);
 		}
 		while ($count);
 
-		return $str;
+		return $string;
 	}
 }
 ?>

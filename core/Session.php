@@ -3,7 +3,7 @@ class Session
 {
 	private static $started = false;
 
-	public static function checkStart()
+	private static function checkStart()
 	{
 		if (!static::$started)
 		{

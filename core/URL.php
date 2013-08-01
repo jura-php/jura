@@ -18,9 +18,10 @@ class URL
 		return $root;
 	}
 
-	public static function to($uri)
+	public static function to($uri = "/")
 	{
-		return rtrim(static::root(), "/") . "/" . trim($uri, "/") . "/";
+		$uri = trim($uri, "/");
+		return rtrim(static::root(), "/") . "/" . (($uri != "") ? $uri . "/" : "");
 	}
 
 

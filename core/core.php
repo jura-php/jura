@@ -66,7 +66,6 @@ function j_shutdown()
 }
 register_shutdown_function("j_shutdown");
 
-
 require J_SYSTEMPATH . "core" . DS . "Request" . EXT;
 Request::init();
 
@@ -123,8 +122,7 @@ Router::register("GET", "download/(:all)", function () {
 	Response::download(J_PATH . DS . $path, Request::get("name"));
 });
 
-Router::register("*", "(:all)", function ()
-{
+Router::register("*", "(:all)", function () {
 	Response::code(404);
 
 	if (Request::isLocal())
