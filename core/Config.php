@@ -21,15 +21,12 @@ class Config
 			$paths[] = J_APPPATH . "config" . DS . strtolower(Request::env()) . DS . $group . EXT;
 		}
 
-		print_r($paths);
-
 		$items = array();
 
 		foreach ($paths as $path)
 		{
 			if (file_exists($path))
 			{
-				echo "file: " . $path . "<br>";
 				$result = require $path;
 
 				if (is_array($result))
@@ -41,9 +38,6 @@ class Config
 
 		if (count($items) > 0)
 		{
-			echo "result: ";
-			print_r($items);
-
 			if ($save)
 			{
 				static::$items[$group] = $items;

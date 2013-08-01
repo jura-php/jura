@@ -60,24 +60,31 @@ class Request
 
 		//Detect environment
 		$list = require J_PATH . "config" . DS . "environments" . EXT;
-		$host = array_get(self::$server, "HTTP_HOST", "localhost");
-		$host2 = gethostname();
 		$env = "";
 		$envWithWildcard = array_first($list);
+		$hosts = array(array_get(self::$server, "HTTP_HOST", "localhost"), gethostname());
 
-		foreach ($list as $k => $v)
+		foreach ($hosts as $host)
 		{
-			foreach ((array)$v as $hostname)
+			foreach ($list as $k => $v)
 			{
-				if ($hostname != "" && ($hostname == $host || $hostname == $host2))
+				foreach ((array)$v as $hostname)
 				{
-					$env = $k;
+					if ($hostname != "" && ($hostname == $host || $hostname == $host2))
+					{
+						$env = $k;
 
-					break;
+						break;
+					}
+					else if ($hostname == "*")
+					{
+						$envWithWildcard = $k;
+					}
 				}
-				else if ($hostname == "*")
+
+				if ($env != "")
 				{
-					$envWithWildcard = $k;
+					break;
 				}
 			}
 
