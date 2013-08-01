@@ -71,7 +71,7 @@ require J_SYSTEMPATH . "core" . DS . "Request" . EXT;
 Request::init();
 
 //TODO: Place it on a Error class.. Create error handlers..
-if (Request::env() == J_LOCAL_ENV)
+if (Request::isLocal() || Request::isPreview())
 {
 	error_reporting(-1);
 }
