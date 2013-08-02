@@ -72,11 +72,13 @@ Request::init();
 //TODO: Place it on a Error class.. Create error handlers..
 if (Request::isLocal() || Request::isPreview())
 {
-	error_reporting(-1);
+	error_reporting(E_ALL); 
+	ini_set('display_errors','1');
 }
 else
 {
 	error_reporting(0);
+	ini_set("error_log", J_APPPATH . "storage" . DS . "errors.log");
 }
 
 require J_SYSTEMPATH . "core" . DS . "URI" . EXT;

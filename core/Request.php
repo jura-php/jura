@@ -9,6 +9,7 @@ class Request
 	private static $pathInfo = null;
 	private static $isSecure = null;
 	private static $isLocal = null;
+	private static $isPreview = null;
 	public static $route = null;
 
 	private static $get;
@@ -130,6 +131,16 @@ class Request
 		}
 
 		return self::$isLocal;
+	}
+
+	public static function isPreview()
+	{
+		if (is_null(self::$isPreview))
+		{
+			self::$isPreview = (self::$env == J_PREVIEW_ENV);
+		}
+
+		return self::$isPreview;
 	}
 
 	public static function method()
