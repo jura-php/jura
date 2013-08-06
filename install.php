@@ -213,9 +213,6 @@ make_file("../.htaccess", '<IfModule mod_rewrite.c>
 
 	#Routes
 	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule . $1 [QSA,C]
-
-	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteRule ^(.+)$ index.php/$1 [L,QSA]
 </IfModule>', null, true);
 

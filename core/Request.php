@@ -50,6 +50,15 @@ class Request
 			return self::clearValue($v);
 		}, $_POST);
 
+		//Remove /public/index.html from path_info..
+		foreach (array("PATH_INFO", "PATH_TRANSLATED", "PHP_SELF") as $k)
+		{
+			if (isset($_SERVER[$k]))
+			{
+				$_SERVER[$k] = str_replace("/public/index.html", "/", $_SERVER[$k]);
+			}
+		}
+
 		self::$server = $_SERVER;
 		self::$get = $_GET;
 		self::$post = $_POST;

@@ -3,7 +3,7 @@ class URL
 {
 	public static function full()
 	{
-		return Request::rootURL() . URI::fullURI();
+		return Request::rootURL() . Request::fullURI();
 	}
 
 	public static function root($addManager = true)
