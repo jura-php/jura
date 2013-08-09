@@ -67,8 +67,13 @@ class Config
 		return null;
 	}
 
-	public static function item($group, $name)
+	public static function item($group, $name = false)
 	{
+		if(!$name) {
+			$name = $group;
+			$group = 'application';
+		}
+
 		static::loadOnce($group);
 
 		if (isset(static::$items[$group][$name]))
