@@ -9,6 +9,7 @@ class Request
 	private static $pathInfo = null;
 	private static $isSecure = null;
 	private static $isLocal = null;
+	private static $isPreview = null;
 	public static $route = null;
 
 	private static $get;
@@ -49,6 +50,15 @@ class Request
 			return self::clearValue($v);
 		}, $_POST);
 
+		//Remove /public/index.html from path_info..
+		foreach (array("PATH_INFO", "PATH_TRANSLATED", "PHP_SELF") as $k)
+		{
+			if (isset($_SERVER[$k]))
+			{
+				$_SERVER[$k] = str_replace("/public/index.html", "/", $_SERVER[$k]);
+			}
+		}
+
 		self::$server = $_SERVER;
 		self::$get = $_GET;
 		self::$post = $_POST;
@@ -60,24 +70,31 @@ class Request
 
 		//Detect environment
 		$list = require J_PATH . "config" . DS . "environments" . EXT;
-		$host = array_get(self::$server, "HTTP_HOST", "localhost");
-		$host2 = gethostname();
 		$env = "";
 		$envWithWildcard = array_first($list);
+		$hosts = array(array_get(self::$server, "HTTP_HOST", "localhost"), gethostname());
 
-		foreach ($list as $k => $v)
+		foreach ($hosts as $host)
 		{
-			foreach ((array)$v as $hostname)
+			foreach ($list as $k => $v)
 			{
-				if ($hostname != "" && ($hostname == $host || $hostname == $host2))
+				foreach ((array)$v as $hostname)
 				{
-					$env = $k;
+					if ($hostname != "" && ($hostname == $host || $hostname == $host2))
+					{
+						$env = $k;
 
-					break;
+						break;
+					}
+					else if ($hostname == "*")
+					{
+						$envWithWildcard = $k;
+					}
 				}
-				else if ($hostname == "*")
+
+				if ($env != "")
 				{
-					$envWithWildcard = $k;
+					break;
 				}
 			}
 
@@ -123,6 +140,16 @@ class Request
 		}
 
 		return self::$isLocal;
+	}
+
+	public static function isPreview()
+	{
+		if (is_null(self::$isPreview))
+		{
+			self::$isPreview = (self::$env == J_PREVIEW_ENV);
+		}
+
+		return self::$isPreview;
 	}
 
 	public static function method()
@@ -262,7 +289,7 @@ class Request
 	{
 		if (is_null(self::$isSecure))
 		{
-			self::$isSecure = isset(self::$server["HTTPS"]) && (self::$server["HTTPS"] === "On" || self::$server["HTTPS"] == 1);
+			self::$isSecure = isset(self::$server["HTTPS"]) && (self::$server["HTTPS"] == "on" || self::$server["HTTPS"] == 1);
 		}
 
 		return self::$isSecure;

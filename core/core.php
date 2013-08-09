@@ -66,18 +66,19 @@ function j_shutdown()
 }
 register_shutdown_function("j_shutdown");
 
-
 require J_SYSTEMPATH . "core" . DS . "Request" . EXT;
 Request::init();
 
 //TODO: Place it on a Error class.. Create error handlers..
-if (Request::env() == J_LOCAL_ENV)
+if (Request::isLocal() || Request::isPreview())
 {
-	error_reporting(-1);
+	error_reporting(E_ALL); 
+	ini_set('display_errors','1');
 }
 else
 {
 	error_reporting(0);
+	ini_set("error_log", J_APPPATH . "storage" . DS . "errors.log");
 }
 
 require J_SYSTEMPATH . "core" . DS . "URI" . EXT;
@@ -123,8 +124,7 @@ Router::register("GET", "download/(:all)", function () {
 	Response::download(J_PATH . DS . $path, Request::get("name"));
 });
 
-Router::register("*", "(:all)", function ()
-{
+Router::register("*", "(:all)", function () {
 	Response::code(404);
 
 	if (Request::isLocal())
