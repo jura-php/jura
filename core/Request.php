@@ -289,7 +289,7 @@ class Request
 	{
 		if (is_null(self::$isSecure))
 		{
-			self::$isSecure = isset(self::$server["HTTPS"]) && (self::$server["HTTPS"] === "On" || self::$server["HTTPS"] == 1);
+			self::$isSecure = isset(self::$server["HTTPS"]) && (self::$server["HTTPS"] == "on" || self::$server["HTTPS"] == 1);
 		}
 
 		return self::$isSecure;
