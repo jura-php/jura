@@ -76,9 +76,10 @@ class Config
 
 		static::loadOnce($group);
 
-		if (isset(static::$items[$group][$name]))
+		$value = array_get(static::$items[$group], $name, null);
+		if (!is_null($value))
 		{
-			return static::$items[$group][$name];
+			return $value;
 		}
 
 		return false;
