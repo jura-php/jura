@@ -31,7 +31,7 @@ class User
 
 				//Create token and return the json
 				$orm = ORM::make("manager_tokens");
-				$orm->idUser = $userID;
+				$orm->userID = $userID;
 				$orm->token = md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
 				$orm->expirationDate = php_sql_datetime(time() + 3600); //one hour
 				$orm->insert();
@@ -148,7 +148,7 @@ class User
 
 		if ($token != "")
 		{
-			$rs = ORM::make("manager_tokens")->select(array("expirationDate", "idUser"))->where("token", "=", $token)->findFirst();
+			$rs = ORM::make("manager_tokens")->select(array("expirationDate", "userID"))->where("token", "=", $token)->findFirst();
 
 			if (!$rs->EOF)
 			{
@@ -156,7 +156,7 @@ class User
 
 				$result["token"] = $token;
 				$result["expirationDate"] = $time;
-				$result["userID"] = $rs->fields["idUser"];
+				$result["userID"] = $rs->fields["userID"];
 
 				if (time() < $time)
 				{
