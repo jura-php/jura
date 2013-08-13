@@ -97,7 +97,14 @@ class ORM
 				{
 					foreach ($fields as $k => $v)
 					{
-						$fields[$k] = DB::conn($this->connName)->quoteID($v);
+						if (strpos($v, "#RAW#") !== false)
+						{
+							$fields[$k] = substr($v, 5);
+						}
+						else
+						{
+							$fields[$k] = DB::conn($this->connName)->quoteID($v);
+						}
 					}
 
 					$fields = join(", ", $fields);
@@ -271,8 +278,10 @@ class ORM
 			$this->selectFields = array();
 		}
 
-		$this->selectFields[] = $expr;
+		$this->selectFields[] = "#RAW#" . $expr;
 		$this->selectFields = array_unique($this->selectFields);
+
+		return $this;
 	}
 
 	public function where($name, $method, $value)

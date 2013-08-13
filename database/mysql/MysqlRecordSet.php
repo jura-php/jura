@@ -139,6 +139,11 @@ class MysqlRecordSet
 			return $this->rowOrm;
 		}
 
+		if (isset($this->fields[$key]))
+		{
+			return $this->fields[$key];
+		}
+
 		return $this->$key;
 	}
 
