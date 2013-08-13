@@ -144,7 +144,7 @@ class MysqlRecordSet
 			return $this->fields[$key];
 		}
 
-		return $this->$key;
+		return @$this->$key;
 	}
 
 	public function close()
