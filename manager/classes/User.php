@@ -12,22 +12,21 @@ class User
 			return static::error(403, "invalid_request");
 		}
 
-		$rs = ORM::make("manager_users")->select(array("id", "password"))->where("username", "=", $user)->findFirst();
+		$orm = ORM::make("manager_users")
+					->select(array("id", "password"))
+					->where("username", "=", $user)
+					->findFirst();
 
-		if (!$rs->EOF)
+		if ($orm)
 		{
-			if ($rs->fields["password"] == md5($pass))
+			if ($orm->password == md5($pass))
 			{
-				$userID = $rs->fields["id"];
+				$userID = $orm->id;
 
 				//Clear old tokens for this client
-				$rs = ORM::make("manager_tokens")->where("id", "=", $userID)->find();
-				while (!$rs->EOF)
-				{
-					$rs->orm->delete();
-
-					$rs->moveNext();
-				}
+				ORM::make("manager_tokens")
+							->where("userID", "=", $userID)
+							->deleteMany();
 
 				//Create token and return the json
 				$orm = ORM::make("manager_tokens");
@@ -76,13 +75,15 @@ class User
 
 		if (!isset($info["error"]))
 		{
-			$rs = ORM::make("manager_tokens")->where("token", "=", $info["token"])->findFirst();
+			$orm = ORM::make("manager_tokens")
+						->where("token", "=", $info["token"])
+						->findFirst();
 
-			if (!$rs->EOF)
+			if ($orm)
 			{
-				$rs->orm->token = md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
-				$rs->orm->expirationDate = php_sql_datetime(time() + 3600); //one hour
-				$rs->orm->update();
+				$orm->token = md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+				$orm->expirationDate = php_sql_datetime(time() + 3600); //one hour
+				$orm->update();
 
 				Session::set("j_manager_token", $orm->token);
 
@@ -114,21 +115,32 @@ class User
 
 			if (!isset($info["error"]))
 			{
-				$rs = ORM::make("manager_users")->select(array("name", "username", "email"))->where("id", "=", $info["userID"])->findFirst();	
+				$orm = ORM::make("manager_users")
+							->select(array("name", "username", "email"))
+							->where("id", "=", $info["userID"])
+							->findFirst();
 
-				if (!$rs->EOF)
+				if ($orm)
 				{
-					return array_merge($rs->fields, array("access_token" => $info["token"], "gravatar_hash" => md5($rs->fields["email"])));
+					return array_merge($orm->asArray(), array(
+						"access_token" => $info["token"],
+						"gravatar_hash" => md5($rs->fields["email"]))
+					);
 				}
 			}
 		}
 		else
 		{
-			$rs = ORM::make("manager_users")->select(array("name", "username", "email"))->where("id", "=", $userID)->findFirst();	
+			$orm = ORM::make("manager_users")
+						->select(array("name", "username", "email"))
+						->where("id", "=", $userID)
+						->findFirst();
 
-			if (!$rs->EOF)
+			if ($orm)
 			{
-				return array_merge($rs->fields, array("gravatar_hash" => md5($rs->fields["email"])));
+				return array_merge($orm->asArray(), array(
+					"gravatar_hash" => md5($rs->fields["email"]))
+				);
 			}
 		}
 
@@ -148,15 +160,18 @@ class User
 
 		if ($token != "")
 		{
-			$rs = ORM::make("manager_tokens")->select(array("expirationDate", "userID"))->where("token", "=", $token)->findFirst();
+			$orm = ORM::make("manager_tokens")
+						->select(array("expirationDate", "userID"))
+						->where("token", "=", $token)
+						->findFirst();
 
-			if (!$rs->EOF)
+			if ($orm)
 			{
-				$time = $rs->fields["expirationDate"];
+				$time = $orm->expirationDate;
 
 				$result["token"] = $token;
 				$result["expirationDate"] = $time;
-				$result["userID"] = $rs->fields["userID"];
+				$result["userID"] = $orm->userID;
 
 				if (time() < $time)
 				{

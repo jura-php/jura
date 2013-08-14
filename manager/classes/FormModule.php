@@ -56,7 +56,8 @@ class FormModule extends Module
 
 			$results = array();
 			$fields = array();
-			$orm = ORM::make($this->tableName)->select("id");
+			$orm = ORM::make($this->tableName)
+						->select("id");
 
 			foreach ($this->fields as $field)
 			{
@@ -71,26 +72,19 @@ class FormModule extends Module
 				}
 			}
 
-			$rs = $orm->find();
-			while (!$rs->EOF)
+			$entries = $orm->find();
+			foreach ($entries as $entry)
 			{
 				$values = array();
 
-				$orm = $rs->orm;
+				$values["id"] = (int)$entry->id;
 
 				foreach ($fields as $field)
 				{
-					$values[$field->name] = $field->value($orm, "L");
-				}
-
-				if (!isset($values["id"]))
-				{
-					$values["id"] = (int)$rs->fields["id"];
+					$values[$field->name] = $field->value($entry, "L");
 				}
 
 				$results[] = $values;
-
-				$rs->moveNext();
 			}
 
 			return Response::json($results);
@@ -140,7 +134,7 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("C"))
 				{
-					$field->afterSave($orm, "C");	
+					$field->afterSave($orm, "C");
 				}
 			}
 		});
@@ -152,7 +146,8 @@ class FormModule extends Module
 			}
 
 			$fields = array();
-			$orm = ORM::make($this->tableName)->select("id");
+			$orm = ORM::make($this->tableName)
+						->select("id");
 			$hasUpdateFlag = false;
 
 			foreach ($this->fields as $field)
@@ -168,28 +163,29 @@ class FormModule extends Module
 				}
 			}
 
-			$rs = $orm->findFirst($id);
+			$orm = $orm->findFirst($id);
 
-			$values = array();
-			$values["id"] = (int)$rs->fields["id"];
-
-			$orm = $rs->orm;
-			
-			foreach ($fields as $field)
+			if ($orm)
 			{
-				$flag = "R";
-
-				if ($field->hasFlag("U"))
+				$values = array();
+				$values["id"] = (int)$orm->id;
+				
+				foreach ($fields as $field)
 				{
-					$flag = "U";
+					$flag = "R";
+
+					if ($field->hasFlag("U"))
+					{
+						$flag = "U";
+					}
+
+					$values[$field->name] = $field->value($orm, $flag);
 				}
 
-				$values[$field->name] = $field->value($orm, $flag);
+				return Response::json($values);
 			}
 
-			//TODO: Check if id exists..
-
-			return Response::json($values);
+			return Response::code(404);
 		});
 
 		Router::register("PUT", "manager/api/" . $this->name . "/(:num)", function ($id) {

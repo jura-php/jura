@@ -61,7 +61,6 @@ class ORM
 		return $this;
 	}
 
-	//SELECT
 	public function findFirst($id = null)
 	{
 		if (!is_null($id))
@@ -72,25 +71,51 @@ class ORM
 
 		$this->method = "SELECT";
 
+		$lastLimit = $this->limit;
 		$this->limit(1);
 
-		return $this->run();
+		$response = $this->run();
+
+		$this->limit($lastLimit);
+
+		if (count($response) > 0)
+		{
+			return $response[0];
+		}
+
+		return false;
 	}
 
 	public function find()
 	{
 		$this->method = "SELECT";
 
-		$this->limit(0);
+		return $this->run();
+	}
+
+	public function findRS()
+	{
+		$this->method = "SELECT_RS";
+
+		return $this->run();
+	}
+
+	public function findArray()
+	{
+		$this->method = "SELECT_ARRAY";
 
 		return $this->run();
 	}
 
 	private function run()
 	{
+		$db = DB::conn($this->connName);
+
 		switch ($this->method)
 		{
 			case "SELECT":
+			case "SELECT_RS":
+			case "SELECT_ARRAY":
 				$fields = $this->selectFields;
 
 				if (is_array($fields))
@@ -103,14 +128,14 @@ class ORM
 						}
 						else
 						{
-							$fields[$k] = DB::conn($this->connName)->quoteID($v);
+							$fields[$k] = $db->quoteID($v);
 						}
 					}
 
 					$fields = join(", ", $fields);
 				}
 
-				$sql = $this->method . " " . $fields . " FROM " . DB::conn($this->connName)->quoteID(J_TP . $this->tableName) . " ";
+				$sql = "SELECT " . $fields . " FROM " . $db->quoteID(J_TP . $this->tableName) . " ";
 
 				if (!is_null($this->wheres))
 				{
@@ -143,11 +168,32 @@ class ORM
 
 				static::$lastSQL = $sql;
 
-				return DB::conn($this->connName)->queryORM($sql, $this);
+				$rs = $db->queryORM($sql, $this);
+
+				if ($this->method == "SELECT_RS")
+				{
+					return $rs;
+				}
+				else if ($this->method == "SELECT_ARRAY")
+				{
+					return $rs->all();
+				}
+				else
+				{
+					$data = array();
+
+					while (!$rs->EOF)
+					{
+						$data[] = $rs->orm;
+						$rs->moveNext();
+					}
+
+					return $data;
+				}
 
 				break;
 			case "INSERT":
-				$fieldsInfo = DB::conn($this->connName)->fieldsInfo(J_TP . $this->tableName);
+				$fieldsInfo = $db->fieldsInfo(J_TP . $this->tableName);
 				$fields = array();
 				$values = array();
 				foreach ($fieldsInfo as $v)
@@ -155,16 +201,16 @@ class ORM
 					$name = $v["name"];
 					if (isset($this->dirtyFields[$name]))
 					{
-						$fields[] = DB::conn($this->connName)->quoteID($name);
-						$values[] = DB::conn($this->connName)->escape($this->fields[$name]);
+						$fields[] = $db->quoteID($name);
+						$values[] = $db->escape($this->fields[$name]);
 					}
 				}
 
-				$sql = "INSERT INTO " . J_TP . $this->tableName . " (" . join(", ", $fields) . ") VALUES (" . join(", ", $values) . ");";
+				$sql = "INSERT INTO " . $db->quoteID(J_TP . $this->tableName) . " (" . join(", ", $fields) . ") VALUES (" . join(", ", $values) . ");";
 
 				static::$lastSQL = $sql;
 
-				$rs = DB::conn($this->connName)->query($sql);
+				$rs = $db->query($sql);
 
 				$this->setField("id", $rs->insertID);
 
@@ -172,25 +218,25 @@ class ORM
 
 				break;
 			case "UPDATE":
-				$sql = "UPDATE " . J_TP . $this->tableName . " SET ";
+				$sql = "UPDATE " . $db->quoteID(J_TP . $this->tableName) . " SET ";
 
-				$fieldsInfo = DB::conn($this->connName)->fieldsInfo(J_TP . $this->tableName);
+				$fieldsInfo = $db->fieldsInfo(J_TP . $this->tableName);
 				$fields = array();
 				foreach ($fieldsInfo as $v)
 				{
 					$name = $v["name"];
 					if (isset($this->dirtyFields[$name]))
 					{
-						$fields[] = DB::conn($this->connName)->quoteID($name) . " = " . DB::conn($this->connName)->escape($this->fields[$name]);
+						$fields[] = $db->quoteID($name) . " = " . $db->escape($this->fields[$name]);
 					}
 				}
 
 				$sql .= join(", ", $fields) . " ";
-				$sql .= "WHERE id = " . DB::conn($this->connName)->escape($this->fields["id"]) . " LIMIT 1;";
+				$sql .= "WHERE id = " . $db->escape($this->fields["id"]) . " LIMIT 1;";
 
 				static::$lastSQL = $sql;
 
-				$rs = DB::conn($this->connName)->query($sql);
+				$rs = $db->query($sql);
 
 				return $rs->success;
 
@@ -202,28 +248,43 @@ class ORM
 
 				if (is_null($ids))
 				{
-					$ids = array($this->fields["id"]);
+					$ids = array($this->field("id"));
 				}
 
 				if (count($ids) > 0)
 				{
-					$conn = DB::conn($this->connName);
-
 					foreach ($ids as $k => $id)
 					{
-						$ids[$k] = $conn->escape($id);
+						$ids[$k] = $db->escape($id);
 					}
 
-					$sql = "DELETE FROM " . J_TP . $this->tableName . " WHERE id in (" . implode(",", $ids) . ") LIMIT " . count($ids) . ";";
+					$sql = "DELETE FROM " . $db->quoteID(J_TP . $this->tableName) . " WHERE id IN (" . implode(",", $ids) . ") LIMIT " . count($ids) . ";";
 
 					static::$lastSQL = $sql;
 
-					$rs = DB::conn($this->connName)->query($sql);
+					$rs = $db->query($sql);
 
 					return $rs->success;
 				}
 
 				return false;
+
+				break;
+			case "DELETE_MANY":
+				$sql = "DELETE FROM " . $db->quoteID(J_TP . $this->tableName);
+
+				if (!is_null($this->wheres))
+				{
+					$sql .= "WHERE " . $this->buildWheres($this->wheres) . " ";
+				}
+
+				$sql .= ";";
+
+				static::$lastSQL = $sql;
+
+				$rs = $db->query($sql);
+
+				return $rs->success;
 
 				break;
 		}
@@ -305,9 +366,83 @@ class ORM
 		return $this->where($name, "!=", $value);
 	}
 
-	public function whereRaw($raw)
+	public function whereLike($name, $value)
+	{
+		return $this->where($name, "LIKE", $value);
+	}
+
+	public function whereNotLike($name, $value)
+	{
+		return $this->where($name, "LIKE", $value);
+	}
+
+	public function whereNull($name)
+	{
+		return $this->whereRaw(DB::conn($this->connName)->quoteID($name) . " IS NULL");
+	}
+
+	public function whereNotNull($name)
+	{
+		return $this->whereRaw(DB::conn($this->connName)->quoteID($name) . " IS NOT NULL");
+	}
+
+	public function whereIn($name, $values)
+	{
+		$values = (array)$values;
+
+		$db = DB::conn($this->connName);
+
+		foreach ($values as $k => $v)
+		{
+			$values[$k] = $db->escape($v);
+		}
+
+		return $this->whereRaw($db->quoteID($name) . " IN (" . implode(",", $values) . ")");
+	}
+
+	public function whereNotIn($name, $values)
+	{
+		$values = (array)$values;
+
+		$db = DB::conn($this->connName);
+
+		foreach ($values as $k => $v)
+		{
+			$values[$k] = $db->escape($v);
+		}
+
+		return $this->whereRaw($db->quoteID($name) . " NOT IN (" . implode(",", $values) . ")");
+	}
+
+	public function whereRaw($raw, $values = null)
 	{
 		$this->initWheres();
+
+		if (!is_null($values))
+		{
+			$values = (array)$values;
+
+			if (strpos($raw, "?") !== false)
+			{
+				$segments = explode("?", $raw);
+
+				if (count($values) >= count($segments))
+				{
+					$values = array_slice($values, 0, count($segments) - 1);
+				}
+
+				$db = DB::conn($this->connName);
+				$newRaw = $segments[0];
+				$i = 1;
+				foreach ($values as $param)
+				{
+					$newRaw .= $db->escape($param);
+					$newRaw .= $segments[$i++];
+				}
+
+				$raw = $newRaw;
+			}
+		}
 
 		$this->currentWhere["wheres"][] = $raw;
 
@@ -353,7 +488,6 @@ class ORM
 		return $this;
 	}
 
-
 	public function orderByAsc($name)
 	{
 		$this->orderBys[] = DB::conn($this->connName)->quoteID($name) . " ASC";
@@ -372,7 +506,6 @@ class ORM
 		return $this;
 	}
 
-
 	public function groupBy($name)
 	{
 		$this->groupBys[] = DB::conn($this->connName)->quoteID($name);
@@ -384,7 +517,6 @@ class ORM
 		$this->groupBys[] = $expr;
 		return $this;
 	}
-
 
 	public function limit($count)
 	{
@@ -435,12 +567,12 @@ class ORM
 
 		$this->selectRaw($func . "(" . $name . ")", $alias);
 
-		$rs = $this->findFirst();
+		$orm = $this->findFirst();
 		$result = 0;
 
-		if (!$rs->EOF)
+		if ($orm)
 		{
-			$result = $rs->fields[$alias];
+			$result = $orm->$alias;
 		}
 
 		array_pop($this->selectFields);
@@ -460,8 +592,6 @@ class ORM
 		}
 	}
 
-	//CRUD...
-
 	public function __get($key)
 	{
 		return $this->field($key);
@@ -470,6 +600,11 @@ class ORM
 	public function __set($key, $value)
 	{
 		return $this->setField($key, $value);
+	}
+
+	public function __isset($key)
+	{
+		return isset($this->fields[$key]);
 	}
 
 	public function setField($name, $value)
@@ -506,6 +641,21 @@ class ORM
 		return $this->fields[$name];
 	}
 
+	public function asArray()
+	{
+		$data = array();
+		foreach ($this->fields as $k => $v)
+		{
+			$data[$k] = $v;
+		}
+
+		return $data;
+	}
+
+	public function isNew()
+	{
+		return !isset($this->fields["id"]);
+	}
 
 	public function insert()
 	{
@@ -526,6 +676,18 @@ class ORM
 		return $this->run();
 	}
 
+	public function save()
+	{
+		if (!$this->isNew())
+		{
+			return $this->update();
+		}
+		else
+		{
+			return $this->insert();
+		}
+	}
+
 	public function delete($ids = null)
 	{
 		if (!is_null($ids) && !is_array($ids))
@@ -538,6 +700,13 @@ class ORM
 		$this->method = "DELETE";
 
 		$this->deleteIDs = $ids;
+
+		return $this->run();
+	}
+
+	public function deleteMany()
+	{
+		$this->method = "DELETE_MANY";
 
 		return $this->run();
 	}

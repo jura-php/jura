@@ -143,11 +143,13 @@ class ItemsField extends Field
 			$id = $orm->field("id");
 			$ormRel = ORM::make($this->multipleTable);
 
-			$rs = $ormRel->where($this->multipleFieldFrom, "=", $id)->find();
+			$entries = $ormRel
+							->where($this->multipleFieldFrom, "=", $id)
+							->find();
 
-			while (!$rs->EOF)
+			foreach ($entries as $entry)
 			{
-				$to = $rs->fields[$this->multipleFieldTo];
+				$to = $entry->field($this->multipleFieldTo);
 				$found = false;
 
 				foreach ($value as $k => $v)
@@ -163,16 +165,14 @@ class ItemsField extends Field
 
 				if (!$found)
 				{
-					$rs->orm->delete();
+
+					$entry->delete();
 				}
-
-				$rs->moveNext();
 			}
-
-			$ormRel->reset();
 
 			foreach ($value as $v)
 			{
+				$ormRel->reset();
 				$ormRel->setField($this->multipleFieldFrom, $id);
 				$ormRel->setField($this->multipleFieldTo, $v);
 				$ormRel->insert();
@@ -186,7 +186,7 @@ class ItemsField extends Field
 		{
 			$value = $orm->field($this->name);
 
-			return $this->format($value, $flag);	
+			return $this->format($value, $flag);
 		}
 		else
 		{
@@ -194,15 +194,13 @@ class ItemsField extends Field
 			$ormRel = ORM::make($this->multipleTable);
 			$values = array();
 
-			$rs = $ormRel->where($this->multipleFieldFrom, "=", $id)->find();
+			$entries = $ormRel
+							->where($this->multipleFieldFrom, "=", $id)
+							->find();
 
-			while (!$rs->EOF)
+			foreach ($entries as $entry)
 			{
-				$to = $rs->fields[$this->multipleFieldTo];
-
-				$values[] = (int)$to;
-
-				$rs->moveNext();
+				$values[] = (int)$entry->field($this->multipleFieldTo);
 			}
 
 			return $values;

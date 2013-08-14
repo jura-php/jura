@@ -57,7 +57,14 @@ class MysqlRecordSet
 		}
 		else
 		{
-			echo "SQL error: <br> <b>'" . mysql_error($this->conn->res) . "'</b>"; //TODO: Error class
+			echo "SQL error";
+
+			if (Request::isLocal() || Request::isPreview()) //TODO: Error class
+			{
+				echo ": " . $query;
+				echo "<br> <b>'" . mysql_error($this->conn->res) . "'</b>";
+			}
+
 			die();
 		}
 	}
