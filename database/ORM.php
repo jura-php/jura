@@ -643,13 +643,11 @@ class ORM
 
 	public function asArray()
 	{
-		$data = array();
-		foreach ($this->fields as $k => $v)
+		if (func_num_args() === 0)
 		{
-			$data[$k] = $v;
+			return $this->fields;
 		}
-
-		return $data;
+		return array_intersect_key($this->fields, array_flip(func_get_args()));
 	}
 
 	public function isNew()
