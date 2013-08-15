@@ -105,7 +105,19 @@ class MysqlDB
 
 	public function quoteID($identifier)
 	{
-		return "`" . trim($identifier, "`") . "`";
+		$parts = explode(".", $identifier);
+
+		foreach ($parts as $k => $v)
+		{
+			if ($v == "*")
+			{
+				continue;
+			}
+
+			$parts[$k] = "`" . trim($v, "`") . "`";
+		}
+
+		return implode(".", $parts);
 	}
 
 	public function fieldsInfo($tableName)

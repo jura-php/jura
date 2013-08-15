@@ -109,6 +109,28 @@ class Str
 		return static::upper($string{0}) . substr($string, 1);
 	}
 
+	public static function camel($string)
+	{
+		$tok = strtok($string, "_ ");
+		$output = "";
+
+		while ($tok !== false)
+		{
+			if ($output == "")
+			{
+				$output .= $tok;
+			}
+			else
+			{
+				$output .= Str::ucfirst($tok);
+			}
+
+			$tok = strtok("_ ");
+		}
+
+		return $output;
+	}
+
 	public static function startsWith($haystack, $needle)
 	{
 		return strpos($haystack, $needle) == 0;

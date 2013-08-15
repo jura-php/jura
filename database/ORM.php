@@ -2,10 +2,9 @@
 
 //OK: Where com OR ou AND..
 //OK: Retorno da query com um recordset associando um objeto a cada move[Next][First]()...
+//OK: Joins
 
-//TODO: Joins
-
-class ORM
+class ORM implements ArrayAccess
 {
 	private static $lastSQL = "";
 
@@ -16,6 +15,7 @@ class ORM
 	private $method;
 
 	private $selectFields;
+	private $joins;
 	private $wheres;
 	private $currentWhere;
 	private $orderBys;
@@ -53,6 +53,7 @@ class ORM
 		$this->dirtyFields = null;
 
 		$this->selectFields = "*";
+		$this->joins = null;
 		$this->wheres = null;
 		$this->currentWhere = null;
 		$this->orderBys = null;
@@ -107,13 +108,6 @@ class ORM
 		return $this->run();
 	}
 
-	public function findArray()
-	{
-		$this->method = "SELECT_ARRAY";
-
-		return $this->run();
-	}
-
 	private function run()
 	{
 		$db = DB::conn($this->connName);
@@ -122,7 +116,6 @@ class ORM
 		{
 			case "SELECT":
 			case "SELECT_RS":
-			case "SELECT_ARRAY":
 				$fields = $this->selectFields;
 
 				if (is_array($fields))
@@ -143,6 +136,11 @@ class ORM
 				}
 
 				$sql = "SELECT " . $fields . " FROM " . $db->quoteID(J_TP . $this->tableName) . " ";
+
+				if (!is_null($this->joins))
+				{
+					$sql .= implode(" ", $this->joins) . " ";
+				}
 
 				if (!is_null($this->wheres))
 				{
@@ -181,10 +179,6 @@ class ORM
 				{
 					return $rs;
 				}
-				else if ($this->method == "SELECT_ARRAY")
-				{
-					return $rs->all();
-				}
 				else
 				{
 					$data = array();
@@ -195,7 +189,7 @@ class ORM
 						$rs->moveNext();
 					}
 
-					return $data;
+					return new ORMResult($data);
 				}
 
 				break;
@@ -221,6 +215,11 @@ class ORM
 
 				$this->setField("id", $rs->insertID);
 
+				if ($rs->success)
+				{
+					$this->dirtyFields = array();
+				}
+
 				return $rs->success;
 
 				break;
@@ -244,6 +243,11 @@ class ORM
 				static::$lastSQL = $sql;
 
 				$rs = $db->query($sql);
+
+				if ($rs->success)
+				{
+					$this->dirtyFields = array();
+				}
 
 				return $rs->success;
 
@@ -350,6 +354,84 @@ class ORM
 		$this->selectFields = array_unique($this->selectFields);
 
 		return $this;
+	}
+
+	private function addJoin($operator, $tableName, $constraints, $tableAlias = null)
+	{
+		$db = DB::conn($this->connName);
+
+		$operator = trim($operator . " JOIN");
+		$tableName = $db->quoteID(J_TP . $tableName);
+
+		if (!is_null($tableAlias))
+		{
+			$tableName .= " " . $db->quoteID($tableAlias);
+		}
+
+		if (is_array($constraints))
+		{
+			$constraintsString = "";
+			$i = 0;
+			foreach ($constraints as $v)
+			{
+				if ($i > 0)
+				{
+					$constraintsString .= " ";
+				}
+
+				if ($i % 2 == 0)
+				{
+					if (strpos($v, ".") !== false)
+					{
+						$v = J_TP . $v;
+					}
+
+					$constraintsString .= $db->quoteID($v);
+				}
+				else
+				{
+					$constraintsString .= $v;
+				}
+
+				$i++;
+			}
+
+			$constraints = $constraintsString;
+		}
+
+		if (is_null($this->joins))
+		{
+			$this->joins = array();
+		}
+
+		$this->joins[] = $operator . " " . $tableName . " ON (" . $constraints . ")";
+
+		return $this;
+	}
+
+	public function join($tableName, $constraints, $tableAlias = null)
+	{
+		return $this->addJoin("", $tableName, $constraints, $tableAlias);
+	}
+
+	public function innerJoin($tableName, $constraints, $tableAlias = null)
+	{
+		return $this->addJoin("INNER", $tableName, $constraints, $tableAlias);
+	}
+
+	public function leftJoin($tableName, $constraints, $tableAlias = null)
+	{
+		return $this->addJoin("LEFT OUTHER", $tableName, $constraints, $tableAlias);
+	}
+
+	public function rightJoin($tableName, $constraints, $tableAlias = null)
+	{
+		return $this->addJoin("RIGHT OUTHER", $tableName, $constraints, $tableAlias);
+	}
+
+	public function fullOutherJoin($tableName, $constraints, $tableAlias = null)
+	{
+		return $this->addJoin("FULL OUTHER", $tableName, $constraints, $tableAlias);
 	}
 
 	public function where($name, $method, $value)
@@ -599,69 +681,6 @@ class ORM
 		}
 	}
 
-	public function __get($key)
-	{
-		return $this->field($key);
-	}
-
-	public function __set($key, $value)
-	{
-		return $this->setField($key, $value);
-	}
-
-	public function __isset($key)
-	{
-		return isset($this->fields[$key]);
-	}
-
-	public function setField($name, $value)
-	{
-		if (is_null($this->fields))
-		{
-			$this->fields = array();
-		}
-
-		if (is_null($this->dirtyFields))
-		{
-			$this->dirtyFields = array();
-		}
-
-		$this->fields[$name] = $value;
-
-		$this->dirtyFields[$name] = true;
-
-		return $this;
-	}
-
-	public function field($name)
-	{
-		if (is_null($this->fields))
-		{
-			$this->fields = array();
-		}
-
-		if (!isset($this->fields[$name]))
-		{
-			return null;
-		}
-
-		return $this->fields[$name];
-	}
-
-	public function asArray()
-	{
-		if (func_num_args() === 0)
-		{
-			return $this->fields;
-		}
-		return array_intersect_key($this->fields, array_flip(func_get_args()));
-	}
-
-	public function isNew()
-	{
-		return !isset($this->fields["id"]);
-	}
-
 	public function insert()
 	{
 		$this->method = "INSERT";
@@ -714,6 +733,171 @@ class ORM
 		$this->method = "DELETE_MANY";
 
 		return $this->run();
+	}
+
+	public function asArray()
+	{
+		if (func_num_args() === 0)
+		{
+			return $this->fields;
+		}
+		return array_intersect_key($this->fields, array_flip(func_get_args()));
+	}
+
+	public function isDirty($name)
+	{
+		return isset($this->dirtyFields[$name]) && $this->dirtyFields[$name] == true;
+	}
+
+	public function isNew()
+	{
+		return !isset($this->fields["id"]);
+	}
+
+	public function setField($name, $value)
+	{
+		if (is_null($this->fields))
+		{
+			$this->fields = array();
+		}
+
+		if (is_null($this->dirtyFields))
+		{
+			$this->dirtyFields = array();
+		}
+
+		$this->fields[$name] = $value;
+
+		$this->dirtyFields[$name] = true;
+
+		return $this;
+	}
+
+	public function field($name)
+	{
+		if (is_null($this->fields))
+		{
+			$this->fields = array();
+		}
+
+		if (!isset($this->fields[$name]))
+		{
+			return null;
+		}
+
+		return $this->fields[$name];
+	}
+
+	public function __get($key)
+	{
+		return $this->field($key);
+	}
+
+	public function __set($key, $value)
+	{
+		return $this->setField($key, $value);
+	}
+
+	public function __isset($key)
+	{
+		return isset($this->fields[$key]);
+	}
+
+	public function offsetExists($key)
+	{
+		return isset($this->fields[$key]);
+		return isset($this->fields[$offset]);
+	}
+
+	public function offsetGet($key)
+	{
+		return $this->field($key);
+	}
+
+	public function offsetSet($key, $value)
+	{
+		return $this->setField($key, $value);
+	}
+
+	public function offsetUnset($key)
+	{
+		unset($this->fields[$key]);
+	}
+}
+
+class ORMResult implements Countable, IteratorAggregate, ArrayAccess, Serializable
+{
+	protected $data;
+
+	public function __construct($data)
+	{
+		$this->data = $data;
+	}
+
+	public function asArray($fields = true)
+	{
+		if (!$fields)
+		{
+			return $this->data;
+		}
+
+		$data = array();
+
+		foreach ($this->data as $orm)
+		{
+			$data[] = $orm->asArray();
+		}
+
+		return $data;
+	}
+
+	public function count()
+	{
+		return count($this->data);
+	}
+
+	public function getIterator()
+	{
+		return new ArrayIterator($this->data);
+	}
+
+	public function offsetExists($offset)
+	{
+		return isset($this->data[$offset]);
+	}
+
+	public function offsetGet($offset)
+	{
+		return $this->data[$offset];
+	}
+
+	public function offsetSet($offset, $value)
+	{
+		$this->data[$offset] = $value;
+	}
+
+	public function offsetUnset($offset)
+	{
+		unset($this->data[$offset]);
+	}
+
+	public function serialize()
+	{
+		return serialize($this->data);
+	}
+
+	public function unserialize($serialized)
+	{
+		$this->data = $serialized;
+	}
+
+	public function __call($method, $params = array())
+	{
+		foreach ($this->data as $orm)
+		{
+			call_user_func_array(array($orm, $method), $params);
+		}
+		return $this;
 	}
 }
 ?>
