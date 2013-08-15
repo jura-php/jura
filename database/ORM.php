@@ -11,6 +11,7 @@ class ORM
 
 	public $tableName;
 	private $connName;
+	public $className;
 
 	private $method;
 
@@ -41,6 +42,7 @@ class ORM
 	{
 		$this->tableName = $tableName;
 		$this->connName = $connName;
+		$this->className = "ORM";
 
 		$this->reset();
 	}
@@ -59,6 +61,11 @@ class ORM
 		$this->offset = 0;
 
 		return $this;
+	}
+
+	public function emptyCopy()
+	{
+		return new $this->className($this->tableName, $this->connName);
 	}
 
 	public function findFirst($id = null)

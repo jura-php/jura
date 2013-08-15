@@ -135,7 +135,7 @@ class MysqlRecordSet
 		{
 			if (is_null($this->rowOrm))
 			{
-				$this->rowOrm = ORM::make($this->orm->tableName);
+				$this->rowOrm = $this->orm->emptyCopy();
 
 				foreach ($this->fields as $k => $v)
 				{
