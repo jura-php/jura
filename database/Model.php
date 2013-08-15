@@ -113,41 +113,5 @@ class Model
 	{
 		return call_user_func_array(array($this->orm, $method), $params);
 	}
-
-	/*
-	public function field($name)
-	{
-		return $this->orm->field($name);
-	}
-
-	public function setField($name, $value)
-	{
-		return $this->orm->setField($name, $value);
-	}
-
-	public function isNew()
-	{
-		return $this->orm->isNew();
-	}
-
-	public function isDirty($name)
-	{
-		return $this->orm->isDirty($name);
-	}
-
-	public function asArray()
-	{
-		return call_user_func_array(array($this->orm, 'asArray'), func_get_args());
-	}
-
-	public function save()
-	{
-		return $this->orm->save();
-	}
-
-	public function delete()
-	{
-		return $this->orm->delete();
-	}*/
 }
 ?>
