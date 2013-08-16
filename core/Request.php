@@ -80,7 +80,7 @@ class Request
 			{
 				foreach ((array)$v as $hostname)
 				{
-					if ($hostname != "" && ($hostname == $host || $hostname == $host2))
+					if ($hostname != "" && ($hostname == $host))
 					{
 						$env = $k;
 
