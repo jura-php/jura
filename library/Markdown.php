@@ -17,7 +17,7 @@
 # Markdown Parser Class
 #
 
-class Markdown {
+class _Markdown_internal {
 
 	### Version ###
 
@@ -1524,7 +1524,7 @@ class Markdown {
 # one.
 #
 
-class _MarkdownExtra_TmpImpl extends Markdown {
+class _MarkdownExtra_TmpImpl extends _Markdown_internal {
 
 	### Configuration Variables ###
 
@@ -3089,6 +3089,11 @@ class _MarkdownExtra_TmpImpl extends Markdown {
 			return $matches[0];
 		}
 	}
+
+}
+
+class Markdown extends _MarkdownExtra_TmpImpl
+{
 
 }
 
