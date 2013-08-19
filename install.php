@@ -139,14 +139,20 @@ make_file("../app/config/application.php", function () {
 	return '<?php
 return array(
 	//random alpha-numeric 32 characters for cookie encriptation
-	"key" => "' . $key . '"
+	"key" => "' . $key . '",
+
+	//use or not the build version
+	"build" => array(
+		"css" => false,
+		"js" => false
+	)
 );
 ?>';
 });
 
 make_file("../config/.gitignore", "/databases.php");
 
-make_file(array("../config/databases.sample.php", "../config/databases.sample.php"), '<?php
+make_file(array("../config/databases.sample.php", "../config/databases.php"), '<?php
 return array(
 	"mysql" => array(
 		"type" => "mysql",
