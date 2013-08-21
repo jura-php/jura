@@ -1,174 +1,129 @@
-<style>
+ <style>
 
-    .toggle {
+    .switch {
         position: relative;
-        padding: 0;
+        display: inline-block;
+        vertical-align: top;
+        width: 60px;
+        height: 20px;
+        padding: 3px;
+        background-color: white;
+        border-radius: 18px;
+        box-shadow: inset 0 -1px white, inset 0 1px 1px rgba(0, 0, 0, 0.05);
+        cursor: pointer;
+        background-image: -webkit-linear-gradient(top, #eeeeee, white 25px);
+        background-image: -moz-linear-gradient(top, #eeeeee, white 25px);
+        background-image: -o-linear-gradient(top, #eeeeee, white 25px);
+        background-image: linear-gradient(to bottom, #eeeeee, white 25px);
     }
 
-    /* Position the label over all the elements, except the slide-button
-     * Clicking anywhere on the label will change the switch-state
-     */
-    .toggle label {
-        position: relative;
-        z-index: 3;
-
-        display: block;
-        width: 100%;
-    }
-
-    /* Don't hide the input from screen-readers and keyboard access
-     */
-    .toggle input {
-        position: absolute;
-        opacity: 0;
-        z-index: 5;
-    }
-
-    .toggle p {
-        position: absolute;
-        left: -100px;
-
-        width: 100%;
-        margin: 0;
-        padding-right: 100px;
-
-        text-align: left;
-    }
-
-    .toggle p span {
+    .switch-input {
         position: absolute;
         top: 0;
         left: 0;
-        z-index: 5;
+        opacity: 0;
+    }
 
+    .switch-label {
+        position: relative;
         display: block;
-        width: 50%;
-        margin-left: 100px;
-
-        text-align: center;
+        height: inherit;
+        font-size: 12px;
+        text-transform: uppercase;
+        background: #eceeef;
+        border-radius: inherit;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), inset 0 0 2px rgba(0, 0, 0, 0.15);
+        -webkit-transition: 0.15s ease-out;
+        -moz-transition: 0.15s ease-out;
+        -o-transition: 0.15s ease-out;
+        transition: 0.15s ease-out;
+        -webkit-transition-property: opacity background;
+        -moz-transition-property: opacity background;
+        -o-transition-property: opacity background;
+        transition-property: opacity background;
     }
-
-    .toggle p span:last-child {
-        left: 50%;
-    }
-
-    .toggle .slide-button {
+    .switch-label:before, .switch-label:after {
         position: absolute;
-        right: 0;
-        top: 0;
-        z-index: 4;
-
-        display: block;
-        width: 50%;
-        height: 100%;
-        padding: 0;
+        top: 50%;
+        margin-top: -.5em;
+        line-height: 1;
+        -webkit-transition: inherit;
+        -moz-transition: inherit;
+        -o-transition: inherit;
+        transition: inherit;
+    }
+    .switch-label:before {
+        content: attr(data-off);
+        right: 11px;
+        color: #aaa;
+        text-shadow: 0 1px rgba(255, 255, 255, 0.5);
+    }
+    .switch-label:after {
+        content: attr(data-on);
+        left: 11px;
+        color: white;
+        text-shadow: 0 1px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+    }
+    .switch-input:checked ~ .switch-label {
+        background: #47a8d8;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15), inset 0 0 3px rgba(0, 0, 0, 0.2);
+    }
+    .switch-input:checked ~ .switch-label:before {
+        opacity: 0;
+    }
+    .switch-input:checked ~ .switch-label:after {
+        opacity: 1;
     }
 
-
-    /* Shared */
-    .toggle,
-    .switch {
-        display: block;
-        height: 30px;
+    .switch-handle {
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: 18px;
+        height: 18px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+        background-image: -webkit-linear-gradient(top, white 40%, #f0f0f0);
+        background-image: -moz-linear-gradient(top, white 40%, #f0f0f0);
+        background-image: -o-linear-gradient(top, white 40%, #f0f0f0);
+        background-image: linear-gradient(to bottom, white 40%, #f0f0f0);
+        -webkit-transition: left 0.15s ease-out;
+        -moz-transition: left 0.15s ease-out;
+        -o-transition: left 0.15s ease-out;
+        transition: left 0.15s ease-out;
+    }
+    .switch-handle:before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin: -6px 0 0 -6px;
+        width: 12px;
+        height: 12px;
+        background: #f9f9f9;
+        border-radius: 6px;
+        box-shadow: inset 0 1px rgba(0, 0, 0, 0.02);
+        background-image: -webkit-linear-gradient(top, #eeeeee, white);
+        background-image: -moz-linear-gradient(top, #eeeeee, white);
+        background-image: -o-linear-gradient(top, #eeeeee, white);
+        background-image: linear-gradient(to bottom, #eeeeee, white);
+    }
+    .switch-input:checked ~ .switch-handle {
+        left: 44px;
+        box-shadow: -1px 1px 5px rgba(0, 0, 0, 0.2);
     }
 
-    .switch *,
-    .toggle * {
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        -ms-box-sizing: border-box;
-        -o-box-sizing: border-box;
-        box-sizing: border-box;
+    .switch-green > .switch-input:checked ~ .switch-label {
+        background: #4fb845;
     }
-
-    .switch .slide-button,
-    .toggle .slide-button {
-        display: block;
-
-        /*-webkit-transition: all 0.3s ease-out;
-        -moz-transition: all 0.3s ease-out;
-        -ms-transition: all 0.3s ease-out;
-        -o-transition: all 0.3s ease-out;
-        transition: all 0.3s ease-out;*/
-    }
-
-    .toggle label,
-    .toggle p,
-    .switch label {
-        line-height: 30px;
-        vertical-align: middle;
-    }
-
-    .toggle input:checked ~ .slide-button {
-        right: 50%;
-    }
-
-    /* Outline the toggles when the inputs are focused */
-    .toggle input:focus ~ .slide-button,
-    .switch input:focus + label {
-        outline: 1px dotted #888;
-    }
-
-    /* Bugfix for older Webkit, including mobile Webkit. Adapted from:
-     * http://css-tricks.com/webkit-sibling-bug/
-     */
-    .switch, .toggle {
-        -webkit-animation: bugfix infinite 1s;
-    }
-
-    @-webkit-keyframes bugfix { from { position: relative; } to { position: relative; } }
-
-
-
-    /* Standalone Themes */
-
-
-    /* Candy Theme
-     * Based on the "Sort Switches / Toggles (PSD)" by Ormal Clarck
-     * http://www.premiumpixels.com/freebies/sort-switches-toggles-psd/
-     */
-
-    .candy {
-        background-color: #ddd;
-        color: #333;
-        text-align: center;
-        border-radius: 2px;
-    }
-
-    .candy input:checked + label {
-        color: #333;
-    }
-
-    .candy .slide-button {
-        background-color: #dd0000;
-        border-radius: 2px;
-    }
-
-    .candy input:checked ~ .slide-button {
-        background-color: #70c66b;
-    }
-
-    .candy p {
-        color: #333;
-        text-shadow: none;
-        font-weight: 100;
-        font-size: 15px;
-    }
-
-    .candy span {
-        color: #fff;
-    }
-
 
 </style>
 
 <label>{{field.label}}</label>
-<label class="checkbox toggle candy">
-    <input type="checkbox" ng-true-value="1" ng-false-value="2" ng-model="data[field.name]" />
-    <p>
-        <span> </span>
-        <span> </span>
-    </p>
-
-    <a class="slide-button"></a>
+<label class="switch switch-green">
+    <input type="checkbox" class="switch-input" ng-true-value="1" ng-false-value="2" ng-model="data[field.name]" ng-change="save(data)" />
+    <span class="switch-label" data-on="Sim" data-off="Não"></span>
+    <span class="switch-handle"></span>
 </label>
