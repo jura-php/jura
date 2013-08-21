@@ -9,6 +9,7 @@ angular.module('manager', ['manager.filters', 'manager.services', 'manager.direc
 		$routeProvider
 			.when('/login', {templateUrl: 'partials/login.html', controller: 'login'})
 			.when('/:table', {templateUrl: 'partials/list.html', controller: 'read'})
+			.when('/:table/:page', {templateUrl: 'partials/list.html', controller: 'read'})
 			.when('/:table/new', {templateUrl: 'partials/edit.html', controller: 'new'})
 			.when('/:table/edit/:id', {templateUrl: 'partials/edit.html', controller: 'edit'})
 

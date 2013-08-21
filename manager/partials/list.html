@@ -29,6 +29,14 @@
             </tbody>
         </table>
 
+        <br />
+
+        <ul class="pure-paginator">
+            <li ng-show="pagination.previewsPage"><a class="pure-button prev" href="#/{{module.uri}}/{{pagination.previewsPage}}">&#171;</a></li>
+            <li ng-repeat="page in [] | range:1:pagination.pages"><a class="pure-button" ng-class="{'pure-button-active': (page == pagination.currentPage)}" href="#/{{module.uri}}/{{page}}">{{page}}</a></li>
+            <li ng-show="pagination.nextPage"><a class="pure-button next" href="#/{{module.uri}}/{{pagination.nextPage}}">&#187;</a></li>
+        </ul>
+
     </div>
 </div>
 
