@@ -1,6 +1,8 @@
 <?php
 class TextField extends Field
 {
+	public $listLimit = 100;
+
 	public function __construct($name, $label = null)
 	{
 		parent::__construct($name, $label);
@@ -10,11 +12,11 @@ class TextField extends Field
 
 	public function validation($type)
 	{
-
 		switch ($type)
 		{
 			case "email":
 				$this->validationPattern = "^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$";
+				$this->validationLength = 255;
 
 				break;
 			case "textarea":
@@ -22,6 +24,16 @@ class TextField extends Field
 
 				break;
 		}
+	}
+
+	public function format($value, $flag)
+	{
+		if ($flag == "L")
+		{
+			return Str::limit($value, $this->listLimit);
+		}
+
+		return $value;
 	}
 }
 ?>

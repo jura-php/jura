@@ -128,7 +128,7 @@ class ORM implements ArrayAccess
 						}
 						else
 						{
-							$fields[$k] = $db->quoteID($v);
+							$fields[$k] = $this->quoteField($v);
 						}
 					}
 
@@ -321,6 +321,21 @@ class ORM implements ArrayAccess
 		return join(" " . $wheres["concat"] . " ", $outs);
 	}
 
+	private function quoteField($name)
+	{
+		if (!is_null($this->joins) && count($this->joins) > 0 && strpos($name, ".") === false)
+		{
+			$name = $this->tableName . "." . $name;
+		}
+
+		if (strpos($name, ".") !== false && strpos($name, J_TP) !== 0)
+		{
+			$name = J_TP . $name;
+		}
+
+		return DB::conn($this->connName)->quoteID($name);
+	}
+
 	public function select($fields)
 	{
 		$fields = (array)$fields;
@@ -434,13 +449,18 @@ class ORM implements ArrayAccess
 		return $this->addJoin("FULL OUTHER", $tableName, $constraints, $tableAlias);
 	}
 
-	public function where($name, $method, $value)
+	public function where($name, $method, $value = null)
 	{
-		$this->initWheres();
+		if (is_null($value))
+		{
+			$this->whereEqual($name, $method);
+		}
+		else
+		{
+			$this->initWheres();
 
-		$db = DB::conn($this->connName);
-
-		$this->currentWhere["wheres"][] = $db->quoteID($name) . " " . $method . " " . $db->escape($value);
+			$this->currentWhere["wheres"][] = $this->quoteField($name) . " " . $method . " " . DB::conn($this->connName)->escape($value);
+		}
 
 		return $this;
 	}
@@ -467,12 +487,12 @@ class ORM implements ArrayAccess
 
 	public function whereNull($name)
 	{
-		return $this->whereRaw(DB::conn($this->connName)->quoteID($name) . " IS NULL");
+		return $this->whereRaw($this->quoteField($name) . " IS NULL");
 	}
 
 	public function whereNotNull($name)
 	{
-		return $this->whereRaw(DB::conn($this->connName)->quoteID($name) . " IS NOT NULL");
+		return $this->whereRaw($this->quoteField($name) . " IS NOT NULL");
 	}
 
 	public function whereIn($name, $values)
@@ -486,7 +506,7 @@ class ORM implements ArrayAccess
 			$values[$k] = $db->escape($v);
 		}
 
-		return $this->whereRaw($db->quoteID($name) . " IN (" . implode(",", $values) . ")");
+		return $this->whereRaw($this->quoteField($name) . " IN (" . implode(",", $values) . ")");
 	}
 
 	public function whereNotIn($name, $values)
@@ -500,7 +520,7 @@ class ORM implements ArrayAccess
 			$values[$k] = $db->escape($v);
 		}
 
-		return $this->whereRaw($db->quoteID($name) . " NOT IN (" . implode(",", $values) . ")");
+		return $this->whereRaw($this->quoteField($name) . " NOT IN (" . implode(",", $values) . ")");
 	}
 
 	public function whereRaw($raw, $values = null)
@@ -579,13 +599,13 @@ class ORM implements ArrayAccess
 
 	public function orderByAsc($name)
 	{
-		$this->orderBys[] = DB::conn($this->connName)->quoteID($name) . " ASC";
+		$this->orderBys[] = $this->quoteField($name) . " ASC";
 		return $this;
 	}
 
 	public function orderByDesc($name)
 	{
-		$this->orderBys[] = DB::conn($this->connName)->quoteID($name) . " DESC";
+		$this->orderBys[] = $this->quoteField($name) . " DESC";
 		return $this;
 	}
 
@@ -597,7 +617,7 @@ class ORM implements ArrayAccess
 
 	public function groupBy($name)
 	{
-		$this->groupBys[] = DB::conn($this->connName)->quoteID($name);
+		$this->groupBys[] = $this->quoteField($name);
 		return $this;
 	}
 
@@ -651,7 +671,7 @@ class ORM implements ArrayAccess
 
 		if ($name != "*")
 		{
-			$name = DB::conn($this->connName)->quoteID($name);
+			$name = $this->quoteField($name);
 		}
 
 		$this->selectRaw($func . "(" . $name . ")", $alias);

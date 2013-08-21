@@ -19,8 +19,6 @@ class Response
 		}
 
 		header($code . " " . $message, true, $code);
-
-		echo "<h1>" . $code . "</h1><h2>" . $message . "</h2>\n";
 	}
 
 	public static function accessControlHeader($allow = "*")

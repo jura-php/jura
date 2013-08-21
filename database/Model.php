@@ -68,30 +68,52 @@ class Model
 
 	public function hasOne($targetClassName, $foreignKey = null)
 	{
-		return $this->makeHasMany($throughClassName, $foreignKey);
+		return $this->makeHasMany($targetClassName, $foreignKey);
 	}
 
-	public function hasMany($throughClassName, $foreignKey = null)
+	public function hasMany($targetClassName, $foreignKey = null)
 	{
-		return $this->makeHasMany($throughClassName, $foreignKey);
+		return $this->makeHasMany($targetClassName, $foreignKey);
 	}
 
-	public function belongsTo($throughClassName, $foreignKey = null)
+	public function belongsTo($targetClassName, $foreignKey = null)
 	{
 		if (is_null($foreignKey))
 		{
 			$foreignKey = Str::camel($this->orm->tableName) . "ID";
 		}
 
-		$model = Model::make($throughClassName);
+		$model = Model::make($targetClassName);
 		$model->orm->whereEqual("id", $this->$foreignKey);
 
 		return $model;
 	}
 
-	public function hasManyThrough($throughClassName, $joinTableName = null, $baseKey = null, $targetKey = null)
+	public function hasManyThrough($targetClassName, $joinTableName = null, $baseKey = null, $targetKey = null)
 	{
-		//TODO:
+		$model = Model::make($targetClassName);
+
+		if (is_null($joinTableName))
+		{
+			$tables = array($this->orm->tableName, $model->orm->tableName);
+			sort($tables, SORT_STRING);
+			$joinTableName = join("_", $tables);
+		}
+
+		if (is_null($baseKey))
+		{
+			$baseKey = Str::camel($this->orm->tableName) . "ID";
+		}
+
+		if (is_null($targetKey))
+		{
+			$targetKey = Str::camel($model->orm->tableName) . "ID";
+		}
+
+		return $model
+					->select($model->orm->tableName . ".*")
+					->join($joinTableName, array($model->orm->tableName . ".id", "=", $joinTableName . "." . $targetKey))
+					->whereEqual($joinTableName . "." . $baseKey, $this->id);
 	}
 
 	public function __get($key)

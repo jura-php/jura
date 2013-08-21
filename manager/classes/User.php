@@ -124,7 +124,7 @@ class User
 				{
 					return array_merge($orm->asArray(), array(
 						"access_token" => $info["token"],
-						"gravatar_hash" => md5($rs->fields["email"]))
+						"gravatar_hash" => md5($orm->email))
 					);
 				}
 			}

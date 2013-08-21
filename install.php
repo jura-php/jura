@@ -125,6 +125,24 @@ make_file("../deploy.sh", "chmod -Rf 777 app/storage/", function () {
 	}
 });
 
+make_file("../index.php", '<?php
+
+define("DS", DIRECTORY_SEPARATOR);
+define("EXT", ".php");
+define("CRLF", PHP_EOL);
+
+define("J_START", microtime(true));
+define("J_PATH", realpath(__DIR__) . DS);
+define("J_APPPATH", realpath(__DIR__)  . DS . "app" . DS);
+define("J_MANAGERPATH", realpath(__DIR__)  . DS . "manager" . DS);
+define("J_SYSTEMPATH", realpath(__DIR__)  . DS . "system" . DS);
+define("J_LOCAL_ENV", "local");
+define("J_PREVIEW_ENV", "preview");
+
+require J_SYSTEMPATH . "core" . DS . "core" . EXT;
+
+?>');
+
 make_file("../app/config/routes.php");
 
 make_file("../app/config/application.php", function () {
@@ -139,14 +157,20 @@ make_file("../app/config/application.php", function () {
 	return '<?php
 return array(
 	//random alpha-numeric 32 characters for cookie encriptation
-	"key" => "' . $key . '"
+	"key" => "' . $key . '",
+
+	//use or not the build version
+	"build" => array(
+		"css" => false,
+		"js" => false
+	)
 );
 ?>';
 });
 
 make_file("../config/.gitignore", "/databases.php");
 
-make_file(array("../config/databases.sample.php", "../config/databases.sample.php"), '<?php
+make_file(array("../config/databases.sample.php", "../config/databases.php"), '<?php
 return array(
 	"mysql" => array(
 		"type" => "mysql",

@@ -2,7 +2,7 @@
 //Hides server critial information
 header('Server: ');
 header('X-Powered-By: ');
-header("Content-Type: UTF-8");
+header("Content-Type: text/html;UTF-8");
 
 ini_set('default_charset','UTF-8');
 chdir(J_PATH);
@@ -72,7 +72,7 @@ Request::init();
 //TODO: Place it on a Error class.. Create error handlers..
 if (Request::isLocal() || Request::isPreview())
 {
-	error_reporting(E_ALL); 
+	error_reporting(E_ALL);
 	ini_set('display_errors','1');
 }
 else
