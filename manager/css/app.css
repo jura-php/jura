@@ -23,6 +23,14 @@ button {
     border-color: #e9322d !important;
 }
 
+.center {
+    text-align: center;
+}
+
+.pure-paginator li {
+    margin: 0;
+}
+
 /**
  * Purecss
  */
