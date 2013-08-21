@@ -57,7 +57,21 @@ class FormModule extends Module
 			$page = (int)Request::get("page", 1);
 			$search = Request::get("search", "");
 
-			$count = $this->listCount();
+			$orm = $this->listCountORM();
+			if ($search != "")
+			{
+				$orm->whereGroup("OR", function ($orm) use ($search) {
+					foreach ($this->fields as $field)
+					{
+						if ($field->hasFlag("F"))
+						{
+							$field->filter($orm, $search);
+						}
+					}
+				});
+			}
+
+			$count = $orm->count('id');
 			$pageCount = max(1, ceil($count / $this->pageSize));
 			$page = max(1, min($pageCount, $page));
 			$nextPage = ($page < $pageCount) ? $page + 1 : false;
@@ -296,9 +310,9 @@ class FormModule extends Module
 						->select("id");
 	}
 
-	protected function listCount()
+	protected function listCountORM()
 	{
-		return ORM::make($this->tableName)->count("id");
+		return ORM::make($this->tableName);
 	}
 }
 ?>
