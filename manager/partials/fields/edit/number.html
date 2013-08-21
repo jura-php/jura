@@ -1,2 +1,2 @@
 <label>{{field.label}}</label>
-<input name="{{field.name}}" type="text" class="pure-input-1" placeholder="{{field.type}}" ng-model="data[field.name]" ng-required="field.validation.required" pattern="{{field.validation.pattern}}" title="{{field.validation.title | label}}" />
+<input ng-disabled="!hasFlag(field.flags, 'u')"  name="{{field.name}}" type="text" class="pure-input-1" placeholder="{{field.type}}" ng-model="data[field.name]" ng-required="field.validation.required" pattern="{{field.validation.pattern}}" title="{{field.validation.title | label}}" />

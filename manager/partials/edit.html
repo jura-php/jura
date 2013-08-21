@@ -16,7 +16,7 @@
             </div>
 
             <fieldset>
-                <div ng-repeat="field in module.fields | fieldsByFlags" ng-include="'partials/fields/edit/'+field.type+'.html'"></div>
+                <div ng-repeat="field in module.fields" ng-include="'partials/fields/edit/'+field.type+'.html'"></div>
             </fieldset>
         </form>
 
