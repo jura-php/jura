@@ -34,14 +34,9 @@ angular.module('manager.controllers', [])
 			$scope.all_checkboxes = false;
 			$scope.checkboxes = {};
 
-			Rest.getList({page: $routeParams.page || 1}).then(function(data){
-				$scope.data = data;
-				$scope.pagination = {
-					pages: 5,
-					currentPage: $routeParams.page || 1,
-					nextPage: 2,
-					previewsPage: 1
-				}
+			Rest.getList({page: $routeParams.page || 1}).then(function(response){
+				$scope.data = response.data;
+				$scope.pagination = response.pagination;
 			});
 		}
 

@@ -6,6 +6,11 @@
     <div id="content">
 
         <ul class="actions">
+            <li need-flag="f">
+                <form class="pure-form search-form">
+                    <input type="text" class="pure-input-rounded" placeholder="palavra chave..."><button type="submit" class="pure-button">Search</button>
+                </form>
+            </li>
             <li need-flag="d" ng-show="hasAtLeastOneCheckboxChecked()"><button class="pure-button pure-button-error" ng-click="removeSelected()">Remover Selecionados</button></li>
             <li need-flag="c"><a href="#/{{module.uri}}/new" class="pure-button pure-button-primary">Novo</a></li>
         </ul>
@@ -32,9 +37,9 @@
         <br />
 
         <ul class="pure-paginator">
-            <li ng-show="pagination.previewsPage"><a class="pure-button prev" href="#/{{module.uri}}/{{pagination.previewsPage}}">&#171;</a></li>
-            <li ng-repeat="page in [] | range:1:pagination.pages"><a class="pure-button" ng-class="{'pure-button-active': (page == pagination.currentPage)}" href="#/{{module.uri}}/{{page}}">{{page}}</a></li>
-            <li ng-show="pagination.nextPage"><a class="pure-button next" href="#/{{module.uri}}/{{pagination.nextPage}}">&#187;</a></li>
+            <li ng-show="pagination.previous"><a class="pure-button prev" href="#/{{module.uri}}/{{pagination.previous}}">&#171;</a></li>
+            <li ng-repeat="page in [] | pagination:pagination.current:pagination.count"><a class="pure-button" ng-class="{'pure-button-active': (page == pagination.current)}" href="#/{{module.uri}}/{{page}}">{{page}}</a></li>
+            <li ng-show="pagination.next"><a class="pure-button next" href="#/{{module.uri}}/{{pagination.next}}">&#187;</a></li>
         </ul>
 
     </div>
