@@ -94,5 +94,10 @@ class Field
 	{
 
 	}
+
+	public function filter($orm, $search)
+	{
+		return $orm->where($this->name, 'LIKE', "%" . $search . "%");
+	}
 }
 ?>
