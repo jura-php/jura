@@ -42,11 +42,9 @@ angular.module('manager', ['manager.filters', 'manager.services', 'manager.direc
 			Restangular.setDefaultRequestParams({access_token: user.access_token});
 		});
 
-		$rootScope.defaultModule = function ()
-		{
-			var module = _.where($rootScope.structure.modules, {default: true})[0];
-			if (!module)
-			{
+		$rootScope.defaultModule = function () {
+			var module = _.where($rootScope.structure.modules, {'default': true})[0];
+			if (!module) {
 				module = $rootScope.structure.modules[0];
 			}
 
@@ -64,11 +62,12 @@ $(function(){
 			angular.module('structure', [])
 				.run(['$rootScope', '$location', function($rootScope, $location){
 					$rootScope.structure = structure;
+					$rootScope.redirectPath = $location.path();
 
 					if(!structure.user) {
 						$location.path('/login');
 					} else {
-						$location.path('/' + $rootScope.defaultModule().uri);
+						$location.path($rootScope.redirectPath || '/' + $rootScope.defaultModule().uri);
 					}
 				}])
 
