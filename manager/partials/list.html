@@ -37,7 +37,7 @@
 
         <br />
 
-        <ul class="pure-paginator">
+        <ul class="pure-paginator" ng-show="pagination.count > 1">
             <li ng-show="pagination.previous"><a class="pure-button prev" href="#/{{module.uri}}/{{pagination.previous}}{{(urlSearch()) && '?search=' + urlSearch() || ''}}">&#171;</a></li>
             <li ng-repeat="page in [] | pagination:pagination.current:pagination.count"><a class="pure-button" ng-class="{'pure-button-active': (page == pagination.current)}" href="#/{{module.uri}}/{{page}}{{(urlSearch()) && '?search=' + urlSearch() || ''}}">{{page}}</a></li>
             <li ng-show="pagination.next"><a class="pure-button next" href="#/{{module.uri}}/{{pagination.next}}{{(urlSearch()) && '?search=' + urlSearch() || ''}}">&#187;</a></li>
