@@ -9,8 +9,6 @@ class ToggleField extends Field
 		$this->defaultValue = 0;
 	}
 
-	//TODO: Extends this class from NumberField
-
 	public function format($value, $flag)
 	{
 		return (string)$value;
