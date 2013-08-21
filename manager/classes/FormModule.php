@@ -49,8 +49,6 @@ class FormModule extends Module
 		//TODO: Check module flags... eg.: dont allow update if it hasn't the U flag
 
 		Router::register("GET", array("manager/api/" . $this->name), function () {
-			//TODO: Fazer paginação
-
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
@@ -62,6 +60,8 @@ class FormModule extends Module
 			$count = $this->listCount();
 			$pageCount = max(1, ceil($count / $this->pageSize));
 			$page = max(1, min($pageCount, $page));
+			$nextPage = ($page < $pageCount) ? $page + 1 : false;
+			$previousPage = ($page > 1) ? $page - 1 : false;
 
 			$results = array();
 			$fields = array();
@@ -111,12 +111,18 @@ class FormModule extends Module
 				$results[] = $values;
 			}
 
+			//echo ORM::lastSQL();
+			//die();
+
 			return Response::json(array(
 				"search" => "",
 				"pagination" => array(
 					"count" => $pageCount,
-					"current" => $page
+					"current" => $page,
+					"next" => $nextPage,
+					"previous" => $previousPage,
 				),
+				"count" => $count,
 				"data" => $results
 			));
 		});
