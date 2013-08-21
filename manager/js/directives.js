@@ -92,4 +92,50 @@ angular.module('manager.directives', []).
             }
         };
 
-    }]);
+    }]).
+
+    directive('epic', function(){
+        return {
+            restrict: 'A',
+            link: function(scope, elm, attrs) {
+                var opts = {
+                    container: elm.attr('id'),
+                    textarea: elm.find('textarea')[0],
+                    basePath: 'lib/epic-editor/',
+                    clientSideStorage: false,
+                    // localStorageName: 'epiceditor',
+                    // useNativeFullscreen: true,
+                    // parser: marked,
+                    // file: {
+                    //     name: 'epiceditor',
+                    //     defaultContent: '',
+                    //     autoSave: 100
+                    // },
+                    theme: {
+                        base: 'themes/base/epiceditor.css',
+                        preview: 'themes/preview/github.css',
+                        editor: 'themes/editor/epic-light.css'
+                    },
+                    button: {
+                        preview: true,
+                        fullscreen: false,
+                        bar: "auto"
+                    },
+                    focusOnLoad: false,
+                    // shortcut: {
+                    //     modifier: 18,
+                    //     fullscreen: 70,
+                    //     preview: 80
+                    // },
+                    string: {
+                        togglePreview: 'Preview',
+                        toggleEdit: 'Editar'
+                        // toggleFullscreen: 'Enter Fullscreen'
+                    },
+                    autogrow: true
+                }
+                var editor = new EpicEditor(opts).load();
+
+            }
+        }
+    });
