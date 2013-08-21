@@ -1,8 +1,6 @@
 html, body {
-    min-height: 100%;
     height: 100%;
 }
-
 
 body {
     font-family: 'proxima-nova', sans-serif;
@@ -21,6 +19,14 @@ button {
 
 :invalid + .chzn-container .chzn-choices {
     border-color: #e9322d !important;
+}
+
+.center {
+    text-align: center;
+}
+
+.pure-paginator li {
+    margin: 0;
 }
 
 /**
@@ -57,10 +63,10 @@ button {
 #side {
     width: 250px;
     background: #383e4b;
-    float: left;
-    position: relative;
-    height: 100%;
-    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
 }
 
     #side .user-info {
@@ -151,6 +157,7 @@ button {
 
     #content {
         padding: 15px;
+        overflow: hidden;
     }
 
         .breadcrumb {
@@ -206,8 +213,18 @@ button {
         }
 
             .actions li {
-                display: inline;
+                display: inline-block;
             }
+
+            .search-form {
+                border-right: 1px solid #ddd;
+                display: block;
+                padding-right: 10px;
+                margin-right: 7px;
+            }
+                .search-form  .pure-button {
+                    margin-left: 10px;
+                }
 
         .table {
             width: 100%;
