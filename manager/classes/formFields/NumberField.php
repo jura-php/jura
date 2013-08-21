@@ -14,27 +14,27 @@ class NumberField extends Field
 		switch ($type)
 		{
 			case "hours":
-				$this->validationPattern = ""; //?
+				$this->validationPattern = "(.*)"; //?
 				$this->validationLength = 5;
 
 				break;
 			case "minutes":
-				$this->validationPattern = ""; //?
+				$this->validationPattern = "(.*)"; //?
 				$this->validationLength = 5;
 
 				break;
 			case "float":
-				$this->validationPattern = ""; //?
+				$this->validationPattern = "(.*)"; //?
 				$this->validationLength = 20;
 
 				break;
 			case "int":
-				$this->validationPattern = ""; //?
+				$this->validationPattern = "(.*)"; //?
 				$this->validationLength = 20;
 
 				break;
 			case "currency":
-				$this->validationPattern = ""; //?
+				$this->validationPattern = "(.*)"; //?
 				$this->validationLength = 20;
 				//TODO: Mask
 
