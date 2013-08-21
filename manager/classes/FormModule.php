@@ -3,6 +3,7 @@ class FormModule extends Module
 {
 	protected $tableName;
 	protected $flags;
+	protected $pageSize;
 
 	private $fields;
 	private $name;
@@ -14,6 +15,7 @@ class FormModule extends Module
 
 		$this->tableName = "";
 		$this->fields = array();
+		$this->pageSize = 20;
 
 		$name = get_class($this);
 		$this->name = Str::lower(substr($name, 0, strlen($name) - 4));
@@ -46,7 +48,7 @@ class FormModule extends Module
 
 		//TODO: Check module flags... eg.: dont allow update if it hasn't the U flag
 
-		Router::register("GET", "manager/api/" . $this->name, function () {
+		Router::register("GET", array("manager/api/" . $this->name), function () {
 			//TODO: Fazer paginação
 
 			if (($token = User::validateToken()) !== true)
@@ -54,10 +56,16 @@ class FormModule extends Module
 				return $token;
 			}
 
+			$page = (int)Request::get("page", 1);
+			$search = Request::get("search", "");
+
+			$count = $this->listCount();
+			$pageCount = max(1, ceil($count / $this->pageSize));
+			$page = max(1, min($pageCount, $page));
+
 			$results = array();
 			$fields = array();
-			$orm = ORM::make($this->tableName)
-						->select("id");
+			$orm = $this->listORM();
 
 			foreach ($this->fields as $field)
 			{
@@ -72,7 +80,23 @@ class FormModule extends Module
 				}
 			}
 
-			$entries = $orm->find();
+			if ($search != "")
+			{
+				$orm->whereGroup("OR", function ($orm) use ($search) {
+					foreach ($this->fields as $field)
+					{
+						if ($field->hasFlag("F"))
+						{
+							$field->filter($orm, $search);
+						}
+					}
+				});
+			}
+
+			$entries = $orm
+						->offset(($page - 1) * $this->pageSize)
+						->limit($this->pageSize)
+						->find();
 			foreach ($entries as $entry)
 			{
 				$values = array();
@@ -87,7 +111,14 @@ class FormModule extends Module
 				$results[] = $values;
 			}
 
-			return Response::json($results);
+			return Response::json(array(
+				"search" => "",
+				"pagination" => array(
+					"count" => $pageCount,
+					"current" => $page
+				),
+				"data" => $results
+			));
 		});
 
 		Router::register("GET", "manager/api/" . $this->name . "/new", function () {
@@ -251,7 +282,17 @@ class FormModule extends Module
 		$field->flags = $filteredFlags;
 
 		$this->fields[] = $field;
-		//TODO:
+	}
+
+	protected function listORM()
+	{
+		return $orm = ORM::make($this->tableName)
+						->select("id");
+	}
+
+	protected function listCount()
+	{
+		return ORM::make($this->tableName)->count("id");
 	}
 }
 ?>

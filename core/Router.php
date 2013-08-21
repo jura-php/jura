@@ -39,7 +39,7 @@ class Router
 
 	public static function register($method, $route, $action, $enableCache = false, $cacheExpirationTime = 172800)
 	{
-		if (Str::contains($method, ","))
+		if (is_string($method) && Str::contains($method, ","))
 		{
 			$method = explode(",", $method);
 			foreach ($method as $v)
@@ -50,7 +50,7 @@ class Router
 			return;
 		}
 
-		if (Str::contains($route, ","))
+		if (is_string($route) && Str::contains($route, ","))
 		{
 			$route = explode(",", $route);
 			foreach ($route as $v)
