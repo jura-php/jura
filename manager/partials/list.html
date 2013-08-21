@@ -7,10 +7,11 @@
 
         <ul class="actions">
             <li need-flag="f">
-                <form class="pure-form search-form">
-                    <input type="text" class="pure-input-rounded" placeholder="palavra chave..."><button type="submit" class="pure-button">Search</button>
+                <form class="pure-form search-form" ng-submit="search()">
+                    <input type="search" ng-model="search_text" class="pure-input-rounded" placeholder="palavra chave..."><button type="submit" class="pure-button"><i class="icon-search"></i></button>
                 </form>
             </li>
+            <li ng-show="urlSearch()"><button class="pure-button pure-button-error" ng-click="resetSearch()"><i class="icon-remove"></i> Limpar Busca</button></li>
             <li need-flag="d" ng-show="hasAtLeastOneCheckboxChecked()"><button class="pure-button pure-button-error" ng-click="removeSelected()">Remover Selecionados</button></li>
             <li need-flag="c"><a href="#/{{module.uri}}/new" class="pure-button pure-button-primary">Novo</a></li>
         </ul>
@@ -37,9 +38,9 @@
         <br />
 
         <ul class="pure-paginator">
-            <li ng-show="pagination.previous"><a class="pure-button prev" href="#/{{module.uri}}/{{pagination.previous}}">&#171;</a></li>
-            <li ng-repeat="page in [] | pagination:pagination.current:pagination.count"><a class="pure-button" ng-class="{'pure-button-active': (page == pagination.current)}" href="#/{{module.uri}}/{{page}}">{{page}}</a></li>
-            <li ng-show="pagination.next"><a class="pure-button next" href="#/{{module.uri}}/{{pagination.next}}">&#187;</a></li>
+            <li ng-show="pagination.previous"><a class="pure-button prev" href="#/{{module.uri}}/{{pagination.previous}}{{(urlSearch()) && '?search=' + urlSearch() || ''}}">&#171;</a></li>
+            <li ng-repeat="page in [] | pagination:pagination.current:pagination.count"><a class="pure-button" ng-class="{'pure-button-active': (page == pagination.current)}" href="#/{{module.uri}}/{{page}}{{(urlSearch()) && '?search=' + urlSearch() || ''}}">{{page}}</a></li>
+            <li ng-show="pagination.next"><a class="pure-button next" href="#/{{module.uri}}/{{pagination.next}}{{(urlSearch()) && '?search=' + urlSearch() || ''}}">&#187;</a></li>
         </ul>
 
     </div>
