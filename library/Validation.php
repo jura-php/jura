@@ -13,7 +13,7 @@ class Validation
 			return false;
 		}
 
-		$value = preg_replace('[^0-9]', '', $value);
+		$value = preg_replace('/[^0-9]/', '', $value);
 		$value = str_pad($value, 11, '0', STR_PAD_LEFT);
 
 		if (strlen($value) != 11)

@@ -28,6 +28,8 @@ class ORM implements ArrayAccess
 
 	private $deleteIDs;
 
+	private $tableAliases;
+
 	public static function make($tableName, $connName = null)
 	{
 		return new ORM($tableName, $connName);
@@ -60,6 +62,7 @@ class ORM implements ArrayAccess
 		$this->groupBys = null;
 		$this->limit = 0;
 		$this->offset = 0;
+		$this->tableAliases = null;
 
 		return $this;
 	}
@@ -323,12 +326,26 @@ class ORM implements ArrayAccess
 
 	private function quoteField($name)
 	{
-		if (!is_null($this->joins) && count($this->joins) > 0 && strpos($name, ".") === false)
+		$bypassPrefix = false;
+
+		if ((!is_null($this->joins) && count($this->joins) > 0) || !is_null($this->tableAliases))
 		{
-			$name = $this->tableName . "." . $name;
+			if (strpos($name, ".") === false)
+			{
+				$name = $this->tableName . "." . $name;
+			}
+			else if (!is_null($this->tableAliases))
+			{
+				$pieces = explode(".", $name);
+				
+				if (array_search($pieces[0], $this->tableAliases) !== false)
+				{
+					$bypassPrefix = true;
+				}
+			}
 		}
 
-		if (strpos($name, ".") !== false && strpos($name, J_TP) !== 0)
+		if (!$bypassPrefix && (strpos($name, ".") !== false && strpos($name, J_TP) !== 0))
 		{
 			$name = J_TP . $name;
 		}
@@ -380,6 +397,16 @@ class ORM implements ArrayAccess
 
 		if (!is_null($tableAlias))
 		{
+			if (is_null($this->tableAliases))
+			{
+				$this->tableAliases = array();
+			}
+
+			$this->tableAliases[] = $tableAlias;
+		}
+
+		if (!is_null($tableAlias))
+		{
 			$tableName .= " " . $db->quoteID($tableAlias);
 		}
 
@@ -396,12 +423,12 @@ class ORM implements ArrayAccess
 
 				if ($i % 2 == 0)
 				{
-					if (strpos($v, ".") !== false)
+					/*if (strpos($v, ".") !== false)
 					{
 						$v = J_TP . $v;
-					}
+					}*/
 
-					$constraintsString .= $db->quoteID($v);
+					$constraintsString .= $this->quoteField($v);
 				}
 				else
 				{
