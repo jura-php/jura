@@ -44,7 +44,7 @@ function sql_php_date($mysqlDate)
 
 	$arr = explode("-", $mysqlDate);
 
-	return mktime(0, 0, 0, $arr[1], $arr[2], $arr[0]);
+	return mktime(0, 0, 0, (int)$arr[1], (int)$arr[2], (int)$arr[0]);
 }
 
 function sql_php_datetime($mysqlDateTime)
@@ -58,7 +58,7 @@ function sql_php_datetime($mysqlDateTime)
 	$arr2 = explode("-", $arr1[0]);
 	$arr3 = explode(":", $arr1[1]);
 
-	return mktime($arr3[0], $arr3[1], $arr3[2], $arr2[1], $arr2[2], $arr2[0]);
+	return mktime((int)$arr3[0], (int)$arr3[1], (int)$arr3[2], (int)$arr2[1], (int)$arr2[2], (int)$arr2[0]);
 }
 
 function php_sql_date($phpDate)
@@ -80,7 +80,7 @@ function date_php($date)
 
 	$arr = explode("/", $date);
 
-	return mktime(0, 0, 0, $arr[1], $arr[0], $arr[2]);
+	return mktime(0, 0, 0, (int)$arr[1], (int)$arr[0], (int)$arr[2]);
 }
 
 function datetime_php($date)
@@ -92,7 +92,7 @@ function datetime_php($date)
 
 	$arr = explode("/", $date);
 
-	return mktime(0, 0, 0, $arr[1], $arr[0], $arr[2]);
+	return mktime(0, 0, 0, (int)$arr[1], (int)$arr[0], (int)$arr[2]);
 }
 
 function php_date($phpDate)
