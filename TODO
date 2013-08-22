@@ -3,6 +3,7 @@
  ☐ Fazer classe de erro, expondo config de show errors para local e preview, production manda e-mail e mostra um erro 500... etc.. colocar config disso no application
  ☐ Colocar flag de cache geral no config do application
  ☐ Fazer um restfy, para que um controller tenha métodos RESTful..
+ ☐ Fazer um restfy com Model e ORM, apenas configurando permissões e tabela
  ☐ Fazer verificação de versão mínima do PHP (5.3), se local
  ☐ Fazer a rota de resize de imagem: resize/[path]?width=&height=&method=[fit|full|crop, ...]
 
