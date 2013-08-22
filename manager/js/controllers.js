@@ -69,7 +69,8 @@ angular.module('manager.controllers', [])
 		}
 
 		$scope.save = function(){
-			this.data.put();
+			var item = Restangular.restangularizeElement(null, this.data, table);
+			item.put();
 		}
 
 		$scope.urlSearch = function(){
