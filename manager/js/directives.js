@@ -169,19 +169,21 @@ angular.module('manager.directives', []).
 		}
 	}]).
 
-	directive('date', function(){
+	directive('date', ['$timeout', function($timeout){
 		return {
 			restrict: 'A',
 			link: function(scope, elm, attrs) {
 
-				var picker = new Pikaday({
-					field: elm[0],
-					format: 'DD/MM/YYYY',
-				});
+				$timeout(function() {
+					var picker = new Pikaday({
+						field: elm[0],
+						format: 'DD/MM/YYYY',
+					});
+				})
 
 			}
 		}
-	})
+	}])
 
 	.directive('loader', function(){
 		return {

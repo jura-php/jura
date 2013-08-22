@@ -1,27 +1,25 @@
 <div id="side" ng-include="'partials/includes/side.html'"></div>
 
 <div id="main">
-    <!-- <div class="pure-menu pure-menu-open pure-menu-horizontal" id="header" ng-include="'partials/includes/header.html'"></div> -->
+	<!-- <div class="pure-menu pure-menu-open pure-menu-horizontal" id="header" ng-include="'partials/includes/header.html'"></div> -->
 
-    <div id="content">
+	<div id="content">
 
-        <form class="pure-form pure-form-stacked" ng-submit="save(data)" name="form">
+		<form class="pure-form pure-form-stacked" ng-submit="save(data)" name="form">
 
-            <ul class="actions">
-                <li><button class="pure-button pure-button-primary" type="submit">Salvar</button></li>
-            </ul>
+			<ul class="actions">
+				<li><button class="pure-button pure-button-primary" type="submit">Salvar</button></li>
+			</ul>
 
-            <div class="breadcrumb">
-                <h1><i ng-class="module.icon"></i> {{acao}} <a href="#/{{module.uri}}">{{module.title}}</a> {{(data.id) && '#' + data.id || ''}} <loader /></h1>
-            </div>
+			<div class="breadcrumb">
+				<h1><i ng-class="module.icon"></i> {{acao}} <a href="#/{{module.uri}}">{{module.title}}</a> {{(data.id) && '#' + data.id || ''}} <loader /></h1>
+			</div>
 
+			<fieldset ng-show="data">
+				<div class="pure-control-group" ng-repeat="field in module.fields" ng-include="'partials/fields/edit/'+ ((actionFlag == 'c' || hasFlag(field.flags, 'u')) && field.type || 'readonly') + '.html'"></div>
+			</fieldset>
+		</form>
 
-
-            <fieldset ng-show="data">
-                <div class="pure-control-group" ng-repeat="field in module.fields" ng-include="'partials/fields/edit/'+ ((actionFlag == 'c' || hasFlag(field.flags, 'u')) && field.type || 'readonly') + '.html'"></div>
-            </fieldset>
-        </form>
-
-    </div>
+	</div>
 </div>
 
