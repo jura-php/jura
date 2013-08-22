@@ -16,7 +16,7 @@
             </div>
 
             <fieldset>
-                <div class="pure-control-group" ng-repeat="field in module.fields" ng-include="'partials/fields/edit/'+field.type+'.html'"></div>
+                <div class="pure-control-group" ng-repeat="field in module.fields" ng-include="'partials/fields/edit/'+ (hasFlag(field.flags, 'u') && field.type || 'readonly') + '.html'"></div>
             </fieldset>
         </form>
 
