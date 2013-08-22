@@ -36,6 +36,10 @@ button {
     overflow: hidden;
 }
 
+.ajax-loader {
+    vertical-align: middle;
+}
+
 /**
  * Purecss
  */
