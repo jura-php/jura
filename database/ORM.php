@@ -473,18 +473,18 @@ class ORM implements ArrayAccess
 
 	public function leftJoin($tableName, $constraints, $tableAlias = null)
 	{
-		return $this->addJoin("LEFT OUTHER", $tableName, $constraints, $tableAlias);
+		return $this->addJoin("LEFT OUTER", $tableName, $constraints, $tableAlias);
 	}
 
 	public function rightJoin($tableName, $constraints, $tableAlias = null)
 	{
-		return $this->addJoin("RIGHT OUTHER", $tableName, $constraints, $tableAlias);
+		return $this->addJoin("RIGHT OUTER", $tableName, $constraints, $tableAlias);
 	}
 
-	public function fullOutherJoin($tableName, $constraints, $tableAlias = null)
+	/*public function fullOutherJoin($tableName, $constraints, $tableAlias = null)
 	{
-		return $this->addJoin("FULL OUTHER", $tableName, $constraints, $tableAlias);
-	}
+		return $this->addJoin("FULL", $tableName, $constraints, $tableAlias);
+	}*/
 
 	public function where($name, $method, $value = null)
 	{
@@ -676,7 +676,7 @@ class ORM implements ArrayAccess
 		return $this;
 	}
 
-	public function count($name)
+	public function count($name = 'id')
 	{
 		return $this->execDBFunc("count", $name);
 	}
