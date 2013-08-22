@@ -7,6 +7,14 @@ header("Content-Type: text/html;UTF-8");
 ini_set('default_charset','UTF-8');
 chdir(J_PATH);
 
+$globalUniqueID = 1;
+function uniqueID()
+{
+	global $globalUniqueID;
+
+	return $globalUniqueID++;
+}
+
 function j_autoload($name)
 {
 	//System core

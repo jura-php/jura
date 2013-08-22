@@ -7,8 +7,8 @@ class ItemsField extends Field
 	private $multipleFieldTo;
 
 	public $items;
-	public $resourceURL;
 
+	private $resourceURL;
 	private $tmpValue;
 
 	public function __construct($name, $label = null)
@@ -18,10 +18,12 @@ class ItemsField extends Field
 		$this->type = 'items';
 		$this->multiple = false;
 		$this->items = [];
-		$this->resourceURL = 'resourceitems/' . $name;
+		$this->resourceURL = 'resourceitems/' . uniqueID();
 		$this->validationLength = -1;
 
 		Router::register('GET', 'manager/api/' . $this->resourceURL, function () {
+			$this->init("C");
+
 			$items = array();
 			foreach ($this->items as $k => $v)
 			{

@@ -43,7 +43,7 @@ class ManyToOneField extends ItemsField
 
 	public function format($value, $flag)
 	{
-		if ($flage == "L")
+		if ($flag == "L")
 		{
 			return $value;
 		}
@@ -51,16 +51,21 @@ class ManyToOneField extends ItemsField
 		return parent::format($value, $flag);
 	}
 
-	public function list($orm)
+	public function listORM($orm)
 	{
 		if ($this->includeOnSQL())
 		{
 			return $orm
-					->selectRaw($this->relationTableName . "." . $this->relationNameField, $this->name)
-					->innerJoin($this->relationTableName, array($this->relationTableName . "." . $this->relationKeyField, "=", "id"));
+					->select($this->relationTableName . "." . $this->relationNameField, $this->name)
+					->innerJoin($this->relationTableName, array($this->relationTableName . "." . $this->relationKeyField, "=", $orm->tableName . ".id"));
 		}
 
 		return $orm;
+	}
+
+	public function filterORM($orm, $search)
+	{
+		return $orm->whereLike($this->relationTableName . "." . $this->relationNameField, "%" . $search . "%");
 	}
 }
 ?>

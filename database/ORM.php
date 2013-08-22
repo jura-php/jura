@@ -129,6 +129,11 @@ class ORM implements ArrayAccess
 						{
 							$fields[$k] = substr($v, 5);
 						}
+						else if (strpos($v, "#AS#") !== false)
+						{
+							$pieces = explode("#AS#", $v);
+							$fields[$k] = $this->quoteField($pieces[0]) . " as " . $db->quoteID($pieces[1]);
+						}
 						else
 						{
 							$fields[$k] = $this->quoteField($v);
@@ -353,13 +358,18 @@ class ORM implements ArrayAccess
 		return DB::conn($this->connName)->quoteID($name);
 	}
 
-	public function select($fields)
+	public function select($fields, $alias = null)
 	{
 		$fields = (array)$fields;
 
 		if ($this->selectFields == "*")
 		{
 			$this->selectFields = array();
+		}
+
+		if (count($fields) == 1 && !is_null($alias))
+		{
+			$fields = array($fields[0] . "#AS#" . $alias);
 		}
 
 		$this->selectFields = array_merge($this->selectFields, $fields);

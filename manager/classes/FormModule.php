@@ -58,6 +58,15 @@ class FormModule extends Module
 			$search = Request::get("search", "");
 
 			$orm = $this->listCountORM();
+
+			foreach ($this->fields as $field)
+			{
+				if ($field->hasFlag("L"))
+				{
+					$field->listORM($orm);
+				}
+			}
+
 			if ($search != "")
 			{
 				$orm->whereGroup("OR", function ($orm) use ($search) {
@@ -65,7 +74,7 @@ class FormModule extends Module
 					{
 						if ($field->hasFlag("F"))
 						{
-							$field->filter($orm, $search);
+							$field->filterORM($orm, $search);
 						}
 					}
 				});
@@ -87,7 +96,7 @@ class FormModule extends Module
 				{
 					$fields[] = $field;
 
-					$field->list($orm);
+					$field->listORM($orm);
 				}
 			}
 
@@ -98,7 +107,7 @@ class FormModule extends Module
 					{
 						if ($field->hasFlag("F"))
 						{
-							$field->filter($orm, $search);
+							$field->filterORM($orm, $search);
 						}
 					}
 				});

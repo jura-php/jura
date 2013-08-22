@@ -100,12 +100,12 @@ class Field
 
 	}
 
-	public function filter($orm, $search)
+	public function filterORM($orm, $search)
 	{
 		return $orm->whereLike($this->name, "%" . $search . "%");
 	}
 
-	public function list($orm)
+	public function listORM($orm)
 	{
 		if ($this->includeOnSQL())
 		{
