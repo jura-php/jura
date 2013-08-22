@@ -1,4 +1,2 @@
 <label>{{field.label}}</label>
-<div>
-	<textarea placeholder="{{field.type}}" ng-model="data[field.name]" ng-required="field.validation.required" epic pattern="{{field.validation.pattern}}" title="{{field.validation.title | label}}" name="{{field.name}}" cols="30" rows="10"></textarea>
-</div>
+<div epic id="epic-{{field.name}}" ng-model="data[field.name]"></div>

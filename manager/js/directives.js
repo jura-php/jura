@@ -94,75 +94,77 @@ angular.module('manager.directives', []).
 
 	}]).
 
-	directive('epic', function(){
+	directive('epic', ['$timeout', function($timeout){
 		return {
 			restrict: 'A',
 			require: 'ngModel',
 			link: function(scope, elm, attrs, ngModel) {
-				var editor;
-				scope.$watch(function () {
-					return ngModel.$modelValue;
-				}, function (data) {
-					if (data && !editor)
-					{
-						var opts = {
-							container: elm.parent()[0],
-							textarea: elm[0],
-							basePath: 'lib/epic-editor/',
-							clientSideStorage: false,
-							// localStorageName: 'epiceditor',
-							// useNativeFullscreen: true,
-							// parser: marked,
-							// file: {
-							//     name: 'epiceditor',
-							//     defaultContent: '',
-							//     autoSave: 100
-							// },
-							file: {
-								autoSave:false
-							},
-							theme: {
-								base: 'themes/base/epiceditor.css',
-								preview: 'themes/preview/github.css',
-								editor: 'themes/editor/epic-light.css'
-							},
-							button: {
-								preview: true,
-								fullscreen: false,
-								bar: "auto"
-							},
-							focusOnLoad: false,
-							// shortcut: {
-							//     modifier: 18,
-							//     fullscreen: 70,
-							//     preview: 80
-							// },
-							string: {
-								togglePreview: 'Preview',
-								toggleEdit: 'Editar'
-								// toggleFullscreen: 'Enter Fullscreen'
-							},
-							autogrow: true
-						}
-						var editor = new EpicEditor(opts);
 
-						editor.load(function () {
+				scope.data.then(function(data){
+					var opts = {
+						container: elm.attr('id'),
+						textarea: null,
+						basePath: 'lib/epic-editor/',
+						clientSideStorage: false,
+						// localStorageName: 'epiceditor',
+						// useNativeFullscreen: true,
+						// parser: marked,
+						file: {
+						//     name: 'epiceditor',
+							defaultContent: data[scope.field.name],
+						//     autoSave: 100
+						},
+						theme: {
+							base: 'themes/base/epiceditor.css',
+							preview: 'themes/preview/github.css',
+							editor: 'themes/editor/epic-light.css'
+						},
+						button: {
+							preview: true,
+							fullscreen: false,
+							bar: "auto"
+						},
+						focusOnLoad: false,
+						// shortcut: {
+						//     modifier: 18,
+						//     fullscreen: 70,
+						//     preview: 80
+						// },
+						string: {
+							togglePreview: 'Preview',
+							toggleEdit: 'Editar'
+							// toggleFullscreen: 'Enter Fullscreen'
+						},
+						autogrow: true
+					}
+
+					var editor = new EpicEditor(opts)
+
+					$timeout(function() {
+
+						return editor.load(function(){
 							var iFrameEditor = editor.getElement('editor');
-							var contents = $('body', iFrameEditor).html();
+
+							var contents = $('body',iFrameEditor).html();
 
 							$('body', iFrameEditor).blur(function() {
-								if (contents != $(this).html())
-								{
-									contents = $(this).html();
-									editor.save();
+
+								if (contents!=$(this).html()){
+									contents = $(this).html(); // set to new content
+									editor.save(); // important!
 									var rawContent = editor.exportFile();
-									ngModel.$setViewValue(content);
+
+									ngModel.$setViewValue(rawContent)
+									console.log('set', rawContent)
 									scope.$apply();
 								}
 							});
 						});
-					}
-				});
+					});
+				})
+
+
+
 			}
 		}
-	});
+	}]);
