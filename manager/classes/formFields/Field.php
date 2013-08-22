@@ -27,6 +27,11 @@ class Field
 		$this->validationLength = 255;
 	}
 
+	public function init($flag)
+	{
+
+	}
+
 	public function hasFlag($flag)
 	{
 		return (Str::contains($this->flags, $flag));
@@ -98,6 +103,16 @@ class Field
 	public function filter($orm, $search)
 	{
 		return $orm->whereLike($this->name, "%" . $search . "%");
+	}
+
+	public function list($orm)
+	{
+		if ($this->includeOnSQL())
+		{
+			return $orm->select($this->name);
+		}
+
+		return $orm;
 	}
 }
 ?>

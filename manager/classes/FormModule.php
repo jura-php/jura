@@ -87,10 +87,7 @@ class FormModule extends Module
 				{
 					$fields[] = $field;
 
-					if ($field->includeOnSQL())
-					{
-						$orm = $orm->select($field->name);
-					}
+					$field->list($orm);
 				}
 			}
 
@@ -153,6 +150,8 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("C"))
 				{
+					$field->init("C");
+
 					$values[$field->name] = $field->format($field->defaultValue, "C");
 				}
 			}
@@ -172,12 +171,16 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("C"))
 				{
+					$field->init("C");
+
 					$value = Request::post($field->name, $field->defaultValue, true);
 					$value = $field->unformat($value);
 
 					$field->save($orm, $value, "C");
 				}
 			}
+
+			$this->save($orm, "C");
 
 			$orm->insert();
 
@@ -188,6 +191,8 @@ class FormModule extends Module
 					$field->afterSave($orm, "C");
 				}
 			}
+
+			$this->afterSave($orm, "C");
 		});
 
 		Router::register("GET", "manager/api/" . $this->name . "/(:num)", function ($id) {
@@ -205,11 +210,13 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("R") || $field->hasFlag("U"))
 				{
+					$field->init($field->hasFlag("U") ? "U" : "R");
+
 					$fields[] = $field;
 
 					if ($field->includeOnSQL())
 					{
-						$orm->select($field->name);	
+						$orm->select($field->name);
 					}
 				}
 			}
@@ -251,12 +258,16 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("U") && Request::hasPost($field->name))
 				{
+					$field->init("U");
+
 					$value = Request::post($field->name, $field->defaultValue);
 					$value = $field->unformat($value);
 
 					$field->save($orm, $value, "U");
 				}
 			}
+
+			$this->save($orm, "U");
 
 			$orm->update($id);
 
@@ -267,6 +278,8 @@ class FormModule extends Module
 					$field->afterSave($orm, "U");
 				}
 			}
+
+			$this->afterSave($orm, "U");
 		});
 
 		Router::register("DELETE", "manager/api/" . $this->name . "/(:any)", function ($ids) {
@@ -275,7 +288,18 @@ class FormModule extends Module
 				return $token;
 			}
 
+			//TODO: Check all saving behaviors for delete, we have to delete each id separated, selecting the orm, etc..
+
+			$this->save($orm, "D");
+
 			ORM::make($this->tableName)->delete(explode('-', $ids));
+
+			foreach ($this->fields as $field)
+			{
+				$field->afterSave($orm, "D");
+			}
+
+			$this->afterSave($orm, "D");
 		});
 	}
 
@@ -313,6 +337,16 @@ class FormModule extends Module
 	protected function listCountORM()
 	{
 		return ORM::make($this->tableName);
+	}
+
+	protected function save($orm, $flag)
+	{
+
+	}
+
+	protected function afterSave($orm, $flag)
+	{
+
 	}
 }
 ?>
