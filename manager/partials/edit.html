@@ -18,7 +18,7 @@
 
 
             <fieldset ng-show="data">
-                <div class="pure-control-group" ng-repeat="field in module.fields" ng-include="'partials/fields/edit/'+ (hasFlag(field.flags, 'u') && field.type || 'readonly') + '.html'"></div>
+                <div class="pure-control-group" ng-repeat="field in module.fields" ng-include="'partials/fields/edit/'+ ((actionFlag == 'c' || hasFlag(field.flags, 'u')) && field.type || 'readonly') + '.html'"></div>
             </fieldset>
         </form>
 

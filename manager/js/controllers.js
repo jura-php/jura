@@ -129,9 +129,7 @@ angular.module('manager.controllers', [])
 			$scope.acao = 'Criar';
 			$scope.actionFlag = 'c';
 			$scope.module = module;
-			Restangular.one(table, 'new').get().then(function(data){
-				$scope.data = data;
-			});
+			$scope.data = Restangular.one(table, 'new').get();
 		}
 
 		$scope.save = function(model){
