@@ -83,6 +83,28 @@ function date_php($date)
 	return mktime(0, 0, 0, $arr[1], $arr[0], $arr[2]);
 }
 
+function datetime_php($date)
+{
+	if ($date == "")
+	{
+		return 0;
+	}
+
+	$arr = explode("/", $date);
+
+	return mktime(0, 0, 0, $arr[1], $arr[0], $arr[2]);
+}
+
+function php_date($phpDate)
+{
+	return date("d/m/Y", $phpDate);
+}
+
+function php_datetime($phpDate)
+{
+	return date("d/m/Y H:i:s", $phpDate);
+}
+
 /**
  * Get an item from an array using "dot" notation.
  *

@@ -57,7 +57,7 @@ class ManyToOneField extends ItemsField
 		{
 			return $orm
 					->select($this->relationTableName . "." . $this->relationNameField, $this->name)
-					->innerJoin($this->relationTableName, array($this->relationTableName . "." . $this->relationKeyField, "=", $orm->tableName . ".id"));
+					->innerJoin($this->relationTableName, array($this->relationTableName . "." . $this->relationKeyField, "=", $orm->tableName . "." . $this->name));
 		}
 
 		return $orm;
