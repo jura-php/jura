@@ -6,6 +6,6 @@
 
 <div class="pure-menu pure-menu-open">
     <ul>
-        <li ng-repeat="m in structure.modules | filter:{menu: 'side'}"><a href="#/{{m.uri}}"><i ng-class="m.icon"></i> {{m.title}}</a></li>
+        <li ng-repeat="m in structure.modules | filter:{menu: 'side'}"><a href="#/{{m.uri}}" ng-class="{active: m.uri == module.uri}"><i ng-class="m.icon"></i> {{m.title}}</a></li>
     </ul>
 </div>

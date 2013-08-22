@@ -136,10 +136,17 @@ button {
             width: 20px;
         }
 
+        #side .pure-menu li a.active {
+            background: #424958;
+            color: #fff;
+        }
+
         #side .pure-menu li a:hover {
             background: #e00b39;
             color: #fff;
         }
+
+
 
 #main {
     margin-left: 250px;
