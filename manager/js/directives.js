@@ -167,4 +167,19 @@ angular.module('manager.directives', []).
 
 			}
 		}
+	}]).
+
+	directive('date', ['$timeout', function($timeout){
+		return {
+			restrict: 'A',
+			link: function(scope, elm, attrs) {
+
+				var picker = new Pikaday({
+					field: elm[0],
+					format: 'DD/MM/YYYY',
+				});
+
+			}
+		}
 	}]);
+
