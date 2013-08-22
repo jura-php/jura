@@ -38,6 +38,7 @@ angular.module('manager.controllers', [])
 			Rest.getList({page: $routeParams.page || 1, search: $routeParams.search || ''}).then(function(response){
 				$scope.data = response.data;
 				$scope.pagination = response.pagination;
+				$scope.count = response.count;
 			});
 		}
 
@@ -129,9 +130,7 @@ angular.module('manager.controllers', [])
 			$scope.acao = 'Criar';
 			$scope.actionFlag = 'c';
 			$scope.module = module;
-			Restangular.one(table, 'new').get().then(function(data){
-				$scope.data = data;
-			});
+			$scope.data = Restangular.one(table, 'new').get();
 		}
 
 		$scope.save = function(model){

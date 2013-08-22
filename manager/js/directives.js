@@ -169,7 +169,7 @@ angular.module('manager.directives', []).
 		}
 	}]).
 
-	directive('date', ['$timeout', function($timeout){
+	directive('date', function(){
 		return {
 			restrict: 'A',
 			link: function(scope, elm, attrs) {
@@ -181,5 +181,16 @@ angular.module('manager.directives', []).
 
 			}
 		}
-	}]);
+	})
+
+	.directive('loader', function(){
+		return {
+			restrict: 'E',
+			replace: true,
+			template: '<img class="ajax-loader" ng-show="!data" src="img/ajax-loader.gif" />',
+			link: function(scope, element, attrs) {
+
+			}
+		}
+	});
 

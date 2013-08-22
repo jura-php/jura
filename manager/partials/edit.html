@@ -12,11 +12,13 @@
             </ul>
 
             <div class="breadcrumb">
-                <h1><i ng-class="module.icon"></i> {{acao}} <a href="#/{{module.uri}}">{{module.title}}</a> {{(data.id) && '#' + data.id || ''}}</h1>
+                <h1><i ng-class="module.icon"></i> {{acao}} <a href="#/{{module.uri}}">{{module.title}}</a> {{(data.id) && '#' + data.id || ''}} <loader /></h1>
             </div>
 
-            <fieldset>
-                <div class="pure-control-group" ng-repeat="field in module.fields" ng-include="'partials/fields/edit/'+ (hasFlag(field.flags, 'u') && field.type || 'readonly') + '.html'"></div>
+
+
+            <fieldset ng-show="data">
+                <div class="pure-control-group" ng-repeat="field in module.fields" ng-include="'partials/fields/edit/'+ ((actionFlag == 'c' || hasFlag(field.flags, 'u')) && field.type || 'readonly') + '.html'"></div>
             </fieldset>
         </form>
 
