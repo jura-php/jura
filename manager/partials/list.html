@@ -17,10 +17,10 @@
         </ul>
 
         <div class="breadcrumb">
-            <h1><i ng-class="module.icon"></i> {{module.title}}</h1>
+            <h1><i ng-class="module.icon"></i> {{module.title}} <loader /></h1>
         </div>
 
-        <table class="pure-table pure-table-horizontal table" ng-class="{editable: hasFlag(module.flags, 'u')}">
+        <table class="pure-table pure-table-horizontal table" ng-class="{editable: hasFlag(module.flags, 'u')}" ng-show="data">
             <thead>
                 <tr>
                     <th need-flag="d" width="15"><input type="checkbox" ng-model="all_checkboxes" ng-change="toggleAllCheckboxes()" /></th>
