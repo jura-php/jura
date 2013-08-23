@@ -1,0 +1,22 @@
+<label>{{field.label}}</label>
+
+<input
+	jd-upload
+
+	jd-state="jdUploading"
+
+	jd-url="upload_file/"
+	jd-json="true"
+	jd-placeholder="<img class='ajax-loader' src='img/ajax-loader.gif' />"
+	jd-auto-submit="true"
+
+	on-start="jdStart(value)"
+	on-finished="jdFinished(content, didUpload)"
+	on-error="jdLg('error')"
+	on-success="jdSuccess(content)"
+
+	type="file"
+	name="attachment[]"
+
+	multiple
+/>

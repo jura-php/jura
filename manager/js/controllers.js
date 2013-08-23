@@ -110,12 +110,34 @@ angular.module('manager.controllers', [])
 		}
 
 		$scope.save = function(model){
-			if(!$scope.form.$valid) return;
+			if(!$scope.form.$valid || $scope.jdUploading) return;
 
 			model.put().then(function(){
 				$location.path(table);
 			})
 		}
+
+
+		//File Upload
+		$scope.jdStart = function() {
+			$scope.jdUploading = true;
+		};
+
+
+		$scope.jdLog = function() {
+			console.log.apply('jdLog', console, arguments);
+		};
+
+		$scope.jdSuccess = function(content) {
+			console.log('jdSuccess', arguments)
+		};
+
+		$scope.jdFinished = function(content, didUpload) {
+			$scope.jdUploading = false;
+			console.log('jdFinished', arguments)
+		};
+
+
 
 	}])
 

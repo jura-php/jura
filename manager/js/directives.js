@@ -254,4 +254,3 @@ angular.module('manager.directives', []).
 			}
 		}
 	});
-
