@@ -123,7 +123,6 @@ angular.module('manager.controllers', [])
 			$scope.jdUploading = true;
 		};
 
-
 		$scope.jdLog = function() {
 			console.log.apply('jdLog', console, arguments);
 		};
@@ -134,7 +133,11 @@ angular.module('manager.controllers', [])
 
 		$scope.jdFinished = function(content, didUpload) {
 			$scope.jdUploading = false;
-			console.log('jdFinished', arguments)
+			var name = this.field.name;
+
+			this.data.then(function(data){
+				data[name] = content;
+			})
 		};
 
 

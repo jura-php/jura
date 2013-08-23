@@ -96,6 +96,7 @@ angular.module('jdUpload', []).
 									scope.jdState = false;
 									scope.onSuccess({content: content});
 									scope.onFinished({content: content, didUpload: true});
+									element.val('')
 								});
 
 								// remove iframe
