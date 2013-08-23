@@ -70,4 +70,11 @@ angular.module('manager.filters', []).
 			}
 
 		};
+	}).
+
+	filter('hora', function(){
+		return function(h) {
+			if(!h) return '';
+			return h.slice(0, 5);
+		}
 	});

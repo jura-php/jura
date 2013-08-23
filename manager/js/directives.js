@@ -182,8 +182,6 @@ angular.module('manager.directives', []).
 				scope.$watch('date', function(data){
 					if(!data) return;
 
-					// console.log( data.match(exp)[0])
-
 					$(elm)
 						.data('value', data.match(exp)[0])
 						.pickadate({
