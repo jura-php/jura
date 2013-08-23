@@ -172,20 +172,51 @@ angular.module('manager.directives', []).
 	directive('date', ['$timeout', function($timeout){
 		return {
 			restrict: 'A',
-			link: function(scope, elm, attrs) {
+			require: 'ngModel',
+			link: function(scope, elm, attrs, ngModel) {
 
-				$timeout(function() {
-					var picker = new Pikaday({
-						field: elm[0],
-						format: 'DD/MM/YYYY',
-					});
+				scope.data.then(function(data){
+					$timeout(function() {
+						$(elm)
+							.data('value', $(elm).val())
+							.pickadate({
+								formatSubmit: 'dd/mm/yyyy',
+								clear: 'Limpar',
+								onSet: function(){
+									ngModel.$setViewValue(this.get('select', 'dd/mm/yyyy'))
+								}
+							})
+					})
+				})
+
+
+			}
+		}
+	}]).
+
+	directive('time', ['$timeout', function($timeout){
+		return {
+			restrict: 'A',
+			require: 'ngModel',
+			link: function(scope, elm, attrs, ngModel) {
+
+				scope.data.then(function(data){
+					$timeout(function() {
+						$(elm).pickatime({
+							formatSubmit: 'HH:i',
+							clear: 'Limpar',
+							onSet: function(){
+								ngModel.$setViewValue(this.get('select', 'HH:i'))
+							}
+						})
+					})
 				})
 
 			}
 		}
-	}])
+	}]).
 
-	.directive('loader', function(){
+	directive('loader', function(){
 		return {
 			restrict: 'E',
 			replace: true,

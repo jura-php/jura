@@ -68,6 +68,15 @@ button {
     background: rgb(66, 184, 221); /* this is a light blue */
 }
 
+.picker__input {
+    cursor: auto !important;
+    background-color: #fff !important;
+    color: #000 !important;
+    border-color: #ccc !important;
+}
+
+
+
 /**************/
 
 
@@ -153,7 +162,10 @@ button {
 
 
 #main {
-    margin-left: 250px;
+    min-height: 100%;
+    position: relative;
+    overflow: hidden;
+    margin-left: 250px
 }
 
     #header {
@@ -175,7 +187,6 @@ button {
 
     #content {
         padding: 15px;
-        overflow: hidden;
     }
 
         .breadcrumb {
