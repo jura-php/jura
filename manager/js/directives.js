@@ -172,21 +172,36 @@ angular.module('manager.directives', []).
 	directive('date', ['$timeout', function($timeout){
 		return {
 			restrict: 'A',
-			require: 'ngModel',
-			link: function(scope, elm, attrs, ngModel) {
+			scope: {
+				date: '=date'
+			},
+			link: function(scope, elm, attrs) {
 
-				scope.data.then(function(data){
-					$timeout(function() {
-						$(elm)
-							.data('value', $(elm).val())
-							.pickadate({
-								formatSubmit: 'dd/mm/yyyy',
-								clear: 'Limpar',
-								onSet: function(){
-									ngModel.$setViewValue(this.get('select', 'dd/mm/yyyy'))
-								}
-							})
-					})
+				var exp = new RegExp(/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/);
+
+				scope.$watch('date', function(data){
+					if(!data) return;
+
+					// console.log( data.match(exp)[0])
+
+					$(elm)
+						.data('value', data.match(exp)[0])
+						.pickadate({
+							// format: 'dd/mm/yyyy',
+							formatSubmit: 'dd/mm/yyyy',
+							clear: 'Limpar',
+							onSet: function(){
+								var pickadate = this;
+
+								scope.$apply(function(){
+									var previous_value = scope.date.match(exp)[0];
+									var new_value = pickadate.get('select', 'dd/mm/yyyy');
+									scope.date = scope.date.replace(previous_value, new_value)
+								})
+
+							}
+						})
+
 				})
 
 
@@ -197,19 +212,34 @@ angular.module('manager.directives', []).
 	directive('time', ['$timeout', function($timeout){
 		return {
 			restrict: 'A',
-			require: 'ngModel',
-			link: function(scope, elm, attrs, ngModel) {
+			scope: {
+				time: '=time'
+			},
+			link: function(scope, elm, attrs) {
 
-				scope.data.then(function(data){
-					$timeout(function() {
-						$(elm).pickatime({
+				var exp = new RegExp(/[0-9]{2}\:[0-9]{2}\:[0-9]{2}/);
+
+				scope.$watch('time', function(time){
+					if(!time) return;
+
+					$(elm)
+						.val(time.match(exp)[0].slice(0, 5))
+						.pickatime({
+							format: 'HH:i',
 							formatSubmit: 'HH:i',
 							clear: 'Limpar',
 							onSet: function(){
-								ngModel.$setViewValue(this.get('select', 'HH:i'))
+								var pickatime = this;
+
+								scope.$apply(function(){
+									var previous_value = scope.time.match(exp)[0];
+									var new_value = pickatime.get('select', 'HH:i') + ':00';
+
+									scope.time = scope.time.replace(previous_value, new_value)
+								})
 							}
 						})
-					})
+
 				})
 
 			}
