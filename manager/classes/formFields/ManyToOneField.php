@@ -32,15 +32,6 @@ class ManyToOneField extends ItemsField
 		}
 	}
 
-	public function config()
-	{
-		$arr = parent::config();
-
-		return array_merge([
-			
-		], $arr);
-	}
-
 	public function format($value, $flag)
 	{
 		if ($flag == "L")
