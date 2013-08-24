@@ -51,15 +51,19 @@ function j_autoload($name)
 		{
 			return include $file;
 		}
-	}
-	else
-	{
-		//App models
-		$file = J_APPPATH . "models" . DS . $name . EXT;
+
+		$file = J_MANAGERPATH . "formFields/" . DS . $name . EXT;
 		if (file_exists($file))
 		{
 			return include $file;
 		}
+	}
+
+	//App models
+	$file = J_APPPATH . "models" . DS . $name . EXT;
+	if (file_exists($file))
+	{
+		return include $file;
 	}
 }
 spl_autoload_register("j_autoload");

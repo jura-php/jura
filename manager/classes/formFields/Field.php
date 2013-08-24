@@ -13,6 +13,8 @@ class Field
 	public $validationTitle;
 	public $validationLength;
 
+	public $orm;
+
 	public function __construct($name, $label = null)
 	{
 		$this->name = $name;
@@ -75,7 +77,7 @@ class Field
 		return true;
 	}
 
-	public function save($orm, $value, $flag)
+	public function save($value, $flag)
 	{
 		if ($this->includeOnSQL())
 		{
@@ -84,35 +86,33 @@ class Field
 				$value = substr($value, 0, $this->validationLength);
 			}
 
-			$orm->setField($this->name, $value);
+			$this->orm->setField($this->name, $value);
 		}
 	}
 
-	public function value($orm, $flag)
+	public function value($flag)
 	{
-		$value = $orm->field($this->name);
+		$value = $this->orm->field($this->name);
 
 		return $this->format($value, $flag);
 	}
 
-	public function afterSave($orm, $flag)
+	public function afterSave($flag)
 	{
 
 	}
 
-	public function filterORM($orm, $search)
+	public function filter($search)
 	{
-		return $orm->whereLike($this->name, "%" . $search . "%");
+		$this->orm->whereLike($this->name, "%" . $search . "%");
 	}
 
-	public function listORM($orm)
+	public function select()
 	{
 		if ($this->includeOnSQL())
 		{
-			return $orm->select($this->name);
+			$this->orm->select($this->name);
 		}
-
-		return $orm;
 	}
 }
 ?>

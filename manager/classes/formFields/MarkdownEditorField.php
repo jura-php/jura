@@ -8,6 +8,7 @@ class MarkdownEditorField extends Field
 		parent::__construct($name, $label);
 
 		$this->type = "markdown";
+		$this->validationLength = 65535;
 	}
 
 	public function format($value, $flag)

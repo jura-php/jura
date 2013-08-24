@@ -42,21 +42,19 @@ class ManyToOneField extends ItemsField
 		return parent::format($value, $flag);
 	}
 
-	public function listORM($orm)
+	public function select()
 	{
 		if ($this->includeOnSQL())
 		{
-			return $orm
+			$this->orm
 					->select($this->relationTableName . "." . $this->relationNameField, $this->name)
-					->innerJoin($this->relationTableName, array($this->relationTableName . "." . $this->relationKeyField, "=", $orm->tableName . "." . $this->name));
+					->innerJoin($this->relationTableName, array($this->relationTableName . "." . $this->relationKeyField, "=", $this->orm->tableName . "." . $this->name));
 		}
-
-		return $orm;
 	}
 
-	public function filterORM($orm, $search)
+	public function filter($search)
 	{
-		return $orm->whereLike($this->relationTableName . "." . $this->relationNameField, "%" . $search . "%");
+		$this->orm->whereLike($this->relationTableName . "." . $this->relationNameField, "%" . $search . "%");
 	}
 }
 ?>

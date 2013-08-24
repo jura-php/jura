@@ -83,16 +83,19 @@ function date_php($date)
 	return mktime(0, 0, 0, (int)$arr[1], (int)$arr[0], (int)$arr[2]);
 }
 
-function datetime_php($date)
+function datetime_php($dateTime)
 {
-	if ($date == "")
+	if ($dateTime == "")
 	{
 		return 0;
 	}
 
-	$arr = explode("/", $date);
+	$arr1 = explode(" ", $dateTime);
+	$arr2 = explode("/", $arr1[0]);
+	$arr3 = explode(":", $arr1[1]);
 
-	return mktime(0, 0, 0, (int)$arr[1], (int)$arr[0], (int)$arr[2]);
+
+	return mktime((int)$arr3[0], (int)$arr3[1], (int)$arr3[2], (int)$arr2[1], (int)$arr2[0], (int)$arr2[2]);
 }
 
 function php_date($phpDate)

@@ -16,8 +16,9 @@ class Structure
 		//Load login routes.. login, logoff, etc..
 
 		Router::register("GET", "manager/api/config/", function () {
-			$config = array();
+			header("Content-Type: text/javascript; charset=utf-8");
 
+			$config = array();
 			$config["api_url"] = URL::to("api/");
 
 			return "window.config = " . json_encode($config);

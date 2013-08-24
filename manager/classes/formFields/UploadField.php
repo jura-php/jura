@@ -15,7 +15,7 @@ class UploadField extends Field
 
 	}
 
-	public function value($orm, $flag)
+	public function value($flag)
 	{
 		return [
 			['path' => Url::root() . '../app/storage/images/dl_adventure_bpack_15in_331-5363.png']

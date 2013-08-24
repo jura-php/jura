@@ -18,22 +18,12 @@ class ItemsField extends Field
 		$this->type = 'items';
 		$this->multiple = false;
 		$this->items = [];
-		$this->resourceURL = 'resourceitems/' . uniqueID();
+		$this->resourceURL = 'resourceitems/' . $this->type . uniqueID();
 		$this->validationLength = -1;
 
 		Router::register('GET', 'manager/api/' . $this->resourceURL, function () {
 			$this->init("C");
-
-			$items = array();
-			foreach ($this->items as $k => $v)
-			{
-				$items[] = array(
-					"value" => $k,
-					"label" => $v
-				);
-			}
-
-			return Response::json($items);
+			return Response::json($this->items());
 		});
 	}
 
@@ -65,6 +55,20 @@ class ItemsField extends Field
 		}
 
 		$rs->close();
+	}
+
+	private function items()
+	{
+		$items = array();
+		foreach ($this->items as $k => $v)
+		{
+			$items[] = array(
+				"value" => $k,
+				"label" => $v
+			);
+		}
+
+		return $items;
 	}
 
 	public function config()
@@ -100,7 +104,10 @@ class ItemsField extends Field
 					$value = (int)$value;
 				}
 
-				$value = (array)$value;
+				if ($this->multiple)
+				{
+					$value = (array)$value;
+				}
 			}
 
 			return $value;
@@ -125,11 +132,11 @@ class ItemsField extends Field
 		return !$this->multiple;
 	}
 
-	public function save($orm, $value, $flag)
+	public function save($value, $flag)
 	{
 		if (!$this->multiple)
 		{
-			$orm->setField($this->name, $value);
+			$this->orm->setField($this->name, $value);
 		}
 		else
 		{
@@ -137,12 +144,12 @@ class ItemsField extends Field
 		}
 	}
 
-	public function afterSave($orm, $flag)
+	public function afterSave($flag)
 	{
 		if ($this->multiple)
 		{
 			$value = $this->tmpValue;
-			$id = $orm->field("id");
+			$id = $this->orm->field("id");
 			$ormRel = ORM::make($this->multipleTable);
 
 			$entries = $ormRel
@@ -182,17 +189,17 @@ class ItemsField extends Field
 		}
 	}
 
-	public function value($orm, $flag)
+	public function value($flag)
 	{
 		if (!$this->multiple)
 		{
-			$value = $orm->field($this->name);
+			$value = $this->orm->field($this->name);
 
 			return $this->format($value, $flag);
 		}
 		else
 		{
-			$id = $orm->field("id");
+			$id = $this->orm->field("id");
 			$ormRel = ORM::make($this->multipleTable);
 			$values = array();
 
