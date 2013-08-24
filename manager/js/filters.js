@@ -9,7 +9,7 @@ angular.module('manager.filters', []).
 
 			return _.filter(data, function(item){
 				return $rootScope.hasFlag(item.flags, actionFlag);
-			})
+			});
 		}
 	}]).
 

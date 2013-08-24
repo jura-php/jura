@@ -8,7 +8,7 @@
 		<form class="pure-form pure-form-stacked" ng-submit="save(data)" name="form">
 
 			<ul class="actions">
-				<li><button class="pure-button pure-button-primary" type="submit">Salvar</button></li>
+				<li><button need-flag="u" class="pure-button pure-button-primary" type="submit">Salvar</button></li>
 			</ul>
 
 			<div class="breadcrumb">
@@ -16,7 +16,7 @@
 			</div>
 
 			<fieldset ng-show="data">
-				<div class="pure-control-group" ng-repeat="field in module.fields" ng-include="'partials/fields/edit/'+ ((actionFlag == 'c' || hasFlag(field.flags, 'u')) && field.type || 'readonly') + '.html'"></div>
+				<div class="pure-control-group" ng-repeat="field in module.fields | fieldsByFlags" ng-include="'partials/fields/edit/'+ ((actionFlag == 'c' || hasFlag(field.flags, 'u')) && field.type || 'readonly') + '.html'"></div>
 			</fieldset>
 		</form>
 

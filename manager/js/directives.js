@@ -155,7 +155,7 @@ angular.module('manager.directives', []).
 									var rawContent = editor.exportFile();
 
 									ngModel.$setViewValue(rawContent)
-									console.log('set', rawContent)
+									//console.log('set', rawContent)
 									scope.$apply();
 								}
 							});

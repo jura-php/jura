@@ -36,7 +36,7 @@ class File
 		if ($extension)
 		{
 			$len = strlen($path);
-			$extensionLen = strlen($extensionLen);
+			$extensionLen = strlen($extension);
 
 			if ($len > $extensionLen)
 			{

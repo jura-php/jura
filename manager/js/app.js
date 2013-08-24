@@ -20,10 +20,13 @@ angular.module('manager', ['manager.filters', 'manager.services', 'manager.direc
 		$rootScope.hasFlag = function(flags, need) {
 			if(!flags || !need) return;
 
-			var has = true;
+			var has = false;
+			flags = flags.toString().toLowerCase();
+			
 			_.each(need.toString().toLowerCase().split(""), function(flag){
-				if(_.indexOf(flags.toString().toLowerCase(), flag) == -1) has = false;
-			})
+				if(_.indexOf(flags, flag) != -1) has = true;
+			});
+
 			return has;
 		}
 

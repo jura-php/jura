@@ -13,6 +13,7 @@ class Field
 	public $validationTitle;
 	public $validationLength;
 
+	public $module;
 	public $orm;
 
 	public function __construct($name, $label = null)

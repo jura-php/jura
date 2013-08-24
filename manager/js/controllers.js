@@ -104,7 +104,7 @@ angular.module('manager.controllers', [])
 
 		if(module) {
 			$scope.acao = 'Editar';
-			$scope.actionFlag = 'u';
+			$scope.actionFlag = 'ru';
 			$scope.module = module;
 			$scope.data = Restangular.one(table, id).get();
 		}
@@ -135,8 +135,13 @@ angular.module('manager.controllers', [])
 			$scope.jdUploading = false;
 			var name = this.field.name;
 
+			if (content.error)
+			{
+				console.log("UPLOAD ERROR: " + content.error);
+			}
+
 			this.data.then(function(data){
-				data[name] = content;
+				data[name] = content.items;
 			})
 		};
 

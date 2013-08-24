@@ -811,6 +811,23 @@ class ORM implements ArrayAccess
 		return !isset($this->fields["id"]);
 	}
 
+	public function fieldNames()
+	{
+		if (is_null($this->fields))
+		{
+			return array();
+		}
+
+		$names = array();
+
+		foreach ($this->fields as $k => $v)
+		{
+			$names[] = $k;
+		}
+
+		return $names;
+	}
+
 	public function setField($name, $value)
 	{
 		if (is_null($this->fields))

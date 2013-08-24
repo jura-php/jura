@@ -1,7 +1,9 @@
 <?php
 class FormModule extends Module
 {
-	protected $tableName;
+	public $flag;
+
+	public $tableName;
 	protected $flags;
 	protected $pageSize;
 	protected $orm;
@@ -55,6 +57,8 @@ class FormModule extends Module
 			{
 				return $token;
 			}
+
+			$this->flag = "L";
 
 			$page = (int)Request::get("page", 1);
 			$search = Request::get("search", "");
@@ -162,6 +166,8 @@ class FormModule extends Module
 				return $token;
 			}
 
+			$this->flag = "C";
+
 			$values = array();
 
 			foreach ($this->fields as $field)
@@ -182,6 +188,8 @@ class FormModule extends Module
 			{
 				return $token;
 			}
+
+			$this->flag = "C";
 
 			$this->orm = $orm = ORM::make($this->tableName);
 
@@ -218,6 +226,8 @@ class FormModule extends Module
 			{
 				return $token;
 			}
+
+			$this->flag = "R";
 
 			$fields = array();
 			$this->orm = $orm = ORM::make($this->tableName)
@@ -272,6 +282,8 @@ class FormModule extends Module
 				return $token;
 			}
 
+			$this->flag = "U";
+
 			$this->orm = $orm = ORM::make($this->tableName)
 										->findFirst($id);
 
@@ -309,6 +321,8 @@ class FormModule extends Module
 			{
 				return $token;
 			}
+
+			$this->flag = "D";
 
 			$ids = explode('-', $ids);
 
@@ -385,6 +399,7 @@ class FormModule extends Module
 			}
 		}
 
+		$field->module = $this;
 		$field->flags = $filteredFlags;
 
 		$this->fields[] = $field;

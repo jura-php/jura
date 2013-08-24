@@ -18,7 +18,7 @@ class ItemsField extends Field
 		$this->type = 'items';
 		$this->multiple = false;
 		$this->items = [];
-		$this->resourceURL = 'resourceitems/' . $this->type . uniqueID();
+		$this->resourceURL = 'fields/' . $this->type . uniqueID();
 		$this->validationLength = -1;
 
 		Router::register('GET', 'manager/api/' . $this->resourceURL, function () {

@@ -5,7 +5,7 @@
 
 	jd-state="jdUploading"
 
-	jd-url="api/upload_file"
+	jd-url="{{field.resource_url + '/' + data['id'] + '/'}}"
 	jd-json="true"
 	jd-placeholder="<img class='ajax-loader' src='img/ajax-loader.gif' />"
 	jd-auto-submit="true"
@@ -18,11 +18,15 @@
 	type="file"
 	name="attachment[]"
 
-	multiple
+	multiple="{{field.limit != 1}}"
+
+	
 />
+<!-- TODO: Fazer ng-show..
+ng-show="{{(field.limit == 0) || (data[field.name].length < field.limit)}}"
+-->
 
-
-<label>Arquivos:</label>
+<label ng-show="data[field.name].length > 0">Arquivos:</label>
 <code ng-repeat="file in data[field.name]">
 	<mark>{{file.path}}</mark><br />
 </code>
