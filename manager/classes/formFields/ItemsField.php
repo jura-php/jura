@@ -136,7 +136,7 @@ class ItemsField extends Field
 	{
 		if (!$this->multiple)
 		{
-			$this->orm->setField($this->name, $value);
+			$this->module->orm->setField($this->name, $value);
 		}
 		else
 		{
@@ -149,7 +149,7 @@ class ItemsField extends Field
 		if ($this->multiple)
 		{
 			$value = $this->tmpValue;
-			$id = $this->orm->field("id");
+			$id = $this->module->orm->field("id");
 			$ormRel = ORM::make($this->multipleTable);
 
 			$entries = $ormRel
@@ -193,13 +193,13 @@ class ItemsField extends Field
 	{
 		if (!$this->multiple)
 		{
-			$value = $this->orm->field($this->name);
+			$value = $this->module->orm->field($this->name);
 
 			return $this->format($value, $flag);
 		}
 		else
 		{
-			$id = $this->orm->field("id");
+			$id = $this->module->orm->field("id");
 			$ormRel = ORM::make($this->multipleTable);
 			$values = array();
 

@@ -94,7 +94,7 @@ angular.module('manager.controllers', [])
 
 	}])
 
-	.controller('edit', ['$rootScope', '$scope', '$routeParams', '$location', 'Restangular', function($rootScope, $scope, $routeParams, $location, Restangular) {
+	.controller('edit', ['$rootScope', '$scope', '$routeParams', '$location', 'Restangular', '$http', function($rootScope, $scope, $routeParams, $location, Restangular, $http) {
 
 		if(!$rootScope.structure.user) return;
 
@@ -140,13 +140,37 @@ angular.module('manager.controllers', [])
 				console.log("UPLOAD ERROR: " + content.error);
 			}
 
-			this.data.then(function(data){
+			this.data.then(function (data) {
 				data[name] = content.items;
 			})
 		};
 
-		$scope.jdUploadURL = function (field, data) {
-			return data ? field.resource_url + "/" + data['id'] + "/U/" : "";
+		var id = "";
+
+		$scope.data.then(function (data) {
+			id = data["id"];
+		});
+
+		$scope.jdUploadURL = function () {
+			return this.field.resource_url + "/upload/" + id + "/U/";
+		}
+
+		$scope.jdUploadDelete = function ()
+		{
+			var that = this;
+			this.data.then(function (data) {
+				var index = _.indexOf(data[that.field.name], that.file);
+
+				//data[that.field.name] = _.without(data[that.field.name], that.file);
+
+				$http.post(that.field.resource_url + "/delete/" + id + "/U/", { index: index })
+					.success(function (content) {
+						data[that.field.name] = content.items;
+					})
+					.error(function (data) {
+						console.log("ERROR?");
+					});
+			});
 		}
 
 		/*$scope.shouldShowUploadField = function (data, field) {
@@ -156,7 +180,7 @@ angular.module('manager.controllers', [])
 	}])
 
 
-	.controller('new', ['$rootScope', '$scope', '$routeParams', '$location', 'Restangular', function($rootScope, $scope, $routeParams, $location, Restangular) {
+	.controller('new', ['$rootScope', '$scope', '$routeParams', '$location', 'Restangular', '$http', function($rootScope, $scope, $routeParams, $location, Restangular, $http) {
 
 		if(!$rootScope.structure.user) return;
 
@@ -207,8 +231,26 @@ angular.module('manager.controllers', [])
 			})
 		};
 
-		$scope.jdUploadURL = function (field, data) {
-			return field.resource_url + "/0/C/";
+		$scope.jdUploadURL = function () {
+			return this.field.resource_url + "/upload/0/C/";
+		}
+
+		$scope.jdUploadDelete = function ()
+		{
+			var that = this;
+			this.data.then(function (data) {
+				var index = _.findIndex(data[that.field.name], { path: that.file.path });
+
+				//data[that.field.name] = _.without(data[that.field.name], that.file);
+
+				$http.post(that.field.resource_url + "/delete/0/C/", { index: index })
+					.success(function (content) {
+						data[that.field.name] = content.items;
+					})
+					.error(function (data) {
+						console.log("ERROR?");
+					});
+			});
 		}
 
 	}])

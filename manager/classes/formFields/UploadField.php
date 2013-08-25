@@ -1,11 +1,11 @@
 <?php
+//TODO: Fazer proteção se o campo na tabela estiver com um json inválido
 //TODO: Create path, if don't exists
 
 class UploadField extends Field
 {
 	public $limit;
 	public $path;
-	public $fileName;
 
 	private $resourceURL;
 	private $sessionKey;
@@ -33,19 +33,37 @@ class UploadField extends Field
 		return URL::root() . "storage/tmp/";
 	}
 
-	private static function tmpFile()
+	private static function tmpKey()
 	{
-		$file = substr("00000" . rand(1, 999999), -6) . "_" . time();
-
-		if (File::exists(static::tmpPath() . $file))
-		{
-			return static::tmpFile();
-		}
-
-		return $file;
+		return time() . substr("00000" . rand(1, 999999), -6);
 	}
 
-	public function __construct($name, $label = null, $path, $fileName)
+	private static function unique($path)
+	{
+		if (File::exists($path))
+		{
+			$ext = File::extension($path);
+			$file = File::removeExtension(File::fileName($path));
+			$path = File::dirName($path);
+
+			list($name, $num) = explode("-", $file);
+
+			if (!is_null($num) && (int)$num == $num)
+			{
+				$file = $name . "-" . ((int)$num + 1) . "." . $ext;
+			}
+			else
+			{
+				$file = $file . "-1." . $ext;
+			}
+
+			return static::unique($path . $file);
+		}
+
+		return $path;
+	}
+
+	public function __construct($name, $label = null, $path)
 	{
 		parent::__construct($name, $label);
 		$this->type = "upload";
@@ -55,79 +73,107 @@ class UploadField extends Field
 		$this->resourceURL = "fields/" . $this->type . $id;
 		$this->limit = 1;
 		$this->path = $path;
-		$this->fileName = $fileName;
+		$this->defaultValue = array();
 
-		Router::register('POST', "manager/api/" . $this->resourceURL . "/(:num)/(:segment)", function ($id, $flag) {
+		Router::register("POST", "manager/api/" . $this->resourceURL . "/(:segment)/(:num)/(:segment)", function ($action, $id, $flag) {
 			$flag = Str::upper($flag);
 			$this->module->flag = $flag;
 
-			if ($flag == "U")
-			{
-				$this->orm = ORM::make($this->module->tableName)
-							->findFirst($id);
-			}
-
 			$return = array();
 
-			if (isset($_FILES["attachment"]))
-			{
-				$info = $_FILES["attachment"];
-				$count = count($this->items());
-				$num = count($info["name"]);
-
-				for ($i = 0; $i < $num; $i++)
-				{
-					$ext = File::extension($info["name"][$i]);
-
-					$dest = "";
-					$tmpFile = "";
-					if ($flag == "C")
+			switch ($action) {
+				default:
+				case "update":
+					if (isset($_FILES["attachment"]))
 					{
-						$tmpFile = static::tmpFile() . "." . $ext;
-						$dest = static::tmpPath() . $tmpFile;
+						$info = $_FILES["attachment"];
+						$num = count($info["name"]);
+
+						//TODO: Check allowed extension
+
+						for ($i = 0; $i < $num; $i++)
+						{
+							$ext = File::extension($info["name"][$i]);
+
+							$fileName = File::removeExtension($info["name"][$i]);
+							$destFile = $fileName . static::tmpKey() . "." . $ext;
+
+							if (move_uploaded_file($info["tmp_name"][$i], static::tmpPath() . $destFile))
+							{
+								//Session::set($this->sessionKey, json_encode(array())); //TEST
+
+								$files = json_decode(Session::get($this->sessionKey), true);
+
+								$files[] = array(
+									"name" => $fileName . "." . $ext,
+									"tmpName" => $destFile
+								);
+
+								Session::set($this->sessionKey, json_encode($files));
+
+								$return = array(
+									"error" => false,
+									"items" => $this->items()
+								);
+							}
+							else
+							{
+								$return = array(
+									"error" => "Erro de permissão de arquivo. Contate o desenvolvedor."
+								);
+							}
+						}
 					}
 					else
 					{
-						$dest = static::storagePath() . $this->path() . $this->unmask($this->fileName, $count + $i) . "." . $ext;
+						$return = array(
+							"error" => "O arquivo é maior que o limite de " . ini_get('upload_max_filesize') . " do servidor"
+						);
 					}
 
-					if (move_uploaded_file($info["tmp_name"][$i], $dest))
-					{
-						if ($flag == "C")
-						{
-							$list = Session::get($this->sessionKey);
+					break;
+				case "delete":
+					$index = (int)Request::post("index", -1);
 
-							if (!$list)
+					if ($index >= 0)
+					{
+						$files = json_decode(Session::get($this->sessionKey), true);
+
+						if ($index < count($files))
+						{
+							$file = $files[$index];
+
+							if (array_key_exists("tmpName", $file))
 							{
-								$list = array();
+								File::delete(static::tmpPath() . $file["tmpName"]);
 							}
 
-							$list[] = $tmpFile;
+							array_splice($files, $index, 1);
 
-							Session::set($this->sessionKey, $list);
+							Session::set($this->sessionKey, json_encode($files));
+
+							$return = array(
+								"error" => false,
+								"items" => $this->items()
+							);
 						}
-
-						$return = array(
-							"error" => false,
-							"items" => $this->items()
-						);
+						else
+						{
+							$return = array(
+								"error" => "Index inválido"
+							);
+						}
 					}
 					else
 					{
 						$return = array(
-							"error" => "Erro de permissão de arquivo. Contate o desenvolvedor."
+							"error" => "Index inválido"
 						);
 					}
-				}
 
-				//TODO: Check allowed extension
+					break;
 			}
-			else
-			{
-				$return = array(
-					"error" => "O arquivo é maior que o limite de " . ini_get('upload_max_filesize') . " do servidor"
-				);
-			}
+			
 
 			return Response::json($return);
 		});
@@ -143,137 +189,126 @@ class UploadField extends Field
 		], $arr);
 	}
 
+	public function init($flag)
+	{
+		if ($flag == "C" && !$this->module->orm)
+		{
+			Session::set($this->sessionKey, json_encode(array()));
+		}
+	}
+
 	public function value($flag)
 	{
-		if ($flag == "C")
+		$value = $this->module->orm->field($this->name);
+
+		if (!is_array(@json_decode($value, true)))
 		{
-			Session::clear($this->sessionKey);
-
-			return array();
-		}
-		else
-		{
-			return $this->items();
-		}
-	}
-
-	public function includeOnSQL()
-	{
-		return false;
-	}
-
-	private function unmask($value, $index = 0)
-	{
-		$value = str_replace("#N#", ($index + 1), $value);
-
-		foreach ($this->orm->fieldNames() as $name)
-		{
-			$value = str_replace("#" . strtoupper($name) . "#", $this->orm->field($name), $value);
+			$value = json_encode(array());
 		}
 
-		return $value;
-	}
+		Session::set($this->sessionKey, $value);
 
-	private function path()
-	{
-		return File::formatDir($this->unmask($this->path));
-	}
-
-	private function limit()
-	{
-		return $this->limit == 0 ? 150 : $this->limit;
+		return $this->items();
 	}
 
 	private function items()
 	{
+		$files = json_decode(Session::get($this->sessionKey), true);
 		$items = array();
 
-		if ($this->module->flag == "C")
+		foreach ($files as $file)
 		{
-			$list = Session::get($this->sessionKey);
-
-			if ($list)
+			if (array_key_exists("tmpName", $file))
 			{
-				foreach ($list as $file)
-				{
-					$items[] = array("path" => static::tmpRoot() . $file);
-				}
+				$items[] = array(
+					"path" => static::tmpRoot() . $file["tmpName"],
+					"name" => $file["name"]
+				);
 			}
-		}
-		else
-		{
-			$path = $this->path();
-
-			$files = File::lsdir(static::storagePath() . $path);
-			$limit = $this->limit();
-
-			for ($i = 0; $i < $limit; $i++)
+			else
 			{
-				$found = false;
-				$name = $this->unmask($this->fileName, $i);
-
-				foreach ($files as $file)
-				{
-					if (File::removeExtension($file) == $name)
-					{
-						$found = $file;
-						break;
-					}
-				}
-
-				if ($found)
-				{
-					$items[] = array("path" => static::storageRoot() . $path . $found, "fsPath" => static::storagePath() . $path . $found);
-				}
+				$items[] = array(
+					"path" => static::storageRoot() . $file["path"],
+					"name" => File::fileName($file["path"])
+				);
 			}
-
-			//TODO: Reorder files if necessary
 		}
 
 		return $items;
 	}
 
-	public function afterSave($flag)
+	public function save($value, $flag)
 	{
-		if ($flag == "C")
+		$path = File::formatDir($this->path);
+		$destPath = static::storagePath() . File::formatDir($this->path);
+		File::mkdir($destPath);
+
+		$files = json_decode(Session::get($this->sessionKey), true);
+
+		if ($flag == "U" || $flag == "D")
 		{
-			$list = Session::get($this->sessionKey);
+			$oldFiles = $this->module->orm->field($this->name);
 
-			if ($list)
+			if (!is_array(@json_decode($oldFiles, true)))
 			{
-				File::mkdir(static::storagePath() . $this->path());
+				$oldFiles = json_encode(array());
+			}
 
-				$i = 0;
-				foreach ($list as $file)
+			$oldFiles = json_decode($oldFiles, true);
+
+			if ($flag == "U")
+			{
+				//Delete files that are on our table but not on our session list
+				foreach ($oldFiles as $oldFile)
 				{
-					$ext = File::extension($file);
-					$dest = static::storagePath() . $this->path() . $this->unmask($this->fileName, $i) . "." . $ext;
+					$found = false;
 
-					File::move(static::tmpPath() . $file, $dest);
+					foreach ($files as $file)
+					{
+						if (!array_key_exists("tmpName", $file))
+						{
+							if ($oldFile["path"] == $file["path"])
+							{
+								$found = true;
+								break;
+							}
+						}
+					}
 
-					$i++;
+					if (!$found)
+					{
+						File::delete(static::storagePath() . $oldFile["path"]);
+					}
+				}
+			}
+			else if ($flag == "D")
+			{
+				//Delete all files
+				foreach ($oldFiles as $oldFile)
+				{
+					File::delete(static::storagePath() . $oldFile["path"]);
+				}
+			}
+		}
+
+		if ($flag == "C" || $flag == "U")
+		{
+			//Copy tmp files to it's target place and save
+			foreach ($files as $k => $file)
+			{
+				if (array_key_exists("tmpName", $file))
+				{
+					$unique = static::unique(static::storagePath() . $path . $file["name"]);
+					File::move(static::tmpPath() . $file["tmpName"], $unique);
+
+					$files[$k] = array(
+						"path" => $path . File::fileName($unique)
+					);
 				}
 			}
 
-			Session::clear($this->sessionKey);
-		}
-		else if ($flag == "D")
-		{
-			$list = $this->items();
-
-			foreach ($list as $info)
-			{
-				File::delete($info["fsPath"]);
-			}
-
-			$files = File::lsdir(static::storagePath() . $this->path());
-			if (count($files) == 0)
-			{
-				File::rmdir($files);
-			}
+			$this->module->orm->setField($this->name, json_encode($files));
 		}
 	}
-
-
 }
 ?>

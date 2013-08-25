@@ -5,7 +5,7 @@
 
 	jd-state="jdUploading"
 
-	jd-url="{{jdUploadURL(field, data)}}"
+	jd-url="{{jdUploadURL()}}"
 	jd-json="true"
 	jd-placeholder="<img class='ajax-loader' src='img/ajax-loader.gif' />"
 	jd-auto-submit="true"
@@ -28,5 +28,5 @@
 
 <label ng-show="data[field.name].length > 0">Arquivos:</label>
 <code ng-repeat="file in data[field.name]">
-	<mark>{{file.path}}</mark><br />
+	<mark>{{file.name}} ({{file.path}}) <a href="" ng-click="jdUploadDelete()">x</a></mark><br />
 </code>

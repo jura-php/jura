@@ -134,7 +134,7 @@ function array_get($array, $key, $default = null)
 	// look for the next segment.
 	foreach (explode('.', $key) as $segment)
 	{
-		if ( ! is_array($array) or ! array_key_exists($segment, $array))
+		if (!is_array($array) or !array_key_exists($segment, $array))
 		{
 			return value($default);
 		}

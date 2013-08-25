@@ -14,7 +14,6 @@ class Field
 	public $validationLength;
 
 	public $module;
-	public $orm;
 
 	public function __construct($name, $label = null)
 	{
@@ -87,13 +86,13 @@ class Field
 				$value = substr($value, 0, $this->validationLength);
 			}
 
-			$this->orm->setField($this->name, $value);
+			$this->module->orm->setField($this->name, $value);
 		}
 	}
 
 	public function value($flag)
 	{
-		$value = $this->orm->field($this->name);
+		$value = $this->module->orm->field($this->name);
 
 		return $this->format($value, $flag);
 	}
@@ -105,14 +104,14 @@ class Field
 
 	public function filter($search)
 	{
-		$this->orm->whereLike($this->name, "%" . $search . "%");
+		$this->module->orm->whereLike($this->name, "%" . $search . "%");
 	}
 
 	public function select()
 	{
 		if ($this->includeOnSQL())
 		{
-			$this->orm->select($this->name);
+			$this->module->orm->select($this->name);
 		}
 	}
 }
