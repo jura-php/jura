@@ -145,7 +145,13 @@ angular.module('manager.controllers', [])
 			})
 		};
 
+		$scope.jdUploadURL = function (field, data) {
+			return data ? field.resource_url + "/" + data['id'] + "/U/" : "";
+		}
 
+		/*$scope.shouldShowUploadField = function (data, field) {
+			return (!data || (field.limit == 0) || (data[field.name].length < field.limit));
+		}*/
 
 	}])
 
@@ -172,6 +178,37 @@ angular.module('manager.controllers', [])
 				$location.path(table);
 			})
 
+		}
+
+		//File Upload
+		$scope.jdStart = function() {
+			$scope.jdUploading = true;
+		};
+
+		$scope.jdLog = function() {
+			console.log.apply('jdLog', console, arguments);
+		};
+
+		$scope.jdSuccess = function(content) {
+			console.log('jdSuccess', arguments)
+		};
+
+		$scope.jdFinished = function(content, didUpload) {
+			$scope.jdUploading = false;
+			var name = this.field.name;
+
+			if (content.error)
+			{
+				console.log("UPLOAD ERROR: " + content.error);
+			}
+
+			this.data.then(function(data){
+				data[name] = content.items;
+			})
+		};
+
+		$scope.jdUploadURL = function (field, data) {
+			return field.resource_url + "/0/C/";
 		}
 
 	}])

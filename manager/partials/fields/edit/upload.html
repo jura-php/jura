@@ -5,7 +5,7 @@
 
 	jd-state="jdUploading"
 
-	jd-url="{{field.resource_url + '/' + data['id'] + '/'}}"
+	jd-url="{{jdUploadURL(field, data)}}"
 	jd-json="true"
 	jd-placeholder="<img class='ajax-loader' src='img/ajax-loader.gif' />"
 	jd-auto-submit="true"
@@ -22,8 +22,8 @@
 
 	
 />
-<!-- TODO: Fazer ng-show..
-ng-show="{{(field.limit == 0) || (data[field.name].length < field.limit)}}"
+<!-- TODO: Fazer isso funcionar
+	ng-show="shouldShowUploadField(data, field)"
 -->
 
 <label ng-show="data[field.name].length > 0">Arquivos:</label>

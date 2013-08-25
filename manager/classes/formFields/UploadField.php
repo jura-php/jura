@@ -1,4 +1,6 @@
 <?php
+//TODO: Create path, if don't exists
+
 class UploadField extends Field
 {
 	public $limit;
@@ -6,6 +8,7 @@ class UploadField extends Field
 	public $fileName;
 
 	private $resourceURL;
+	private $sessionKey;
 
 	private static function storagePath()
 	{
@@ -17,82 +20,107 @@ class UploadField extends Field
 		return URL::root() . "storage/";
 	}
 
+	private static function tmpPath()
+	{
+		$path = J_APPPATH . "storage" . DS . "tmp" . DS;
+		File::mkdir($path);
+
+		return $path;
+	}
+
+	private static function tmpRoot()
+	{
+		return URL::root() . "storage/tmp/";
+	}
+
+	private static function tmpFile()
+	{
+		$file = substr("00000" . rand(1, 999999), -6) . "_" . time();
+
+		if (File::exists(static::tmpPath() . $file))
+		{
+			return static::tmpFile();
+		}
+
+		return $file;
+	}
+
 	public function __construct($name, $label = null, $path, $fileName)
 	{
 		parent::__construct($name, $label);
 		$this->type = "upload";
-		$this->resourceURL = "fields/" . $this->type . uniqueID();
+
+		$id = uniqueID();
+		$this->sessionKey = "manager_" . $this->type . $id;
+		$this->resourceURL = "fields/" . $this->type . $id;
 		$this->limit = 1;
 		$this->path = $path;
 		$this->fileName = $fileName;
 
-		Router::register('POST', "manager/api/" . $this->resourceURL . "/(:num)", function ($id) {
-			$this->orm = ORM::make($this->module->tableName)
-							->findFirst($id);
+		Router::register('POST', "manager/api/" . $this->resourceURL . "/(:num)/(:segment)", function ($id, $flag) {
+			$flag = Str::upper($flag);
+			$this->module->flag = $flag;
 
-			//TODO: Detect flag
+			if ($flag == "U")
+			{
+				$this->orm = ORM::make($this->module->tableName)
+							->findFirst($id);
+			}
 
 			$return = array();
 
 			if (isset($_FILES["attachment"]))
 			{
 				$info = $_FILES["attachment"];
-				$ext = File::extension($info["name"][0]); //TODO: Fazer isso ficar múltiplo..
+				$count = count($this->items());
+				$num = count($info["name"]);
+
+				for ($i = 0; $i < $num; $i++)
+				{
+					$ext = File::extension($info["name"][$i]);
+
+					$dest = "";
+					$tmpFile = "";
+					if ($flag == "C")
+					{
+						$tmpFile = static::tmpFile() . "." . $ext;
+						$dest = static::tmpPath() . $tmpFile;
+					}
+					else
+					{
+						$dest = static::storagePath() . $this->path() . $this->unmask($this->fileName, $count + $i) . "." . $ext;
+					}
+
+					if (move_uploaded_file($info["tmp_name"][$i], $dest))
+					{
+						if ($flag == "C")
+						{
+							$list = Session::get($this->sessionKey);
+
+							if (!$list)
+							{
+								$list = array();
+							}
+
+							$list[] = $tmpFile;
+
+							Session::set($this->sessionKey, $list);
+						}
+
+						$return = array(
+							"error" => false,
+							"items" => $this->items()
+						);
+					}
+					else
+					{
+						$return = array(
+							"error" => "Erro de permissão de arquivo. Contate o desenvolvedor."
+						);
+					}
+				}
 
 				//TODO: Check allowed extension
-				//TODO: Create C version
-
-				//RU version
-
-				$items = $this->items();
-				$dest = static::storagePath() . $this->path() . $this->unmask($this->fileName, count($items)) . "." . $ext;
-
-				if (move_uploaded_file($info["tmp_name"][0], $dest))
-				{
-
-
-					$return = array(
-						"error" => false,
-						"items" => $this->items()
-					);
-				}
-				else
-				{
-					$return = array(
-						"error" => "Erro de permissão de arquivo. Contate o desenvolvedor."
-					);
-				}
-
-				// $ext = $F->extension($_FILES['Filedata']["name"]);
-				// 	$fileDest = $this->_tmpFile();
-					
-				// 	$ok = false;
-				// 	if (is_array($this->allowedExtensions) && sizeof($this->allowedExtensions) > 0)
-				// 	{
-				// 		if (array_search($ext, $this->allowedExtensions) !== false) 
-				// 		{
-				// 			$ok = true;
-				// 		}
-				// 	}
-				// 	else
-				// 	{
-				// 		$ok = true;
-				// 	}
-					
-				// 	if ($ok)
-				// 	{
-				// 		if (move_uploaded_file($_FILES['Filedata']["tmp_name"], $fileDest))
-				// 		{
-				// 			$list = $this->copyFilesToLocation($fileDest, $ext);
-				// 			echo "OK||" . implode(",", $list);
-				// 		} else {
-				// 			echo "ERROR||Erro de permissão de arquivo. Contate o desenvolvedor.";
-				// 		}
-				// 	} else {					
-				// 		echo "ERROR||Por favor, apenas arquivos com extensões " . implode(", ", $this->allowedExtensions);
-				// 	}
-
-				
 			}
 			else
 			{
@@ -119,7 +147,7 @@ class UploadField extends Field
 	{
 		if ($flag == "C")
 		{
-			//TODO: Clear tmp session
+			Session::clear($this->sessionKey);
 
 			return array();
 		}
@@ -153,42 +181,97 @@ class UploadField extends Field
 
 	private function limit()
 	{
-		return $this->limit == 0 ? 100 : $this->limit;
+		return $this->limit == 0 ? 150 : $this->limit;
 	}
 
 	private function items()
 	{
-		//TODO: Check C version..
-		//$this->module->flag
-
-		//RU version
-		$path = $this->path();
-
-		$files = File::lsdir(static::storagePath() . $path);
 		$items = array();
-		$limit = $this->limit();
 
-		for ($i = 0; $i < $limit; $i++)
+		if ($this->module->flag == "C")
 		{
-			$found = false;
-			$name = $this->unmask($this->fileName, $i);
+			$list = Session::get($this->sessionKey);
 
-			foreach ($files as $file)
+			if ($list)
 			{
-				if (File::removeExtension($file) == $name)
+				foreach ($list as $file)
 				{
-					$found = $file;
-					break;
+					$items[] = array("path" => static::tmpRoot() . $file);
+				}
+			}
+		}
+		else
+		{
+			$path = $this->path();
+
+			$files = File::lsdir(static::storagePath() . $path);
+			$limit = $this->limit();
+
+			for ($i = 0; $i < $limit; $i++)
+			{
+				$found = false;
+				$name = $this->unmask($this->fileName, $i);
+
+				foreach ($files as $file)
+				{
+					if (File::removeExtension($file) == $name)
+					{
+						$found = $file;
+						break;
+					}
+				}
+
+				if ($found)
+				{
+					$items[] = array("path" => static::storageRoot() . $path . $found, "fsPath" => static::storagePath() . $path . $found);
 				}
 			}
 
-			if ($found)
-			{
-				$items[] = array("path" => static::storageRoot() . $found);
-			}
+			//TODO: Reorder files if necessary
 		}
 
 		return $items;
+	}
+
+	public function afterSave($flag)
+	{
+		if ($flag == "C")
+		{
+			$list = Session::get($this->sessionKey);
+
+			if ($list)
+			{
+				File::mkdir(static::storagePath() . $this->path());
+
+				$i = 0;
+				foreach ($list as $file)
+				{
+					$ext = File::extension($file);
+					$dest = static::storagePath() . $this->path() . $this->unmask($this->fileName, $i) . "." . $ext;
+
+					File::move(static::tmpPath() . $file, $dest);
+
+					$i++;
+				}
+			}
+
+			Session::clear($this->sessionKey);
+		}
+		else if ($flag == "D")
+		{
+			$list = $this->items();
+
+			foreach ($list as $info)
+			{
+				File::delete($info["fsPath"]);
+			}
+
+			$files = File::lsdir(static::storagePath() . $this->path());
+			if (count($files) == 0)
+			{
+				File::rmdir($files);
+			}
+		}
 	}
 
 

@@ -39,6 +39,13 @@ class Session
 		}
 	}
 
+	public static function has($key)
+	{
+		static::init();
+
+		return isset($_SESSION[$key]);
+	}
+
 	public static function set($key, $value)
 	{
 		static::init();

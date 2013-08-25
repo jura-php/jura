@@ -139,7 +139,7 @@ class User
 			if ($orm)
 			{
 				return array_merge($orm->asArray(), array(
-					"gravatar_hash" => md5($rs->fields["email"]))
+					"gravatar_hash" => md5($orm->fields["email"]))
 				);
 			}
 		}
