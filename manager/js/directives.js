@@ -54,41 +54,43 @@ angular.module('manager.directives', []).
 		return chosen = {
 			restrict: 'A',
 			link: function(scope, element, attr) {
-				var disableWithMessage, match, options, startLoading, stopLoading, valuesExpr;
+				scope.data.then(function(){
+					var disableWithMessage, match, options, startLoading, stopLoading, valuesExpr;
 
-				options = scope.$eval(attr.chosen) || {};
-				angular.forEach(attr, function(value, key) {
-					if (_.indexOf(CHOSEN_OPTION_WHITELIST, key) >= 0) {
-						return options[snakeCase(key)] = scope.$eval(value);
-					}
-				});
-				startLoading = function() {
-					return element.addClass('loading').attr('disabled', true).trigger('liszt:updated');
-				};
-				stopLoading = function() {
-					return element.removeClass('loading').attr('disabled', false).trigger('liszt:updated');
-				};
-				disableWithMessage = function(message) {
-					return element.empty().append("<option selected>" + message + "</option>").attr('disabled', true).trigger('liszt:updated');
-				};
-				$timeout(function() {
-					return element.chosen(options);
-				});
-				if (attr.ngOptions) {
-					match = attr.ngOptions.match(NG_OPTIONS_REGEXP);
-					valuesExpr = match[7];
-					if (angular.isUndefined(scope.$eval(valuesExpr))) {
-						startLoading();
-					}
-					return scope.$watch(valuesExpr, function(newVal, oldVal) {
-						if (newVal !== oldVal) {
-							stopLoading();
-							if (isEmpty(newVal)) {
-								return disableWithMessage(options.no_results_text || 'No values available');
-							}
+					options = scope.$eval(attr.chosen) || {};
+					angular.forEach(attr, function(value, key) {
+						if (_.indexOf(CHOSEN_OPTION_WHITELIST, key) >= 0) {
+							return options[snakeCase(key)] = scope.$eval(value);
 						}
 					});
-				}
+					startLoading = function() {
+						return element.addClass('loading').attr('disabled', true).trigger('liszt:updated');
+					};
+					stopLoading = function() {
+						return element.removeClass('loading').attr('disabled', false).trigger('liszt:updated');
+					};
+					disableWithMessage = function(message) {
+						return element.empty().append("<option selected>" + message + "</option>").attr('disabled', true).trigger('liszt:updated');
+					};
+					$timeout(function() {
+						return element.chosen(options);
+					});
+					if (attr.ngOptions) {
+						match = attr.ngOptions.match(NG_OPTIONS_REGEXP);
+						valuesExpr = match[7];
+						if (angular.isUndefined(scope.$eval(valuesExpr))) {
+							startLoading();
+						}
+						return scope.$watch(valuesExpr, function(newVal, oldVal) {
+							if (newVal !== oldVal) {
+								stopLoading();
+								if (isEmpty(newVal)) {
+									return disableWithMessage(options.no_results_text || 'No values available');
+								}
+							}
+						});
+					}
+				})
 			}
 		};
 

@@ -1,2 +1,6 @@
 <label>{{field.label}}</label>
+<select name="{{field.name}}" ng-multiple="field.multiple" data-placeholder="Selecione" items-field chosen data-disable-search-threshold="10" class="pure-input-1" ng-model="data[field.name]" ng-options="o.value as o.label for o in options" ng-required="field.validation.required" pattern="{{field.validation.pattern}}" title="{{field.validation.title | label}}"></select>
+<!--
+Essa versão abaixo com a tag multiple estava bugando o item selecionado no select single, mas é possível que o select multiplo deixe de funcionar
 <select name="{{field.name}}" multiple ng-multiple="field.multiple" data-placeholder="Selecione" items-field chosen data-disable-search-threshold="10" class="pure-input-1" ng-model="data[field.name]" ng-options="o.value as o.label for o in options" ng-required="field.validation.required" pattern="{{field.validation.pattern}}" title="{{field.validation.title | label}}"></select>
+-->
