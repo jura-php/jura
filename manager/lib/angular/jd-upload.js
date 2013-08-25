@@ -22,6 +22,9 @@ angular.module('jdUpload', []).
 				jdUrlMethod: '&',
 				jdJson: '='
 			},
+			controller: function($scope){
+				return $scope;
+			},
 			link: function(scope, element, attrs) {
 
 				scope.jdState = false;

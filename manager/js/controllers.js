@@ -118,65 +118,6 @@ angular.module('manager.controllers', [])
 		}
 
 
-		//File Upload
-		$scope.jdStart = function() {
-			$scope.jdUploading = true;
-		};
-
-		$scope.jdLog = function() {
-			console.log.apply('jdLog', console, arguments);
-		};
-
-		$scope.jdSuccess = function(content) {
-			console.log('jdSuccess', arguments)
-		};
-
-		$scope.jdFinished = function(content, didUpload) {
-			$scope.jdUploading = false;
-			var name = this.field.name;
-
-			if (content.error)
-			{
-				console.log("UPLOAD ERROR: " + content.error);
-			}
-
-			this.data.then(function (data) {
-				data[name] = content.items;
-			})
-		};
-
-		var id = "";
-
-		$scope.data.then(function (data) {
-			id = data["id"];
-		});
-
-		$scope.jdUploadURL = function () {
-			return this.field.resource_url + "/upload/" + id + "/U/";
-		}
-
-		$scope.jdUploadDelete = function ()
-		{
-			var that = this;
-			this.data.then(function (data) {
-				var index = _.indexOf(data[that.field.name], that.file);
-
-				//data[that.field.name] = _.without(data[that.field.name], that.file);
-
-				$http.post(that.field.resource_url + "/delete/" + id + "/U/", { index: index })
-					.success(function (content) {
-						data[that.field.name] = content.items;
-					})
-					.error(function (data) {
-						console.log("ERROR?");
-					});
-			});
-		}
-
-		/*$scope.shouldShowUploadField = function (data, field) {
-			return (!data || (field.limit == 0) || (data[field.name].length < field.limit));
-		}*/
-
 	}])
 
 
@@ -195,62 +136,12 @@ angular.module('manager.controllers', [])
 		}
 
 		$scope.save = function(model){
-			console.log($scope.form.$valid)
 			if(!$scope.form.$valid) return;
 
 			model.post().then(function(){
 				$location.path(table);
 			})
 
-		}
-
-		//File Upload
-		$scope.jdStart = function() {
-			$scope.jdUploading = true;
-		};
-
-		$scope.jdLog = function() {
-			console.log.apply('jdLog', console, arguments);
-		};
-
-		$scope.jdSuccess = function(content) {
-			console.log('jdSuccess', arguments)
-		};
-
-		$scope.jdFinished = function(content, didUpload) {
-			$scope.jdUploading = false;
-			var name = this.field.name;
-
-			if (content.error)
-			{
-				console.log("UPLOAD ERROR: " + content.error);
-			}
-
-			this.data.then(function(data){
-				data[name] = content.items;
-			})
-		};
-
-		$scope.jdUploadURL = function () {
-			return this.field.resource_url + "/upload/0/C/";
-		}
-
-		$scope.jdUploadDelete = function ()
-		{
-			var that = this;
-			this.data.then(function (data) {
-				var index = _.findIndex(data[that.field.name], { path: that.file.path });
-
-				//data[that.field.name] = _.without(data[that.field.name], that.file);
-
-				$http.post(that.field.resource_url + "/delete/0/C/", { index: index })
-					.success(function (content) {
-						data[that.field.name] = content.items;
-					})
-					.error(function (data) {
-						console.log("ERROR?");
-					});
-			});
 		}
 
 	}])

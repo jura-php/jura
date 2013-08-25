@@ -255,4 +255,51 @@ angular.module('manager.directives', []).
 
 			}
 		}
+	}).
+
+	directive('upload', function(){
+		return {
+			restrict: 'AC',
+			controller: function($scope, $http){
+				$scope.data.then(function(data){
+
+					$scope.deleteFile = function(index){
+						var that = this;
+
+						$http.post(that.field.resource_url + "/delete/" + ((data.id) ? data.id + "/U/" : "0/C/"), { index: index })
+							.success(function (content) {
+								data[that.field.name] = content.items;
+							})
+					}
+
+					$scope.jdUploadURL = function () {
+						return this.field.resource_url + "/upload/" + ((data.id) ? data.id + "/U/" : "0/C/");
+					}
+
+					$scope.jdStart = function() {
+						$scope.jdUploading = true;
+					};
+
+					$scope.jdLog = function() {
+						console.log.apply('jdLog', console, arguments);
+					};
+
+					$scope.jdSuccess = function(content) {
+						console.log('jdSuccess', arguments)
+					};
+
+					$scope.jdFinished = function(content, didUpload) {
+						$scope.jdUploading = false;
+						var name = this.field.name;
+
+						if (content.error) {
+							console.log("UPLOAD ERROR: " + content.error);
+						} else {
+							data[name] = content.items;
+						}
+					};
+				})
+			}
+		}
 	});
+

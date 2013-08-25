@@ -1,32 +1,45 @@
-<label>{{field.label}}</label>
+<div upload>
+	<label>{{field.label}}</label>
 
-<input
-	jd-upload
+	<span ng-show="data[field.name].length < field.limit">
+		<input
+			jd-upload
 
-	jd-state="jdUploading"
+			jd-state="jdUploading"
 
-	jd-url="{{jdUploadURL()}}"
-	jd-json="true"
-	jd-placeholder="<img class='ajax-loader' src='img/ajax-loader.gif' />"
-	jd-auto-submit="true"
+			jd-url-method="jdUploadURL()"
+			jd-json="true"
+			jd-placeholder="<img class='ajax-loader' src='img/ajax-loader.gif' />"
+			jd-auto-submit="true"
 
-	on-start="jdStart(value)"
-	on-finished="jdFinished(content, didUpload)"
-	on-error="jdLg('error')"
-	on-success="jdSuccess(content)"
+			on-start="jdStart(value)"
+			on-finished="jdFinished(content, didUpload)"
+			on-error="jdLg('error')"
+			on-success="jdSuccess(content)"
 
-	type="file"
-	name="attachment[]"
+			type="file"
+			name="attachment[]"
 
-	multiple="{{field.limit != 1}}"
+			ng-multiple="{{field.limit > 1}}"
 
-	
-/>
-<!-- TODO: Fazer isso funcionar
-	ng-show="shouldShowUploadField(data, field)"
--->
+		/>
+	</span>
 
-<label ng-show="data[field.name].length > 0">Arquivos:</label>
-<code ng-repeat="file in data[field.name]">
-	<mark>{{file.name}} ({{file.path}}) <a href="" ng-click="jdUploadDelete()">x</a></mark><br />
-</code>
+	<table class="pure-table pure-table-odd" ng-show="data[field.name].length > 0">
+		<thead>
+			<tr>
+				<th width="100%">Arquivo</th>
+				<th>Ações</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="(index, file) in data[field.name]">
+				<td>{{file.name}}</td>
+				<td>
+					<button ng-click="deleteFile(index)" type="button" class="pure-button pure-button-error"><i class="icon-remove"></i></button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+</div>
