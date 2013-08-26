@@ -264,7 +264,6 @@ angular.module('manager.directives', []).
 				$scope.data.then(function(data){
 
 					$scope.deleteFile = function(index, access_token){
-						console.log(arguments)
 						var that = this;
 
 						$http.post(that.field.resource_url + "/delete/" + ((data.id) ? data.id + "/U/" : "0/C/"), {index: index}, {params: {access_token: access_token}})
@@ -292,6 +291,10 @@ angular.module('manager.directives', []).
 							data[name] = content.items;
 						}
 					};
+
+					$scope.jdAccept = function(){
+						return 'image/*';
+					}
 				})
 			}
 		}

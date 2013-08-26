@@ -16,6 +16,7 @@ angular.module('jdUpload', []).
 				onError: '&',
 				onStart: '&',
 				jdAutoSubmit: '=',
+				jdAccept: '=',
 				jdPlaceholder: '@',
 				jdState: '=',
 				jdUrl: '@',
@@ -43,6 +44,12 @@ angular.module('jdUpload', []).
 				scope.$watch('jdState', function() {
 					upload();
 				});
+
+				scope.$watch('jdAccept', function(accept){
+					if(accept) {
+						element.attr('accept', accept)
+					}
+				})
 
 				var upload = function() {
 					var value, form, placeholder, iframe, id;
