@@ -11,7 +11,7 @@
 			jd-json="true"
 			jd-placeholder="<img class='ajax-loader' src='img/ajax-loader.gif' />"
 			jd-auto-submit="true"
-			jd-accept="field.accept"
+			jd-accept="field.accepts"
 
 			on-finished="jdFinished(content, didUpload)"
 			on-error="jdLg('error')"
@@ -21,8 +21,6 @@
 			name="attachment[]"
 
 			ng-multiple="{{field.limit > 1}}"
-
-			accept="{{field.accept}}"
 		/>
 	</span>
 

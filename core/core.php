@@ -119,7 +119,7 @@ Router::register("GET", "download/(:all)", function () {
 
 	foreach ($allowedPaths as $dir)
 	{
-		if (Str::startsWith($path, $dir))
+		if (Str::startsWith($path, File::formatDir($dir)))
 		{
 			$allowed = true;
 			break;
@@ -134,6 +134,40 @@ Router::register("GET", "download/(:all)", function () {
 	}
 
 	Response::download(J_PATH . DS . $path, Request::get("name"));
+});
+
+Router::register("GET", "thumb/", function () {
+	$pieces = explode("/", trim(Request::get("path"), "/"));
+
+	$path = implode(DS, $pieces);
+
+	$allowedPaths = array("storage", "public/img", "app/assets/img");
+	$allowed = false;
+
+	foreach ($allowedPaths as $dir)
+	{
+		if (Str::startsWith($path, File::formatDir($dir)))
+		{
+			$allowed = true;
+			break;
+		}
+	}
+
+	if (!$allowed || count($pieces) == 0)
+	{
+		return Response::code(403);
+	}
+
+	$path = implode(DS, $pieces);
+
+	if (!File::exists(J_PATH . DS . $path) || is_dir(J_PATH . DS . $path))
+	{
+		return Response::code(404);
+	}
+
+	$im = new Image(J_PATH . DS . $path);
+	$im->resize((int)Request::get("width"), (int)Request::get("height"), Request::get("method", "fit"), Request::get("background", 0xFFFFFF));
+	$im->header();
 });
 
 Router::register("*", "(:all)", function () {

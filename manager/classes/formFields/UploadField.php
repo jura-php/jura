@@ -1,7 +1,5 @@
 <?php
-//TODO: Fazer proteção se o campo na tabela estiver com um json inválido
-//TODO: Fazer verificação de extensões válidas
-//TODO: Create path, if don't exists
+//TODO: Fazer verificação de extensões válidas no upload
 
 class UploadField extends Field
 {
@@ -9,8 +7,8 @@ class UploadField extends Field
 	public $path;
 
 	protected $sessionKey;
-	protected $accept;
-	protected $acceptMask;
+	protected $accepts;
+	protected $acceptsMask;
 
 	private $resourceURL;
 
@@ -21,7 +19,7 @@ class UploadField extends Field
 
 	protected static function storageRoot()
 	{
-		return URL::root() . "storage/";
+		return URL::root(false) . "storage/";
 	}
 
 	protected static function tmpPath()
@@ -34,7 +32,7 @@ class UploadField extends Field
 
 	protected static function tmpRoot()
 	{
-		return URL::root() . "storage/tmp/";
+		return URL::root(false) . "storage/tmp/";
 	}
 
 	protected static function tmpKey()
@@ -79,15 +77,15 @@ class UploadField extends Field
 		$this->limit = 1;
 		$this->path = $path;
 		$this->defaultValue = array();
-		$this->accept = array();
-		$this->acceptMask = null;
+		$this->accepts = array();
+		$this->acceptsMask = null;
 
 		Router::register("POST", "manager/api/" . $this->resourceURL . "/(:segment)/(:num)/(:segment)", function ($action, $id, $flag) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
 			}
-			
+
 			$flag = Str::upper($flag);
 			$this->module->flag = $flag;
 
@@ -107,23 +105,23 @@ class UploadField extends Field
 		});
 	}
 
-	public function accept($mimetypes)
+	public function accepts($mimetypes)
 	{
 		if (is_array($mimetypes))
 		{
-			$accept = $mimetypes;
+			$accepts = $mimetypes;
 		}
 		else
 		{
-			$accept = explode(",", $mimetypes);
+			$accepts = explode(",", $mimetypes);
 		}
 
-		if (!is_null($this->acceptMask))
+		if (!is_null($this->acceptsMask))
 		{
-			$accept = array_intersect($accept, $this->acceptMask);
+			$accepts = array_intersect($accepts, $this->acceptsMask);
 		}
 
-		$this->accept = array_unique($accept);
+		$this->accepts = array_unique($accepts);
 	}
 
 	public function config()
@@ -133,7 +131,7 @@ class UploadField extends Field
 		return array_merge([
 			"limit" => $this->limit,
 			"resource_url" => "api/" . $this->resourceURL,
-			"accept" => implode(",", $this->accept)
+			"accepts" => implode(",", $this->accepts)
 		], $arr);
 	}
 
@@ -189,7 +187,9 @@ class UploadField extends Field
 	{
 		$path = File::formatDir($this->path);
 		$destPath = static::storagePath() . File::formatDir($this->path);
+		
 		File::mkdir($destPath);
+		File::permission($destPath);
 
 		$files = json_decode(Session::get($this->sessionKey), true);
 

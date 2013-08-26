@@ -200,21 +200,26 @@ class Image
 		if (!($newRect[2] > $this->width || $newRect[3] > $this->height) && !($newRect[2] == $this->width && $newRect[3] == $this->height))
 		{
 			$this->resourceID = imagecreatetruecolor($width, $height);
-			
+
 			if (!(($this->path != "") && (File::extension($this->path) == "png")))
 			{
 				$color = imagecolorallocate($this->resourceID, ($backgroundColor >> 16) & 0xFF, ($backgroundColor >> 8) & 0xFF, $backgroundColor & 0xFF);
 				imagefilledrectangle($this->resourceID, 0, 0, $width, $height, $color);
 			}
+			else
+			{
+				imagesavealpha($this->resourceID, true);
+				imagefill($this->resourceID, 0, 0, imagecolorallocatealpha($this->resourceID, 0, 0, 0, 127));
+			}
 			
 			imagecopyresampled($this->resourceID, $this->sourceResourceID, $newRect[0], $newRect[1], 0, 0, $newRect[2], $newRect[3], $this->width, $this->height);
-			
+
 			$this->width = $width;
 			$this->height = $height;
 		}
 	}
 	
-	public function header($type = null, $quality = 90, $saveCache = false)
+	public function header($type = null, $quality = 90)
 	{
 		$extension = "";
 		if (is_null($type))

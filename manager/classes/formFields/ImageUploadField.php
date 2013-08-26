@@ -7,8 +7,8 @@ class ImageUploadField extends UploadField
 	{
 		parent::__construct($name, $label, $path);
 		$this->type = "imageupload";
-		$this->acceptMask = array("image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp");
-		$this->accept("image/jpg,image/jpeg,image/png,image/gif,image/bmp");
+		$this->acceptsMask = array("image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp");
+		$this->accepts("image/jpg,image/jpeg,image/png,image/gif,image/bmp");
 
 		$this->samples = array(
 			array(
@@ -53,7 +53,7 @@ class ImageUploadField extends UploadField
 				$items[] = array(
 					"path" => static::tmpRoot() . $file["_tmpName"],
 					"name" => $file["_name"],
-					"thumb" => "TODO"
+					"thumb" => URL::thumb("app/storage/tmp/" . $file["_tmpName"], 100, 100)
 				);
 			}
 			else
@@ -62,12 +62,26 @@ class ImageUploadField extends UploadField
 				$items[] = array(
 					"path" => static::storageRoot() . $first,
 					"name" => File::fileName($first),
-					"thumb" => "TODO"
+					"thumb" => URL::thumb("app/storage/" . $first, 100, 100)
 				);
 			}
 		}
 
 		return $items;
+	}
+
+	public function value($flag)
+	{
+		$value = $this->module->orm->field($this->name);
+
+		if (!is_array(@json_decode($value, true)))
+		{
+			$value = json_encode(array());
+		}
+
+		Session::set($this->sessionKey, $value);
+
+		return $this->items();
 	}
 
 	public function save($value, $flag)

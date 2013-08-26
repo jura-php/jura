@@ -1,17 +1,29 @@
 ✔ Renomear o Query Builder e montar uma ORM em cima disso @done (13-08-15 15:21)
+✔ Fazer a rota de resize de imagem: resize/?path=&width=&height=&method=[fit|full|crop, ...] @done (13-08-26 16:49)
 
+ ☐ Atualizar o install com o install.php com as configs de application.php (downloadPaths, etc..)
  ☐ Fazer classe de erro, expondo config de show errors para local e preview, production manda e-mail e mostra um erro 500... etc.. colocar config disso no application
  ☐ Colocar flag de cache geral no config do application
  ☐ Fazer um restfy, para que um controller tenha métodos RESTful..
  ☐ Fazer um restfy com Model e ORM, apenas configurando permissões e tabela
- ☐ Fazer verificação de versão mínima do PHP (5.3), se local
- ☐ Fazer a rota de resize de imagem: resize/[path]?width=&height=&method=[fit|full|crop, ...]
+ ☐ Fazer verificação de versão mínima do PHP (5.3), se local/preview
+ ☐ Verificar erro no .htacces que influencia no download/ (assets..)
 
 
-LIBRARIES
+Guilherme:
+ng-options="o.value as o.label for o in options" Verificar os itens do itemsField, agora estão vindo key: value
+Verificar o retorno de erro do upload, agora vem como nas outras requests:
+  {
+  error: true,
+  error_description: "mensagem..."
+  }
+
+
+
+LIBRARIES:
  ✔ E-mail @done (13-08-03 02:27)
  ✔ Markdown @done (13-08-15 15:22)
+ ✔ Image @done (13-08-26 16:50)
  ☐ Validation (mais campos)
- ☐ Image
    ...
 
