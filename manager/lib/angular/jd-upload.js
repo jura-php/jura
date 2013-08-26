@@ -16,6 +16,7 @@ angular.module('jdUpload', []).
 				onError: '&',
 				onStart: '&',
 				jdAutoSubmit: '=',
+				jdAccept: '=',
 				jdPlaceholder: '@',
 				jdState: '=',
 				jdUrl: '@',
@@ -43,6 +44,12 @@ angular.module('jdUpload', []).
 				scope.$watch('jdState', function() {
 					upload();
 				});
+
+				scope.$watch('jdAccept', function(accept){
+					if(accept) {
+						element.attr('accept', accept)
+					}
+				})
 
 				var upload = function() {
 					var value, form, placeholder, iframe, id;
@@ -83,7 +90,7 @@ angular.module('jdUpload', []).
 							form.append(iframe);
 
 							// attach function to load event of the iframe
-							iframe.bind('load', function () {
+							iframe.on('load', function () {
 								// get content - requires jQuery
 								var content = iframe.contents().find('body').text();
 
@@ -113,7 +120,7 @@ angular.module('jdUpload', []).
 							});
 
 							// Attach error handler
-							iframe.bind('error', function() {
+							iframe.on('error', function() {
 								scope.$apply(function () {
 									scope.jdState = false;
 									scope.onError({content: content});

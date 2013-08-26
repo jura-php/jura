@@ -1,7 +1,7 @@
 'use strict';
 
 // Declare app level module which depends on filters, and services
-angular.module('manager', ['manager.filters', 'manager.services', 'manager.directives', 'manager.controllers', 'restangular', 'jdUpload'])
+angular.module('manager', ['manager.filters', 'manager.services', 'manager.directives', 'manager.controllers', 'restangular', 'jdUpload', 'ngCookies'])
 	.config(['$routeProvider', 'RestangularProvider', function($routeProvider, Restangular) {
 
 		Restangular.setBaseUrl(config.api_url.replace(/\/$/, ""));
@@ -22,7 +22,7 @@ angular.module('manager', ['manager.filters', 'manager.services', 'manager.direc
 
 			var has = false;
 			flags = flags.toString().toLowerCase();
-			
+
 			_.each(need.toString().toLowerCase().split(""), function(flag){
 				if(_.indexOf(flags, flag) != -1) has = true;
 			});

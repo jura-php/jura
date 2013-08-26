@@ -26,11 +26,11 @@
 			<thead>
 				<tr>
 					<th need-flag="d" width="15"><input type="checkbox" ng-model="all_checkboxes" ng-change="toggleAllCheckboxes()" /></th>
-					<th ng-repeat="f in module.fields | fieldsByFlags" width="{{(f.type == 'toggle') && '70px' || ''}}">{{f.label}}</th>
+					<th ng-repeat="f in module.fields | fieldsByFlags" width="{{(f.type == 'toggle') && '70px' || ''}}" ng-click="doOrder(f, pagination)" ng-class="{'can-order': hasFlag(f.flags, 'O')}">{{f.label}} <i ng-class="{'icon-sort-by-alphabet': (order.by == f.name && order.reverse == false || order.reqBy == f.name && order.reqReverse == false), 'icon-sort-by-alphabet-alt': (order.by == f.name && order.reverse == true || order.reqBy == f.name && order.reqReverse == true), 'icon-angle-down': (order.by != f.name && order.reqBy != f.name && hasFlag(f.flags, 'O'))}"></i></th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="data in data">
+				<tr ng-repeat="data in data | orderBy:order.by:order.reverse">
 					<td need-flag="d" width="15"><input type="checkbox" ng-model="checkboxes[data.id]" /></td>
 					<td ng-repeat="field in module.fields | fieldsByFlags" ng-click="edit($event)" ng-include="'partials/fields/list/'+field.type+'.html'"></td>
 				</tr>

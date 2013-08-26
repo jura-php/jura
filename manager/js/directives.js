@@ -262,15 +262,10 @@ angular.module('manager.directives', []).
 			restrict: 'AC',
 			controller: function($scope, $http){
 				$scope.data.then(function(data){
-
-					$scope.accepts = function () {
-						return this.field.accepts;
-					}
-
-					$scope.deleteFile = function(index){
+					$scope.deleteFile = function(index, access_token){
 						var that = this;
 
-						$http.post(that.field.resource_url + "/delete/" + ((data.id) ? data.id + "/U/" : "0/C/"), { index: index })
+						$http.post(that.field.resource_url + "/delete/" + ((data.id) ? data.id + "/U/" : "0/C/"), {index: index}, {params: {access_token: access_token}})
 							.success(function (content) {
 								data[that.field.name] = content.items;
 							})
@@ -280,23 +275,25 @@ angular.module('manager.directives', []).
 						return this.field.resource_url + "/upload/" + ((data.id) ? data.id + "/U/" : "0/C/");
 					}
 
-					$scope.jdLog = function() {
-						console.log.apply('jdLog', console, arguments);
+					$scope.jdLog = function(content) {
+						$scope.uploads.error = content;
 					};
 
-					$scope.jdSuccess = function(content) {
-						console.log('jdSuccess', arguments)
-					};
+					$scope.jdSuccess = function(content) {};
 
 					$scope.jdFinished = function(content, didUpload) {
 						var name = this.field.name;
 
 						if (content.error) {
-							console.log("UPLOAD ERROR: " + content.error);
+							$scope.uploads.error = content.error;
 						} else {
 							data[name] = content.items;
 						}
 					};
+
+					$scope.jdAccept = function(){
+						return 'image/*';
+					}
 				})
 			}
 		}
