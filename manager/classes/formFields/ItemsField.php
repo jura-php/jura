@@ -17,7 +17,7 @@ class ItemsField extends Field
 
 		$this->type = 'items';
 		$this->multiple = false;
-		$this->items = [];
+		$this->items = array();
 		$this->resourceURL = 'fields/' . $this->type . uniqueID();
 		$this->validationLength = -1;
 
@@ -34,7 +34,7 @@ class ItemsField extends Field
 
 	public function addItemsFromArray($arr)
 	{
-		$this->items = $arr;
+		$this->items = array_unique(array_merge($this->items, $arr));
 	}
 
 	public function addItemsFromTable($tableName, $fieldValue = "id", $fieldLabel = "name", $orderBy = "[label]")

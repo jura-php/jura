@@ -35,6 +35,8 @@ class FormModule extends Module
 
 		$config["uri"] = str_replace("_", "", $this->name);
 		$config["flags"] = $this->flags;
+		$config["order"] = $this->order;
+		$config["orderBy"] = $this->orderBy;
 
 		$this->loadFields();
 

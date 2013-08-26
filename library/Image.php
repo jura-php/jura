@@ -122,6 +122,7 @@ class Image
 		if (!$this->sourceResourceID)
 		{
 			$this->sourceResourceID = $this->resourceID;
+			imagesavealpha($this->sourceResourceID, true);
 		}
 		
 		$width = (int)$width;
