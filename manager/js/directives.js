@@ -263,6 +263,10 @@ angular.module('manager.directives', []).
 			controller: function($scope, $http){
 				$scope.data.then(function(data){
 
+					$scope.accepts = function () {
+						return this.field.accepts;
+					}
+
 					$scope.deleteFile = function(index){
 						var that = this;
 

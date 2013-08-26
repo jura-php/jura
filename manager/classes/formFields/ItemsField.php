@@ -22,6 +22,11 @@ class ItemsField extends Field
 		$this->validationLength = -1;
 
 		Router::register('GET', 'manager/api/' . $this->resourceURL, function () {
+			if (($token = User::validateToken()) !== true)
+			{
+				return $token;
+			}
+			
 			$this->init("C");
 			return Response::json($this->items());
 		});
