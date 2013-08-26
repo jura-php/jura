@@ -90,7 +90,7 @@ angular.module('jdUpload', []).
 							form.append(iframe);
 
 							// attach function to load event of the iframe
-							iframe.bind('load', function () {
+							iframe.on('load', function () {
 								// get content - requires jQuery
 								var content = iframe.contents().find('body').text();
 
@@ -120,7 +120,7 @@ angular.module('jdUpload', []).
 							});
 
 							// Attach error handler
-							iframe.bind('error', function() {
+							iframe.on('error', function() {
 								scope.$apply(function () {
 									scope.jdState = false;
 									scope.onError({content: content});
