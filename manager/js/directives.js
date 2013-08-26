@@ -276,10 +276,6 @@ angular.module('manager.directives', []).
 						return this.field.resource_url + "/upload/" + ((data.id) ? data.id + "/U/" : "0/C/");
 					}
 
-					$scope.jdStart = function() {
-						$scope.jdUploading = true;
-					};
-
 					$scope.jdLog = function() {
 						console.log.apply('jdLog', console, arguments);
 					};
@@ -289,7 +285,6 @@ angular.module('manager.directives', []).
 					};
 
 					$scope.jdFinished = function(content, didUpload) {
-						$scope.jdUploading = false;
 						var name = this.field.name;
 
 						if (content.error) {

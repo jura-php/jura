@@ -106,11 +106,12 @@ angular.module('manager.controllers', [])
 			$scope.acao = 'Editar';
 			$scope.actionFlag = 'ru';
 			$scope.module = module;
+			$scope.uploads = {};
 			$scope.data = Restangular.one(table, id).get();
 		}
 
 		$scope.save = function(model){
-			if(!$scope.form.$valid || $scope.jdUploading) return;
+			if(!$scope.form.$valid || $scope.uploads.uploading) return;
 
 			model.put().then(function(){
 				$location.path(table);
@@ -132,11 +133,12 @@ angular.module('manager.controllers', [])
 			$scope.acao = 'Criar';
 			$scope.actionFlag = 'c';
 			$scope.module = module;
+			$scope.uploads = {};
 			$scope.data = Restangular.one(table, 'new').get();
 		}
 
 		$scope.save = function(model){
-			if(!$scope.form.$valid) return;
+			if(!$scope.form.$valid || $scope.uploads.uploading) return;
 
 			model.post().then(function(){
 				$location.path(table);

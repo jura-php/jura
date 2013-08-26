@@ -5,14 +5,13 @@
 		<input
 			jd-upload
 
-			jd-state="jdUploading"
+			jd-state="uploads.uploading"
 
 			jd-url-method="jdUploadURL()"
 			jd-json="true"
 			jd-placeholder="<img class='ajax-loader' src='img/ajax-loader.gif' />"
 			jd-auto-submit="true"
 
-			on-start="jdStart(value)"
 			on-finished="jdFinished(content, didUpload)"
 			on-error="jdLg('error')"
 			on-success="jdSuccess(content)"

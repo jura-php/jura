@@ -173,7 +173,7 @@ class UploadField extends Field
 
 					break;
 			}
-			
+
 
 			return Response::json($return);
 		});
