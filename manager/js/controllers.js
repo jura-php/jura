@@ -35,7 +35,7 @@ angular.module('manager.controllers', [])
 			$scope.checkboxes = {};
 			$scope.search_text = $routeParams.search;
 
-			Rest.getList({page: $routeParams.page || 1, search: $routeParams.search || ''}).then(function(response){
+			Restangular.all(table).getList({page: $routeParams.page || 1, search: $routeParams.search || ''}).then(function(response){
 				$scope.data = response.data;
 				$scope.pagination = response.pagination;
 				$scope.count = response.count;
