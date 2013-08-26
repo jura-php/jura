@@ -46,16 +46,35 @@ class UploadField extends Field
 			$file = File::removeExtension(File::fileName($path));
 			$path = File::dirName($path);
 
-			list($name, $num) = explode("-", $file);
+			if (preg_match ('/(.*)-(\d+)$/', $file, $matches))
+			{
+				$num = (int)$matches[2] + 1;
+				$file = $matches[1];
+			}
+			else
+			{
+				$num = 1;
+			}
 
-			if (!is_null($num) && (int)$num == $num)
+			$file = $file . "-" . $num . "." . $ext;
+
+			/*$name = "";
+			$num = null;
+			$pieces = explode("-", $file);
+			if (count($pieces) > 1)
+			{
+				$num = end($pieces);
+				$name = substr($file, 0, strlen($file) - strlen($num) - 1);
+			}
+
+			if ($num != "" && (int)$num == $num)
 			{
 				$file = $name . "-" . ((int)$num + 1) . "." . $ext;
 			}
 			else
 			{
 				$file = $file . "-1." . $ext;
-			}
+			}*/
 
 			return static::unique($path . $file);
 		}
