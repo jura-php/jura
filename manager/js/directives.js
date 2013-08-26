@@ -262,7 +262,6 @@ angular.module('manager.directives', []).
 			restrict: 'AC',
 			controller: function($scope, $http){
 				$scope.data.then(function(data){
-
 					$scope.deleteFile = function(index, access_token){
 						var that = this;
 
