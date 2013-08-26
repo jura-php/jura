@@ -24,6 +24,8 @@
 		/>
 	</span>
 
+	<div class="form-error">{{uploads.error}}</div>
+
 	<table class="pure-table pure-table-odd" ng-show="data[field.name].length > 0">
 		<thead>
 			<tr>
@@ -35,7 +37,7 @@
 			<tr ng-repeat="(index, file) in data[field.name]">
 				<td>{{file.name}}</td>
 				<td>
-					<button ng-click="deleteFile(index)" type="button" class="pure-button pure-button-error"><i class="icon-remove"></i></button>
+					<button ng-click="deleteFile(index, structure.user.access_token)" type="button" class="pure-button pure-button-error"><i class="icon-remove"></i></button>
 				</td>
 			</tr>
 		</tbody>
