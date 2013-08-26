@@ -262,6 +262,7 @@ button {
 
             .table.editable td {
                 cursor: pointer;
+                height: 26px;
             }
 
             .table.editable tr:hover td {
