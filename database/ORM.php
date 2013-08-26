@@ -342,7 +342,7 @@ class ORM implements ArrayAccess
 			else if (!is_null($this->tableAliases))
 			{
 				$pieces = explode(".", $name);
-				
+
 				if (array_search($pieces[0], $this->tableAliases) !== false)
 				{
 					$bypassPrefix = true;
@@ -636,13 +636,13 @@ class ORM implements ArrayAccess
 
 	public function orderByAsc($name)
 	{
-		$this->orderBys[] = $this->quoteField($name) . " ASC";
+		$this->orderBys[] = $this->quoteField($name) . " ASC ";
 		return $this;
 	}
 
 	public function orderByDesc($name)
 	{
-		$this->orderBys[] = $this->quoteField($name) . " DESC";
+		$this->orderBys[] = $this->quoteField($name) . " DESC ";
 		return $this;
 	}
 

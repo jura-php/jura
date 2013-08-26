@@ -46,7 +46,7 @@ angular.module('manager.controllers', [])
 			Restangular.all(table).getList({
 				page: $routeParams.page || 1,
 				search: $routeParams.search || '',
-				orderBy: $scope.order.reqBy || false,
+				orderBy: $scope.order.reqBy || '',
 				order: ($scope.order.reqReverse) ? 'DESC' : 'ASC'
 			}).then(function(response){
 				$scope.data = response.data;
