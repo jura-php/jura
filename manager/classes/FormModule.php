@@ -62,6 +62,8 @@ class FormModule extends Module
 
 			$page = (int)Request::get("page", 1);
 			$search = Request::get("search", "");
+			$order = Request::get("order", "");
+			$orderBy = Request::get("orderBy", "");
 
 			$this->orm = $this->listCountORM();
 
@@ -122,10 +124,18 @@ class FormModule extends Module
 
 			$entries = $this->orm
 						->offset(($page - 1) * $this->pageSize)
-						->limit($this->pageSize)
-						->find();
+						->limit($this->pageSize);
 
-			foreach ($entries as $entry)
+
+			if($orderBy != ""){
+				if($order == 'ASC') {
+					$entries->orderByAsc($orderBy);
+				} else {
+					$entries->orderByDesc($orderBy);
+				}
+			}
+
+			foreach ($entries->find() as $entry)
 			{
 				$this->orm = $entry;
 
@@ -249,7 +259,7 @@ class FormModule extends Module
 			{
 				$values = array();
 				$values["id"] = (int)$this->orm->id;
-				
+
 				foreach ($fields as $field)
 				{
 					$flag = "R";
