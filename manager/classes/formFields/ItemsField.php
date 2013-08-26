@@ -26,7 +26,7 @@ class ItemsField extends Field
 			{
 				return $token;
 			}
-			
+
 			$this->init("C");
 			return Response::json($this->items());
 		});
@@ -68,8 +68,8 @@ class ItemsField extends Field
 		foreach ($this->items as $k => $v)
 		{
 			$items[] = array(
-				"value" => $k,
-				"label" => $v
+				"v" => $k,
+				"l" => $v
 			);
 		}
 

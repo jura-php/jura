@@ -10,16 +10,6 @@
  ☐ Verificar erro no .htacces que influencia no download/ (assets..)
 
 
-Guilherme:
-ng-options="o.value as o.label for o in options" Verificar os itens do itemsField, agora estão vindo key: value
-Verificar o retorno de erro do upload, agora vem como nas outras requests:
-  {
-  error: true,
-  error_description: "mensagem..."
-  }
-
-
-
 LIBRARIES:
  ✔ E-mail @done (13-08-03 02:27)
  ✔ Markdown @done (13-08-15 15:22)

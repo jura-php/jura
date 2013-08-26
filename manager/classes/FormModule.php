@@ -7,6 +7,8 @@ class FormModule extends Module
 
 	protected $flags;
 	protected $pageSize;
+	protected $order;
+	protected $orderBy;
 
 	private $fields;
 	private $name;
@@ -20,6 +22,8 @@ class FormModule extends Module
 		$this->fields = array();
 		$this->pageSize = 20;
 		$this->orm = null;
+		$this->order = "ASC";
+		$this->orderBy = "";
 
 		$name = get_class($this);
 		$this->name = Str::lower(substr($name, 0, strlen($name) - 4));
@@ -62,8 +66,8 @@ class FormModule extends Module
 
 			$page = (int)Request::get("page", 1);
 			$search = Request::get("search", "");
-			$order = Request::get("order", "");
-			$orderBy = Request::get("orderBy", "");
+			$order = Request::get("order", $this->order);
+			$orderBy = Request::get("orderBy", $this->orderBy);
 
 			$this->orm = $this->listCountORM();
 
@@ -127,10 +131,14 @@ class FormModule extends Module
 						->limit($this->pageSize);
 
 
-			if($orderBy != ""){
-				if($order == 'ASC') {
+			if ($orderBy != "")
+			{
+				if ($order == "ASC")
+				{
 					$entries->orderByAsc($orderBy);
-				} else {
+				}
+				else
+				{
 					$entries->orderByDesc($orderBy);
 				}
 			}
@@ -162,6 +170,8 @@ class FormModule extends Module
 					"previous" => $previousPage,
 				),
 				"count" => $count,
+				"order" => $order,
+				"orderBy" => $orderBy,
 				"data" => $results
 			));
 		});
