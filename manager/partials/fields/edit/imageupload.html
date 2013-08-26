@@ -24,7 +24,7 @@
 		/>
 	</span>
 
-	<div class="form-error">{{uploads.error}}</div>
+	<div class="form-error" ng-show="uploads.error.error">{{uploads.error.error_description}}</div>
 
 	<table class="pure-table pure-table-odd" ng-show="data[field.name].length > 0">
 		<thead>
