@@ -20,13 +20,21 @@ angular.module('manager.controllers', [])
 		}
 	}])
 
-	.controller('read', ['$rootScope', '$scope', '$routeParams', '$timeout', '$location', 'Restangular', function($rootScope, $scope, $routeParams, $timeout, $location, Restangular) {
+	.controller('read', ['$rootScope', '$scope', '$routeParams', '$timeout', '$location', 'Restangular', '$cookieStore', function($rootScope, $scope, $routeParams, $timeout, $location, Restangular, $cookieStore) {
 
 		if(!$rootScope.structure.user) return;
 
 		var table = $routeParams.table;
 		var module = _.where($rootScope.structure.modules, {uri: table})[0];
 		var Rest = Restangular.all(table)
+
+
+		$scope.order = JSON.parse($cookieStore.get(table + '_order') || '\{\}');
+
+		$scope.$watch('order', function(order){
+			$cookieStore.put(table + '_order', JSON.stringify(order));
+		}, true)
+
 
 		function reset() {
 			$scope.actionFlag = 'l';
@@ -35,7 +43,12 @@ angular.module('manager.controllers', [])
 			$scope.checkboxes = {};
 			$scope.search_text = $routeParams.search;
 
-			Restangular.all(table).getList({page: $routeParams.page || 1, search: $routeParams.search || ''}).then(function(response){
+			Restangular.all(table).getList({
+				page: $routeParams.page || 1,
+				search: $routeParams.search || '',
+				orderBy: $scope.order.reqBy || false,
+				order: ($scope.order.reqReverse) ? 'DESC' : 'ASC'
+			}).then(function(response){
 				$scope.data = response.data;
 				$scope.pagination = response.pagination;
 				$scope.count = response.count;
@@ -48,6 +61,31 @@ angular.module('manager.controllers', [])
 			$timeout(function(){
 				angular.element(e.target).find('a').trigger("click");
 			}, 0, false)
+		}
+
+		$scope.doOrder = function(field, pagination){
+			if(!$rootScope.hasFlag(field.flags, 'O')) return;
+			if(pagination.count > 1) return $scope.doOrderByRequest(field, pagination)
+
+			console.log($scope.order)
+
+			if($scope.order.by == field.name) {
+				$scope.order.reverse = !$scope.order.reverse;
+			} else {
+				$scope.order.by = field.name;
+				$scope.order.reverse = false;
+			}
+		}
+
+		$scope.doOrderByRequest = function(field, pagination){
+			if($scope.order.reqBy == field.name) {
+				$scope.order.reqReverse = !$scope.order.reqReverse;
+			} else {
+				$scope.order.reqBy = field.name;
+				$scope.order.reqReverse = false;
+			}
+
+			reset();
 		}
 
 		$scope.hasAtLeastOneCheckboxChecked = function() {
