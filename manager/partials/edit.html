@@ -14,7 +14,8 @@
 
 				<li class="divisor" ng-show="module.buttons.length > 0"></li>
 
-				<li><button need-flag="u" class="pure-button pure-button-primary" type="submit">Salvar</button></li>
+				<li><button need-flag="u" class="pure-button pure-button-primary" type="submit" ng-show="!saving">Salvar</button></li>
+				<li><span need-flag="u" class="pure-button pure-button-primary" ng-show="saving">Salvar&nbsp;&nbsp;<i class="icon-spin icon-spinner"></i></span></li>
 			</ul>
 
 			<div class="breadcrumb">

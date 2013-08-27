@@ -150,8 +150,10 @@ angular.module('manager.controllers', [])
 
 		$scope.save = function(model){
 			if(!$scope.form.$valid || $scope.uploads.uploading) return;
+			$scope.saving = true;
 
 			model.put().then(function(){
+				$scope.saving = false;
 				$location.path(table);
 			})
 		}
@@ -177,8 +179,10 @@ angular.module('manager.controllers', [])
 
 		$scope.save = function(model){
 			if(!$scope.form.$valid || $scope.uploads.uploading) return;
+			$scope.saving = true;
 
 			model.post().then(function(){
+				$scope.saving = false;
 				$location.path(table);
 			})
 
