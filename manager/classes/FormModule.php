@@ -401,6 +401,11 @@ class FormModule extends Module
 			}
 		}
 
+		if (is_null($icon))
+		{
+			$icon = "puzzle-piece";
+		}
+
 		$this->buttons[] = array(
 			"type" => $type,
 			"flags" => $flags,
