@@ -267,7 +267,7 @@ angular.module('manager.directives', []).
 
 						$http.post(that.field.resource_url + "/delete/" + ((data.id) ? data.id + "/U/" : "0/C/"), {index: index}, {params: {access_token: access_token}})
 							.success(function (content) {
-								data[that.field.name] = content.items;
+								$scope.data.$$v[that.field.name] = content.items;
 							})
 					}
 
@@ -287,7 +287,7 @@ angular.module('manager.directives', []).
 						if (content.error) {
 							$scope.uploads.error = content.error;
 						} else {
-							data[name] = content.items;
+							$scope.data.$$v[name] = content.items;
 						}
 					};
 

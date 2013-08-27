@@ -152,7 +152,13 @@ angular.module('manager.controllers', [])
 			$scope.data = Restangular.one(table, id).get();
 		}
 
-		$scope.$watch('data', function(){
+
+		$scope.$watch('data', function(data, oldValue){
+			if(!data || !oldValue) return;
+			$scope.saved = false;
+		}, true)
+
+		$scope.$watch('uploads.uploading', function(data, oldValue){
 			$scope.saved = false;
 		}, true)
 
@@ -165,12 +171,7 @@ angular.module('manager.controllers', [])
 
 				if(module.uniqueID) {
 					$scope.saved = true;
-					
-					//TODO: Update data
-					// $scope.$unwatch("data");
-					// $scope.data = Restangular.one(table, id).get();
-					// $scope.data.then(function () {
-					// });
+					$scope.data = Restangular.one(table, id).get();
 				} else {
 					$scope.saved = true;
 					$timeout(function(){
