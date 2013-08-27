@@ -1,5 +1,24 @@
 <?php
 
+/*
+TODO:
+function dbfile($value, $index = 0)
+{
+	$value = @json_decode($value);
+
+	if ($value)
+	{
+		return $value[$index]->path;
+	}
+
+	return false;
+}
+
+function dbimage($value, $sample = null, $index = 0)
+{
+
+}*/
+
 function dump($value)
 {
 	echo "<pre>";
