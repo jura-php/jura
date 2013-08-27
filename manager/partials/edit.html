@@ -13,9 +13,10 @@
 
 				<li class="divisor" ng-show="module.buttons.length > 0"></li>
 
-				<li><button need-flag="u" class="pure-button pure-button-primary" type="submit" ng-show="!saving && !saved">Salvar</button></li>
-				<li><span need-flag="u" class="pure-button pure-button-primary" ng-show="saving && !saved">Salvar&nbsp;&nbsp;<i class="icon-spin icon-spinner"></i></span></li>
-				<li><span need-flag="u" class="pure-button pure-button-success" ng-show="saved">Salvo &nbsp;&nbsp;<i class="icon-ok"></i></span></li>
+				<li><button need-flag="u" class="pure-button pure-button-primary" type="submit" ng-show="!saving && !saved && !error">Salvar</button></li>
+				<li><span need-flag="u" class="pure-button pure-button-primary" ng-show="saving && !saved && !error">Salvar&nbsp;&nbsp;<i class="icon-spin icon-spinner"></i></span></li>
+				<li><span need-flag="u" class="pure-button pure-button-success" ng-show="saved && !error">Salvo &nbsp;&nbsp;<i class="icon-ok"></i></span></li>
+				<li><span need-flag="u" class="pure-button pure-button-error" ng-show="error">{{error_description}}</span></li>
 			</ul>
 
 			<div class="breadcrumb">
