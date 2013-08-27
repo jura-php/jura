@@ -297,5 +297,47 @@ angular.module('manager.directives', []).
 				})
 			}
 		}
-	});
+	}).
+
+	directive('name', [function () {
+		return {
+			restrict: 'A',
+
+			controller: function($scope, $http, $location){
+				$scope.doButtonAction = function(button, token){
+					//type request
+					if(button.type == 'request'){
+						button.loading = true;
+						$http.get(button.url, {params: {access_token: token}})
+							.success(function(response){
+								button.loading = true;
+								if(!response.error){
+									alert(response.message)
+								} else {
+									alert(response.error_description)
+								}
+							})
+					}
+
+					//type redirect
+					if(button.type == 'redirect'){
+						$location.path(button.url)
+					}
+
+					//type print
+					if(button.type == 'print'){
+						window.print();
+					}
+
+					//type export
+					if(button.type == 'export'){
+						var use = (/\?/.test(button.url)) ? '&' : '?';
+						window.open(button.url + use + 'access_token=' + token);
+					}
+
+				}
+			}
+		};
+	}])
+
 
