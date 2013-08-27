@@ -107,10 +107,8 @@ require J_SYSTEMPATH . "core" . DS . "Route" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Cache" . EXT;
 Cache::init();
 
-Router::register("GET", "download/(:all)", function () {
-	$pieces = explode("/", Request::pathInfo());
-	array_shift($pieces); //(empty space)
-	array_shift($pieces); //download
+Router::register("GET", "download/", function () {
+	$pieces = explode("/", trim(Request::get("path"), "/"));
 
 	$path = implode(DS, $pieces);
 
@@ -133,7 +131,7 @@ Router::register("GET", "download/(:all)", function () {
 		return;
 	}
 
-	Response::download(J_PATH . DS . $path, Request::get("name"));
+	Response::download(J_PATH . $path, Request::get("name"));
 });
 
 Router::register("GET", "thumb/", function () {
@@ -141,7 +139,7 @@ Router::register("GET", "thumb/", function () {
 
 	$path = implode(DS, $pieces);
 
-	$allowedPaths = array("storage", "public/img", "app/assets/img");
+	$allowedPaths = Config::item("application", "thumbPaths");
 	$allowed = false;
 
 	foreach ($allowedPaths as $dir)
@@ -160,12 +158,12 @@ Router::register("GET", "thumb/", function () {
 
 	$path = implode(DS, $pieces);
 
-	if (!File::exists(J_PATH . DS . $path) || is_dir(J_PATH . DS . $path))
+	if (!File::exists(J_PATH . $path) || is_dir(J_PATH . $path))
 	{
 		return Response::code(404);
 	}
 
-	$im = new Image(J_PATH . DS . $path);
+	$im = new Image(J_PATH . $path);
 	$im->resize((int)Request::get("width"), (int)Request::get("height"), Request::get("method", "fit"), Request::get("background", 0xFFFFFF));
 	$im->header();
 });

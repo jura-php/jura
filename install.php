@@ -99,7 +99,7 @@ $folders = array(
 		"models" => "#keep#",
 		"storage" => array(
 			"cache" => "#keep#",
-			"uploads" => "#keep#"
+			"tmp" => "#keep#"
 		),
 		"views" => "#keep#"
 	),
@@ -163,12 +163,27 @@ return array(
 	"build" => array(
 		"css" => false,
 		"js" => false
+	),
+
+	//allowed directories that can have files downloaded from
+	"downloadPaths" => array(
+		"app/storage/"
+	),
+
+	//allowed directories that can have images resized automatically
+	"thumbPaths" => array(
+		"app/storage/",
+		"app/assets/img/",
+		"public/img/"
 	)
 );
 ?>';
 });
 
-make_file("../config/.gitignore", "/databases.php");
+make_file("../.gitignore", "node_modules
+public/_dist
+config/databases.php
+app/storage/tmp/*");
 
 make_file(array("../config/databases.sample.php", "../config/databases.php"), '<?php
 return array(
@@ -230,7 +245,7 @@ make_file("../.htaccess", '<IfModule mod_rewrite.c>
 
 	#App public
 	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule ^(.*)\.(html|css|js|jpg|png|gif|ttf|eot|svg|woff) public/$1.$2 [L,QSA]
+	RewriteRule ^(.*)\.(html|css|js|jpg|png|gif|ttf|eot|svg|woff) public/$1.$2 [QSA]
 
 	#App public index.html
 	RewriteRule ^$ public/index.html [QSA]

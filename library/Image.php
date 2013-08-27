@@ -127,6 +127,13 @@ class Image
 		
 		$width = (int)$width;
 		$height = (int)$height;
+
+		if ($width == 0 && $height == 0)
+		{
+			$width = $this->width;
+			$height = $this->height;
+		}
+
 		$newRect = array(0, 0, 0, 0);
 		$relW = $this->width / $width;
 		$relH = $this->height / $height;

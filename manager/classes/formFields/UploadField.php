@@ -189,7 +189,6 @@ class UploadField extends Field
 		$destPath = static::storagePath() . File::formatDir($this->path);
 		
 		File::mkdir($destPath);
-		File::permission($destPath);
 
 		$files = json_decode(Session::get($this->sessionKey), true);
 

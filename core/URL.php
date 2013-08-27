@@ -27,7 +27,7 @@ class URL
 	public static function download($path)
 	{
 		$path = trim($path, "/");
-		return rtrim(static::root(false), "/") . "/download/" . $path . "/";
+		return rtrim(static::root(false), "/") . "/download/?path=" . $path;
 	}
 
 	public static function thumb($path, $width = 0, $height = 0, $method = "fit", $background = null)
