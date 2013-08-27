@@ -50,6 +50,16 @@ class FormModule extends Module
 				"icon" => $button["icon"]
 			);
 
+			if ($button["type"] == "export" || $button["type"] == "request")
+			{
+				$info["url"] = $button["url"];
+			}
+
+			if ($button["type"] == "redirect")
+			{
+				$info["url"] = $button["callback"];
+			}
+
 			$buttons[] = $info;
 		}
 		$config["buttons"] = $buttons;
@@ -385,9 +395,11 @@ class FormModule extends Module
 		}
 	}
 
-	//types: print,
+	//types: request, redirect, print,  export
 	protected function button($type, $flags, $label = null, $icon = null, $callback = null)
 	{
+		$url = "";
+
 		if ($type == "print")
 		{
 			if (is_null($label))
@@ -400,19 +412,47 @@ class FormModule extends Module
 				$icon = "icon-print";
 			}
 		}
-
-		if (is_null($icon))
+		else if ($type == "export")
 		{
-			$icon = "puzzle-piece";
+			if (is_null($label))
+			{
+				$label = "Exportar";
+			}
+
+			if (is_null($icon))
+			{
+				$icon = "icon-share";
+			}
+		}
+		else if ($type == "redirect" || $type == "request")
+		{
+			if (is_null($icon))
+			{
+				$icon = "icon-arrow-right";
+			}
+
+			$uri = "manager/api/button" . uniqueID();
+			$url = URL::root(false) . $uri;
+
+			Router::register("GET", $uri, function () use ($callback) {
+				call_user_func($callback);
+			});
 		}
 
-		$this->buttons[] = array(
+		$info = array(
 			"type" => $type,
 			"flags" => $flags,
 			"label" => $label,
 			"icon" => $icon,
 			"callback" => $callback
 		);
+
+		if ($type == "redirect" || $type == "request")
+		{
+			$info["url"] = $url;
+		}
+
+		$this->buttons[] = $info;
 	}
 
 	protected function addField($field, $flags = "LOFCRU")

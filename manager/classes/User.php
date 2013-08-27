@@ -150,7 +150,7 @@ class User
 	public static function error($code, $description)
 	{
 		Response::code($code);
-		return Response::json(array("error_description" => $description));
+		return Response::json(array("error" => true, "error_description" => $description));
 	}
 
 	private static function token($emitError = true)
