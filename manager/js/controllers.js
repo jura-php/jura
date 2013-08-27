@@ -28,6 +28,9 @@ angular.module('manager.controllers', [])
 		var module = _.where($rootScope.structure.modules, {uri: table})[0];
 		var Rest = Restangular.all(table)
 
+		if(module.unique_id) {
+			$location.path(table + '/edit/' + module.unique_id)
+		}
 
 		$scope.order = JSON.parse($cookieStore.get(table + '_order') || '\{\}');
 

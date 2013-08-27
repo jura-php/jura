@@ -38,7 +38,12 @@ angular.module('manager', ['manager.filters', 'manager.services', 'manager.direc
 		}
 
 		Restangular.setErrorInterceptor(function(response){
-			$location.path('/login');
+			if(response.code == 403) {
+				$location.path('/login');
+			} else {
+				alert('Um alert é constrangedor. Porém, ocorreu um erro com sua requisição.')
+			}
+
 		})
 
 		$rootScope.$watch('structure.user', function(user){
