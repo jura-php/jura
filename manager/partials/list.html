@@ -6,9 +6,11 @@
 	<div id="content">
 
 		<ul class="actions">
-			<li ng-repeat="button in module.buttons | fieldsByFlags">
+			<li class="custom-button" ng-repeat="button in module.buttons | fieldsByFlags">
 				<a class="pure-button" custom-button ng-click="doButtonAction(button, structure.user.access_token, actionFlag)"><i ng-class="button.icon"></i> {{button.label}} <i ng-show="button.loading" class="icon-spin icon-spinner"></i></a>
 			</li>
+
+			<li class="divisor" ng-show="module.buttons.length > 0"></li>
 
 			<li need-flag="f">
 				<form class="pure-form search-form" ng-submit="search()">
@@ -18,8 +20,10 @@
 				</form>
 			</li>
 
+			<li class="divisor" ng-show="hasFlag(module.flags, 'c')"></li>
+
 			<li need-flag="d" ng-show="hasAtLeastOneCheckboxChecked()"><button class="pure-button pure-button-error" ng-click="removeSelected()">Remover Selecionados</button></li>
-			<li need-flag="c"><a href="#/{{module.uri}}/new" class="pure-button pure-button-primary">Novo</a></li>
+			<li need-flag="c" ng-class="divisor"><a href="#/{{module.uri}}/new" class="pure-button pure-button-primary">Novo</a></li>
 		</ul>
 
 		<div class="breadcrumb">

@@ -245,11 +245,20 @@ button {
                 display: inline-block;
             }
 
-            .search-form {
+            .actions .divisor {
                 border-right: 1px solid #ddd;
+                height: 33px;
+                vertical-align: top;
+                margin: 0 10px;
+            }
+
+                .actions .custom-button {
+                    margin-left: 3px;
+                }
+
+            .search-form {
                 display: block;
-                padding-right: 10px;
-                margin-right: 7px;
+                margin-right: 0;
             }
                 .search-form  .pure-button {
                     margin-left: 10px;

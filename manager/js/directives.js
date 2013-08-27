@@ -310,7 +310,7 @@ angular.module('manager.directives', []).
 					if(button.type == 'request'){
 						button.loading = true;
 
-						$http.get(button.url, {params: {access_token: token, action_flag: actionFlag, id: id}})
+						$http.get(button.url, {params: {access_token: token, flag: actionFlag, id: id}})
 							.success(function(response){
 								button.loading = false;
 								if(!response.error){
@@ -338,7 +338,7 @@ angular.module('manager.directives', []).
 					//type export
 					if(button.type == 'export'){
 						var use = (/\?/.test(button.url)) ? '&' : '?';
-						window.open(button.url + use + 'access_token=' + token + '&action_flag=' + actionFlag + ((id) ? '&id=' + id : ''));
+						window.open(button.url + use + 'access_token=' + token + '&flag=' + actionFlag + ((id) ? '&id=' + id : ''));
 					}
 
 				}
