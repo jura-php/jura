@@ -28,8 +28,8 @@ angular.module('manager.controllers', [])
 		var module = _.where($rootScope.structure.modules, {uri: table})[0];
 		var Rest = Restangular.all(table)
 
-		if(module.unique_id) {
-			$location.path(table + '/edit/' + module.unique_id)
+		if(module.uniqueID) {
+			$location.path(table + '/edit/' + module.uniqueID)
 		}
 
 		$scope.order = JSON.parse($cookieStore.get(table + '_order') || '\{\}');
@@ -144,7 +144,7 @@ angular.module('manager.controllers', [])
 		var module = _.where($rootScope.structure.modules, {uri: table})[0];
 
 		if(module) {
-			// module.unique_id = 4;
+			// module.uniqueID = 4;
 			$scope.acao = 'Editar';
 			$scope.actionFlag = 'ru';
 			$scope.module = module;
@@ -163,14 +163,19 @@ angular.module('manager.controllers', [])
 			model.put().then(function(){
 				$scope.saving = false;
 
-				if(module.unique_id) {
+				if(module.uniqueID) {
 					$scope.saved = true;
+					
+					//TODO: Update data
+					// $scope.$unwatch("data");
+					// $scope.data = Restangular.one(table, id).get();
+					// $scope.data.then(function () {
+					// });
 				} else {
 					$scope.saved = true;
 					$timeout(function(){
 						$location.path(table);
 					}, 300)
-
 				}
 			})
 		}

@@ -19,8 +19,8 @@
 			</ul>
 
 			<div class="breadcrumb">
-				<h1 ng-show="!module.unique_id"><i ng-class="module.icon"></i> {{acao}} <a href="#/{{module.uri}}">{{module.title}}</a> {{(data.id) && '#' + data.id || ''}} <loader /></h1>
-				<h1 ng-show="module.unique_id"><i ng-class="module.icon"></i> {{module.title}}<loader /></h1>
+				<h1 ng-show="!module.uniqueID"><i ng-class="module.icon"></i> {{acao}} <a href="#/{{module.uri}}">{{module.title}}</a> {{(data.id) && '#' + data.id || ''}} <loader /></h1>
+				<h1 ng-show="module.uniqueID"><i ng-class="module.icon"></i> {{module.title}}<loader /></h1>
 			</div>
 
 			<fieldset ng-show="data">
