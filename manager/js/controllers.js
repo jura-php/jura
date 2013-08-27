@@ -156,11 +156,14 @@ angular.module('manager.controllers', [])
 		$scope.$watch('data', function(data, oldValue){
 			if(!data || !oldValue) return;
 			$scope.saved = false;
+			$scope.error = false;
 		}, true)
 
 		$scope.$watch('uploads.uploading', function(data, oldValue){
 			$scope.saved = false;
+			$scope.error = false;
 		}, true)
+
 
 		$scope.save = function(model){
 			if(!$scope.form.$valid || $scope.uploads.uploading) return;
@@ -178,6 +181,9 @@ angular.module('manager.controllers', [])
 						$location.path(table);
 					}, 300)
 				}
+			}, function(response){
+				$scope.error = response.error;
+				$scope.error_description = response.error_description;
 			})
 		}
 
@@ -200,13 +206,30 @@ angular.module('manager.controllers', [])
 			$scope.data = Restangular.one(table, 'new').get();
 		}
 
+
+		$scope.$watch('data', function(data, oldValue){
+			if(!data || !oldValue) return;
+			$scope.saved = false;
+			$scope.error = false;
+		}, true)
+
+		$scope.$watch('uploads.uploading', function(data, oldValue){
+			$scope.saved = false;
+			$scope.error = false;
+		}, true)
+
+
 		$scope.save = function(model){
 			if(!$scope.form.$valid || $scope.uploads.uploading) return;
 			$scope.saving = true;
 
 			model.post().then(function(){
 				$scope.saving = false;
+				$scope.saved = true;
 				$location.path(table);
+			}, function(response){
+				$scope.error = response.error;
+				$scope.error_description = response.error_description;
 			})
 
 		}
