@@ -1,0 +1,12 @@
+#side {
+    display: none;
+}
+
+#main {
+    margin-left: 0
+}
+
+
+#content .actions {
+    display: none;
+}
