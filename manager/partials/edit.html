@@ -8,6 +8,10 @@
 		<form class="pure-form pure-form-stacked" ng-submit="save(data)" name="form">
 
 			<ul class="actions">
+				<li ng-repeat="button in module.buttons">
+					<a need-flag="u" class="pure-button" custom-button ng-click="click()">{{button.label}}</a>
+				</li>
+
 				<li><button need-flag="u" class="pure-button pure-button-primary" type="submit">Salvar</button></li>
 			</ul>
 

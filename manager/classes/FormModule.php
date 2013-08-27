@@ -12,6 +12,7 @@ class FormModule extends Module
 
 	private $fields;
 	private $name;
+	private $buttons;
 
 	public function __construct()
 	{
@@ -24,6 +25,7 @@ class FormModule extends Module
 		$this->orm = null;
 		$this->order = "ASC";
 		$this->orderBy = "";
+		$this->buttons = array();
 
 		$name = get_class($this);
 		$this->name = Str::lower(substr($name, 0, strlen($name) - 4));
@@ -38,10 +40,19 @@ class FormModule extends Module
 		$config["order"] = $this->order;
 		$config["orderBy"] = $this->orderBy;
 
+		$buttons = array();
+		foreach ($this->buttons as $button)
+		{
+			$buttons[] = array(
+				"label" => $button["label"],
+				"flags" => $button["flags"]
+			);
+		}
+		$config["buttons"] = $buttons;
+
 		$this->loadFields();
 
 		$fields = array();
-
 		foreach ($this->fields as $field)
 		{
 			$fields[] = $field->config();
@@ -368,6 +379,15 @@ class FormModule extends Module
 		{
 			$this->fields();
 		}
+	}
+
+	protected function button($label, $flags, $callback)
+	{
+		$this->buttons[] = array(
+			"label" => $label,
+			"flags" => $flags,
+			"callback" => $callback
+		);
 	}
 
 	protected function addField($field, $flags = "LOFCRU")

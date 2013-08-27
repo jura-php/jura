@@ -33,42 +33,23 @@ angular.module('manager.filters', []).
 		return function(input, current, total) {
 			var total = parseInt(total);
 			var show = 10;
-
-
-			if(total <= show) {
-				for (var i=current; i<=total; i++){
-					input.push(i);
-				}
-
-				return input;
+			var min, max;
+			if (current <= show / 2){
+				min = 1;
+				max = Math.min(total, min + show);
+			}else if (current >= total - (show / 2)){
+				max = total;
+				min = Math.max(1, max - show);
+			}else{
+				min = Math.max(1, current - (show / 2));
+				max = Math.min(total, min + show);
 			}
 
-			if(total > show) {
-				var remaining = 0;
-				var prepend = 0;
-
-				for(var i = 0; i < show; i++) {
-					var num = current+i-show/2;
-					if(num < 1) {
-						remaining++;
-					} else if (num > total) {
-						prepend++;
-					} else {
-						input.push(num);
-					}
-				}
-
-				for (var i = 0; i < remaining; i++) {
-					input.push(input[input.length - 1] + 1);
-				}
-
-				for (var i = 0; i < prepend; i++) {
-					input.unshift(input[0] - 1);
-				}
-
-				return input;
+			for (var i=min; i<=max; i++){
+				input.push(i);
 			}
 
+			return input;
 		};
 	}).
 
