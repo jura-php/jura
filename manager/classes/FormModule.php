@@ -4,6 +4,7 @@ class FormModule extends Module
 	public $flag;
 	public $orm;
 	public $tableName;
+	public $uniqueID;
 
 	protected $flags;
 	protected $pageSize;
@@ -26,6 +27,7 @@ class FormModule extends Module
 		$this->order = "ASC";
 		$this->orderBy = "";
 		$this->buttons = array();
+		$this->uniqueID = false;
 
 		$name = get_class($this);
 		$this->name = Str::lower(substr($name, 0, strlen($name) - 4));
@@ -39,6 +41,7 @@ class FormModule extends Module
 		$config["flags"] = $this->flags;
 		$config["order"] = $this->order;
 		$config["orderBy"] = $this->orderBy;
+		$config["uniqueID"] = $this->uniqueID;
 
 		$buttons = array();
 		foreach ($this->buttons as $button)
@@ -389,13 +392,56 @@ class FormModule extends Module
 
 	private function loadFields()
 	{
+		if (Str::contains($this->flags, "U") && !Str::contains($this->flags, "R"))
+		{
+			$this->flags .= "R";
+		}
+
 		if (count($this->fields) == 0)
 		{
 			$this->fields();
 		}
 	}
 
-	//types: request, redirect, print,  export
+	protected function addField($field, $flags = "LOFCRU")
+	{
+		if (Str::contains($flags, "U") && !Str::contains($flags, "R"))
+		{
+			$flags .= "R";
+		}
+
+		$filteredFlags = "";
+		for ($i = 0; $i < strlen($flags); $i++)
+		{
+			if (Str::contains($this->flags, $flags{$i}))
+			{
+				$filteredFlags .= $flags{$i};
+			}
+		}
+
+		$field->module = $this;
+		$field->flags = $filteredFlags;
+
+		$this->fields[] = $field;
+	}
+
+	/*
+	Examples:
+
+	$this->button("print", "LR");
+
+	$this->button("export", "LR", null, null, function () {
+		return Response::downloadContent("content", "export.csv");
+	});
+
+	$this->button("redirect", "LR", "Usuários", null, "/registers");
+
+	$this->button("request", "LR", "Request", null, function () {
+		return Response::json(array(
+			"message" => $this->flag . " - " . ($this->orm ? $this->orm->id : "(sem id)")
+		));
+	});
+	*/
 	protected function button($type, $flags, $label = null, $icon = null, $callback = null)
 	{
 		if ($type == "print")
@@ -444,29 +490,29 @@ class FormModule extends Module
 			$info["url"] = URL::root(false) . $uri;
 
 			Router::register("GET", $uri, function () use ($callback) {
+				if (($token = User::validateToken()) !== true)
+				{
+					return $token;
+				}
+
+				$id = (int)Request::get("id", 0);
+				$this->flag = Str::upper(Request::get("flag", "L"));
+
+				if ($this->flag == "RU")
+				{
+					$this->flag == "R";
+				}
+
+				if ($id > 0)
+				{
+					$this->orm = ORM::make($this->tableName)->where("id", $id)->findFirst();
+				}
+
 				return call_user_func($callback);
 			});
 		}
 
 		$this->buttons[] = $info;
-	}
-
-	protected function addField($field, $flags = "LOFCRU")
-	{
-		$filteredFlags = "";
-
-		for ($i = 0; $i < strlen($flags); $i++)
-		{
-			if (Str::contains($this->flags, $flags{$i}))
-			{
-				$filteredFlags .= $flags{$i};
-			}
-		}
-
-		$field->module = $this;
-		$field->flags = $filteredFlags;
-
-		$this->fields[] = $field;
 	}
 
 	protected function listORM()

@@ -33,6 +33,35 @@ class Response
 		return json_encode($data);
 	}
 
+	public static function downloadContent($content, $name, $headers = array())
+	{
+		$ext = File::extension($name);
+
+		if ($ext == "")
+		{
+			$ext = "txt";
+			$name .= ".txt";
+		}
+
+		$headers = array_merge(array(
+			'Content-Description' => 'File Transfer',
+			'Content-Type' => File::mime($ext),
+			'Content-Transfer-Encoding' => 'binary',
+			'Expires' => 0,
+			'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+			'Pragma' => 'public',
+			'Content-Length' => strlen($content),
+			'Content-Disposition' => 'attachment; filename="' . str_replace('"', '\\"', $name) . '"'
+		), $headers);
+
+		foreach ($headers as $k => $v)
+		{
+			header($k . ": " . $v);
+		}
+
+		echo $content;
+	}
+
 	public static function download($path, $name = null, $headers = array())
 	{
 		if (!file_exists($path))
