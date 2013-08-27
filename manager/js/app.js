@@ -60,6 +60,20 @@ angular.module('manager', ['manager.filters', 'manager.services', 'manager.direc
 			return module;
 		}
 
+		$rootScope.notification = function(title, content){
+			if (!window.webkitNotifications) return;
+
+			if (window.webkitNotifications.checkPermission() == 0) { // 0 is PERMISSION_ALLOWED
+				var notification = window.webkitNotifications.createNotification('icon.png', title, content);
+				notification.show();
+			} else {
+				window.webkitNotifications.requestPermission();
+			}
+		}
+
+
+		$rootScope.notification('foo', 'bar')
+
 	}]);
 
 

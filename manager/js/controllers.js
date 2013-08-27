@@ -135,7 +135,7 @@ angular.module('manager.controllers', [])
 
 	}])
 
-	.controller('edit', ['$rootScope', '$scope', '$routeParams', '$location', 'Restangular', '$http', function($rootScope, $scope, $routeParams, $location, Restangular, $http) {
+	.controller('edit', ['$rootScope', '$scope', '$routeParams', '$location', 'Restangular', '$http', '$timeout', function($rootScope, $scope, $routeParams, $location, Restangular, $http, $timeout) {
 
 		if(!$rootScope.structure.user) return;
 
@@ -144,6 +144,7 @@ angular.module('manager.controllers', [])
 		var module = _.where($rootScope.structure.modules, {uri: table})[0];
 
 		if(module) {
+			// module.unique_id = 4;
 			$scope.acao = 'Editar';
 			$scope.actionFlag = 'ru';
 			$scope.module = module;
@@ -151,13 +152,26 @@ angular.module('manager.controllers', [])
 			$scope.data = Restangular.one(table, id).get();
 		}
 
+		$scope.$watch('data', function(){
+			$scope.saved = false;
+		}, true)
+
 		$scope.save = function(model){
 			if(!$scope.form.$valid || $scope.uploads.uploading) return;
 			$scope.saving = true;
 
 			model.put().then(function(){
 				$scope.saving = false;
-				$location.path(table);
+
+				if(module.unique_id) {
+					$scope.saved = true;
+				} else {
+					$scope.saved = true;
+					$timeout(function(){
+						$location.path(table);
+					}, 300)
+
+				}
 			})
 		}
 
