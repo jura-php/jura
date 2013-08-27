@@ -304,12 +304,13 @@ angular.module('manager.directives', []).
 			restrict: 'A',
 
 			controller: function($scope, $http, $location){
-				$scope.doButtonAction = function(button, token, module, data){
+				$scope.doButtonAction = function(button, token, actionFlag, id){
+
 					//type request
 					if(button.type == 'request'){
 						button.loading = true;
 
-						$http.get(button.url, {params: {access_token: token}})
+						$http.get(button.url, {params: {access_token: token, action_flag: actionFlag, id: id}})
 							.success(function(response){
 								button.loading = false;
 								if(!response.error){
@@ -317,9 +318,9 @@ angular.module('manager.directives', []).
 								} else {
 									alert(response.error_description)
 								}
-							}).error(function (error) {
+							})
+							.error(function (error) {
 								button.loading = false;
-
 								alert("Occoreu um erro.");
 							})
 					}
@@ -337,7 +338,7 @@ angular.module('manager.directives', []).
 					//type export
 					if(button.type == 'export'){
 						var use = (/\?/.test(button.url)) ? '&' : '?';
-						window.open(button.url + use + 'access_token=' + token);
+						window.open(button.url + use + 'access_token=' + token + '&action_flag=' + actionFlag + ((id) ? '&id=' + id : ''));
 					}
 
 				}

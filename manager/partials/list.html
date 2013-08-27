@@ -7,7 +7,7 @@
 
 		<ul class="actions">
 			<li ng-repeat="button in module.buttons | fieldsByFlags">
-				<a class="pure-button" custom-button ng-click="doButtonAction(button, structure.user.access_token, module, data)"><i ng-class="button.icon"></i> {{button.label}} <i ng-show="button.loading" class="icon-spin icon-spinner"></i></a>
+				<a class="pure-button" custom-button ng-click="doButtonAction(button, structure.user.access_token, actionFlag)"><i ng-class="button.icon"></i> {{button.label}} <i ng-show="button.loading" class="icon-spin icon-spinner"></i></a>
 			</li>
 
 			<li need-flag="f">
