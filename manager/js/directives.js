@@ -285,7 +285,7 @@ angular.module('manager.directives', []).
 						var name = this.field.name;
 
 						if (content.error) {
-							$scope.uploads.error = content.error;
+							$scope.uploads.error = content.error_description;
 						} else {
 							$scope.data.$$v[name] = content.items;
 						}
