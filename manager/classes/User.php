@@ -23,9 +23,10 @@ class User
 			{
 				$userID = $orm->id;
 
-				//Clear old tokens for this client
+				//Clear expired tokens for this client
 				ORM::make("manager_tokens")
 							->where("userID", "=", $userID)
+							->where("expirationDate", "<", php_sql_datetime(time()))
 							->deleteMany();
 
 				//Create token and return the json

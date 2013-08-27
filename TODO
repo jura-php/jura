@@ -9,6 +9,7 @@
  ☐ Fazer um restfy, para que um controller tenha métodos RESTful..
  ☐ Fazer um restfy com Model e ORM, apenas configurando permissões e tabela
  ☐ Fazer verificação de versão mínima do PHP (5.3), se local/preview
+ ☐ Fazer uma classe ou função helper para parsear os dados dos campos de upload e imageUpload
 
 
 LIBRARIES:
