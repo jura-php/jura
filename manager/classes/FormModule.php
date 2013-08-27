@@ -43,10 +43,14 @@ class FormModule extends Module
 		$buttons = array();
 		foreach ($this->buttons as $button)
 		{
-			$buttons[] = array(
+			$info = array(
+				"type" => $button["type"],
+				"flags" => $button["flags"],
 				"label" => $button["label"],
-				"flags" => $button["flags"]
+				"icon" => $button["icon"]
 			);
+
+			$buttons[] = $info;
 		}
 		$config["buttons"] = $buttons;
 
@@ -381,11 +385,27 @@ class FormModule extends Module
 		}
 	}
 
-	protected function button($label, $flags, $callback)
+	//types: print,
+	protected function button($type, $flags, $label = null, $icon = null, $callback = null)
 	{
+		if ($type == "print")
+		{
+			if (is_null($label))
+			{
+				$label = "Imprimir";
+			}
+
+			if (is_null($icon))
+			{
+				$icon = "icon-print";
+			}
+		}
+
 		$this->buttons[] = array(
-			"label" => $label,
+			"type" => $type,
 			"flags" => $flags,
+			"label" => $label,
+			"icon" => $icon,
 			"callback" => $callback
 		);
 	}
