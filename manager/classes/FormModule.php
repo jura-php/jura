@@ -398,8 +398,6 @@ class FormModule extends Module
 	//types: request, redirect, print,  export
 	protected function button($type, $flags, $label = null, $icon = null, $callback = null)
 	{
-		$url = "";
-
 		if ($type == "print")
 		{
 			if (is_null($label))
@@ -430,13 +428,6 @@ class FormModule extends Module
 			{
 				$icon = "icon-arrow-right";
 			}
-
-			$uri = "manager/api/button" . uniqueID();
-			$url = URL::root(false) . $uri;
-
-			Router::register("GET", $uri, function () use ($callback) {
-				call_user_func($callback);
-			});
 		}
 
 		$info = array(
@@ -447,9 +438,14 @@ class FormModule extends Module
 			"callback" => $callback
 		);
 
-		if ($type == "redirect" || $type == "request")
+		if ($type == "export" || $type == "request")
 		{
-			$info["url"] = $url;
+			$uri = "manager/api/button" . uniqueID();
+			$info["url"] = URL::root(false) . $uri;
+
+			Router::register("GET", $uri, function () use ($callback) {
+				return call_user_func($callback);
+			});
 		}
 
 		$this->buttons[] = $info;

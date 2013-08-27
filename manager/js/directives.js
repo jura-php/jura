@@ -299,23 +299,28 @@ angular.module('manager.directives', []).
 		}
 	}).
 
-	directive('name', [function () {
+	directive('customButton', [function () {
 		return {
 			restrict: 'A',
 
 			controller: function($scope, $http, $location){
-				$scope.doButtonAction = function(button, token){
+				$scope.doButtonAction = function(button, token, module, data){
 					//type request
 					if(button.type == 'request'){
 						button.loading = true;
+
 						$http.get(button.url, {params: {access_token: token}})
 							.success(function(response){
-								button.loading = true;
+								button.loading = false;
 								if(!response.error){
 									alert(response.message)
 								} else {
 									alert(response.error_description)
 								}
+							}).error(function (error) {
+								button.loading = false;
+
+								alert("Occoreu um erro.");
 							})
 					}
 
