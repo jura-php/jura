@@ -24,22 +24,24 @@ class ManyToOneField extends ItemsField
 		echo "ERROR..."; //TODO: Put on error class
 	}
 
-	public function init($flag)
+	public function init()
 	{
+		$flag = $this->module->flag;
+		
 		if ($flag == "C" || $flag == "R" || $flag == "U")
 		{
 			$this->addItemsFromTable($this->relationTableName, $this->relationKeyField, $this->relationNameField);
 		}
 	}
 
-	public function format($value, $flag)
+	public function format($value)
 	{
-		if ($flag == "L")
+		if ($this->module->flag == "L")
 		{
 			return $value;
 		}
 
-		return parent::format($value, $flag);
+		return parent::format($value);
 	}
 
 	public function select()

@@ -135,15 +135,15 @@ class UploadField extends Field
 		], $arr);
 	}
 
-	public function init($flag)
+	public function init()
 	{
-		if ($flag == "C" && !$this->module->orm)
+		if ($this->module->flag == "C" && !$this->module->orm)
 		{
 			Session::set($this->sessionKey, json_encode(array()));
 		}
 	}
 
-	public function value($flag)
+	public function value()
 	{
 		$value = $this->module->orm->field($this->name);
 
@@ -183,8 +183,9 @@ class UploadField extends Field
 		return $items;
 	}
 
-	public function save($value, $flag)
+	public function save($value)
 	{
+		$flag = $this->module->flag;
 		$path = File::formatDir($this->path);
 		$destPath = static::storagePath() . File::formatDir($this->path);
 		

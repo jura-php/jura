@@ -13,12 +13,12 @@ class StaticField extends TextField
 		return false;
 	}
 
-	public function value($flag)
+	public function value()
 	{
 		return "";
 	}
 
-	public function save($value, $flag)
+	public function save($value)
 	{
 
 	}

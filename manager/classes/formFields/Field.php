@@ -29,7 +29,7 @@ class Field
 		$this->validationLength = 255;
 	}
 
-	public function init($flag)
+	public function init()
 	{
 
 	}
@@ -57,7 +57,7 @@ class Field
 		);
 	}
 
-	public function format($value, $flag)
+	public function format($value)
 	{
 		return $value;
 	}
@@ -77,7 +77,7 @@ class Field
 		return true;
 	}
 
-	public function save($value, $flag)
+	public function save($value)
 	{
 		if ($this->includeOnSQL())
 		{
@@ -90,14 +90,14 @@ class Field
 		}
 	}
 
-	public function value($flag)
+	public function value()
 	{
 		$value = $this->module->orm->field($this->name);
 
-		return $this->format($value, $flag);
+		return $this->format($value);
 	}
 
-	public function afterSave($flag)
+	public function afterSave()
 	{
 
 	}

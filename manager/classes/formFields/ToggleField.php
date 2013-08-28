@@ -9,7 +9,7 @@ class ToggleField extends Field
 		$this->defaultValue = 0;
 	}
 
-	public function format($value, $flag)
+	public function format($value)
 	{
 		return (string)$value;
 	}
