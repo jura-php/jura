@@ -98,8 +98,8 @@ $folders = array(
 		"controllers" => "#keep#",
 		"models" => "#keep#",
 		"storage" => array(
-			"cache" => "#keep#",
-			"tmp" => "#keep#"
+			"cache" => "",
+			"tmp" => ""
 		),
 		"views" => "#keep#"
 	),
@@ -180,10 +180,12 @@ return array(
 ?>';
 });
 
-make_file("../.gitignore", "node_modules
-public/_dist
+make_file("../.gitignore", "node_modules/
+public/_dist/
 config/databases.php
-app/storage/tmp/*");
+app/storage/
+!app/storage/cache/
+!app/storage/tmp/");
 
 make_file(array("../config/databases.sample.php", "../config/databases.php"), '<?php
 return array(

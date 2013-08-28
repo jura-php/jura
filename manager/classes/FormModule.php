@@ -206,6 +206,43 @@ class FormModule extends Module
 			));
 		});
 
+		Router::register("PATCH", "manager/api/" . $this->name . "/(:num)", function ($id) {
+			if (($token = User::validateToken()) !== true)
+			{
+				return $token;
+			}
+
+			$this->flag = "U";
+
+			$this->orm = ORM::make($this->tableName)
+										->findFirst($id);
+
+			foreach ($this->fields as $field)
+			{
+				if ($field->hasFlag("L") && $field->hasFlag("U") && Request::hasPost($field->name))
+				{
+					$field->init("U");
+
+					$value = $field->unformat(Request::post($field->name, $field->defaultValue));
+					$field->save($value, "U");
+				}
+			}
+
+			$this->save("U");
+
+			$this->orm->update($id);
+
+			foreach ($this->fields as $field)
+			{
+				if ($field->hasFlag("L") && $field->hasFlag("U"))
+				{
+					$field->afterSave("U");
+				}
+			}
+
+			$this->afterSave("U");
+		});
+
 		Router::register("GET", "manager/api/" . $this->name . "/new", function () {
 			if (($token = User::validateToken()) !== true)
 			{
