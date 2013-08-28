@@ -142,6 +142,38 @@ angular.module('manager.controllers', [])
 		var table = $routeParams.table;
 		var id = $routeParams.id;
 		var module = _.where($rootScope.structure.modules, {uri: table})[0];
+		var save_states = {
+			'ready': {
+				can_save: true,
+				label: 'Salvar',
+				icon_class: false,
+				button_class: 'pure-button-primary'
+			},
+			'saving': {
+				lock_screen: true,
+				label: 'Salvar',
+				icon_class: 'icon-spin icon-spinner',
+				button_class: 'pure-button-primary'
+			},
+
+			'saved': {
+				label: 'Salvo',
+				icon_class: 'icon-ok',
+				button_class: 'pure-button-success'
+			},
+
+			'error': {
+				label: 'Erro',
+				icon_class: 'icon-error',
+				button_class: 'pure-button-error'
+			},
+
+			'uploading': {
+				label: 'Carregando arquivo',
+				icon_class: 'icon-spin icon-spinner',
+				button_class: 'pure-button-secondary'
+			}
+		}
 
 		if(module) {
 			// module.uniqueID = 4;
@@ -155,36 +187,35 @@ angular.module('manager.controllers', [])
 
 		$scope.$watch('data', function(data, oldValue){
 			if(!data || !oldValue) return;
-			$scope.saved = false;
-			$scope.error = false;
+			$scope.button_save = save_states['ready'];
 		}, true)
 
-		$scope.$watch('uploads.uploading', function(data, oldValue){
-			$scope.saved = false;
-			$scope.error = false;
+		$scope.$watch('uploads.uploading', function(uploading, oldValue){
+			if(uploading) {
+				$scope.button_save = save_states['uploading'];
+			} else {
+				$scope.button_save = save_states['ready'];
+			}
 		}, true)
 
 
 		$scope.save = function(model){
-			if(!$scope.form.$valid || $scope.uploads.uploading) return;
-			$scope.saving = true;
+			if(!$scope.form.$valid || !$scope.button_save.can_save) return;
+			$scope.button_save = save_states['saving'];
 
 			model.put().then(function(){
-				$scope.saving = false;
+				$scope.button_save = save_states['saved'];
 
 				if(module.uniqueID) {
-					$scope.saved = true;
 					$scope.data = Restangular.one(table, id).get();
 				} else {
-					$scope.saved = true;
 					$timeout(function(){
 						$location.path(table);
 					}, 300)
 				}
 			}, function(response){
-				$scope.saving = false;
-				$scope.error = response.data.error;
-				$scope.error_description = response.data.error_description;
+				save_states['error']['label'] = response.data.error_description || 'Erro inesperado';
+				$scope.button_save = save_states['error'];
 			})
 		}
 
@@ -198,6 +229,38 @@ angular.module('manager.controllers', [])
 
 		var table = $routeParams.table;
 		var module = _.where($rootScope.structure.modules, {uri: table})[0];
+		var save_states = {
+			'ready': {
+				can_save: true,
+				label: 'Salvar',
+				icon_class: false,
+				button_class: 'pure-button-primary'
+			},
+			'saving': {
+				lock_screen: true,
+				label: 'Salvar',
+				icon_class: 'icon-spin icon-spinner',
+				button_class: 'pure-button-primary'
+			},
+
+			'saved': {
+				label: 'Salvo',
+				icon_class: 'icon-ok',
+				button_class: 'pure-button-success'
+			},
+
+			'error': {
+				label: 'Erro',
+				icon_class: 'icon-error',
+				button_class: 'pure-button-error'
+			},
+
+			'uploading': {
+				label: 'Carregando arquivo',
+				icon_class: 'icon-spin icon-spinner',
+				button_class: 'pure-button-secondary'
+			}
+		}
 
 		if(module) {
 			$scope.acao = 'Criar';
@@ -210,27 +273,28 @@ angular.module('manager.controllers', [])
 
 		$scope.$watch('data', function(data, oldValue){
 			if(!data || !oldValue) return;
-			$scope.saved = false;
-			$scope.error = false;
+			$scope.button_save = save_states['ready'];
 		}, true)
 
-		$scope.$watch('uploads.uploading', function(data, oldValue){
-			$scope.saved = false;
-			$scope.error = false;
+		$scope.$watch('uploads.uploading', function(uploading, oldValue){
+			if(uploading) {
+				$scope.button_save = save_states['uploading'];
+			} else {
+				$scope.button_save = save_states['ready'];
+			}
 		}, true)
 
 
 		$scope.save = function(model){
-			if(!$scope.form.$valid || $scope.uploads.uploading) return;
-			$scope.saving = true;
+			if(!$scope.form.$valid || !$scope.button_save.can_save) return;
+			$scope.button_save = save_states['saving'];
 
 			model.post().then(function(){
-				$scope.saving = false;
-				$scope.saved = true;
+				$scope.button_save = save_states['saved'];
 				$location.path(table);
 			}, function(response){
-				$scope.error = response.error;
-				$scope.error_description = response.error_description;
+				save_states['error']['label'] = response.data.error_description || 'Erro inesperado';
+				$scope.button_save = save_states['error'];
 			})
 
 		}
