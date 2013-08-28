@@ -10,7 +10,7 @@ class DateTimeField extends Field
 		$this->validationLength = 19;
 	}
 
-	public function format($value, $flag)
+	public function format($value)
 	{
 		return php_datetime(sql_php_datetime($value));
 	}

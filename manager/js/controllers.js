@@ -109,9 +109,15 @@ angular.module('manager.controllers', [])
 			Rest.doDELETE(to_delete).then(reset);
 		}
 
-		$scope.save = function(){
-			var item = Restangular.restangularizeElement(null, this.data, table);
-			item.put();
+		$scope.save = function(data, fieldName){
+			var patch = {};
+			patch[fieldName] = data[fieldName];
+
+			var item = Restangular.restangularizeElement(null, patch, table + '/' + data.id);
+			item.patch();
+
+			//this.data
+			//item.put();
 		}
 
 		$scope.urlSearch = function(){

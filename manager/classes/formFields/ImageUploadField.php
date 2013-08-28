@@ -70,7 +70,7 @@ class ImageUploadField extends UploadField
 		return $items;
 	}
 
-	public function value($flag)
+	public function value()
 	{
 		$value = $this->module->orm->field($this->name);
 
@@ -84,8 +84,9 @@ class ImageUploadField extends UploadField
 		return $this->items();
 	}
 
-	public function save($value, $flag)
+	public function save($value)
 	{
+		$flag = $this->module->flag;
 		$path = File::formatDir($this->path);
 		$destPath = static::storagePath() . File::formatDir($this->path);
 		File::mkdir($destPath);

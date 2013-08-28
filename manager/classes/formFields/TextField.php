@@ -26,9 +26,9 @@ class TextField extends Field
 		}
 	}
 
-	public function format($value, $flag)
+	public function format($value)
 	{
-		if ($flag == "L")
+		if ($this->module->flag == "L")
 		{
 			return Str::limit($value, $this->listLimit);
 		}

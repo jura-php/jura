@@ -11,8 +11,10 @@ class MarkdownEditorField extends Field
 		$this->validationLength = 65535;
 	}
 
-	public function format($value, $flag)
+	public function format($value)
 	{
+		$flag = $this->module->flag;
+		
 		if ($flag == "L")
 		{
 			return Markdown::defaultTransform(Str::limit($value, $this->listLimit));

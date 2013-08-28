@@ -1,7 +1,7 @@
 <?php
 class Request
 {
-	private static $availableMethods = array("GET", "PUT", "POST", "DELETE");
+	private static $availableMethods = array("GET", "PUT", "POST", "DELETE", "PATCH");
 
 	private static $env;
 	private static $method;

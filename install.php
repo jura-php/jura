@@ -180,10 +180,10 @@ return array(
 ?>';
 });
 
-make_file("../.gitignore", "node_modules
-public/_dist
+make_file("../.gitignore", "node_modules/
+public/_dist/
 config/databases.php
-app/storage/tmp/*");
+app/storage/");
 
 make_file(array("../config/databases.sample.php", "../config/databases.php"), '<?php
 return array(

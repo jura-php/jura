@@ -94,8 +94,10 @@ class ItemsField extends Field
 		$this->multipleFieldTo = $fieldTo;
 	}
 
-	public function format($value, $flag)
+	public function format($value)
 	{
+		$flag = $this->module->flag;
+		
 		if ($flag == "L" || $flag == "R")
 		{
 			return $this->items[$value];
@@ -137,7 +139,7 @@ class ItemsField extends Field
 		return !$this->multiple;
 	}
 
-	public function save($value, $flag)
+	public function save($value)
 	{
 		if (!$this->multiple)
 		{
@@ -149,7 +151,7 @@ class ItemsField extends Field
 		}
 	}
 
-	public function afterSave($flag)
+	public function afterSave()
 	{
 		if ($this->multiple)
 		{
@@ -194,13 +196,13 @@ class ItemsField extends Field
 		}
 	}
 
-	public function value($flag)
+	public function value()
 	{
 		if (!$this->multiple)
 		{
 			$value = $this->module->orm->field($this->name);
 
-			return $this->format($value, $flag);
+			return $this->format($value);
 		}
 		else
 		{

@@ -105,7 +105,7 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("L"))
 				{
-					$field->init("L");
+					$field->init();
 					$field->select();
 				}
 			}
@@ -182,7 +182,7 @@ class FormModule extends Module
 
 				foreach ($fields as $field)
 				{
-					$values[$field->name] = $field->value("L");
+					$values[$field->name] = $field->value();
 				}
 
 				$results[] = $values;
@@ -206,6 +206,43 @@ class FormModule extends Module
 			));
 		});
 
+		Router::register("PATCH", "manager/api/" . $this->name . "/(:num)", function ($id) {
+			if (($token = User::validateToken()) !== true)
+			{
+				return $token;
+			}
+
+			$this->flag = "U";
+
+			$this->orm = ORM::make($this->tableName)
+										->findFirst($id);
+
+			foreach ($this->fields as $field)
+			{
+				if ($field->hasFlag("L") && $field->hasFlag("U") && Request::hasPost($field->name))
+				{
+					$field->init();
+
+					$value = $field->unformat(Request::post($field->name, $field->defaultValue));
+					$field->save($value);
+				}
+			}
+
+			$this->save();
+
+			$this->orm->update($id);
+
+			foreach ($this->fields as $field)
+			{
+				if ($field->hasFlag("L") && $field->hasFlag("U"))
+				{
+					$field->afterSave();
+				}
+			}
+
+			$this->afterSave();
+		});
+
 		Router::register("GET", "manager/api/" . $this->name . "/new", function () {
 			if (($token = User::validateToken()) !== true)
 			{
@@ -220,9 +257,9 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("C"))
 				{
-					$field->init("C");
+					$field->init();
 
-					$values[$field->name] = $field->format($field->defaultValue, "C");
+					$values[$field->name] = $field->format($field->defaultValue);
 				}
 			}
 
@@ -243,14 +280,14 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("C"))
 				{
-					$field->init("C");
+					$field->init();
 
 					$value = $field->unformat(Request::post($field->name, $field->defaultValue, true));
-					$field->save($value, "C");
+					$field->save($value);
 				}
 			}
 
-			$this->save("C");
+			$this->save();
 
 			$this->orm->insert();
 
@@ -258,11 +295,11 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("C"))
 				{
-					$field->afterSave("C");
+					$field->afterSave();
 				}
 			}
 
-			$this->afterSave("C");
+			$this->afterSave();
 		});
 
 		Router::register("GET", "manager/api/" . $this->name . "/(:num)", function ($id) {
@@ -282,7 +319,7 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("R") || $field->hasFlag("U"))
 				{
-					$field->init($field->hasFlag("U") ? "U" : "R");
+					$field->init();
 
 					$fields[] = $field;
 
@@ -295,6 +332,8 @@ class FormModule extends Module
 
 			$this->orm = $this->orm->findFirst($id);
 
+			$moduleFlag = $this->flag;
+
 			if ($this->orm)
 			{
 				$values = array();
@@ -302,14 +341,16 @@ class FormModule extends Module
 
 				foreach ($fields as $field)
 				{
-					$flag = "R";
+					$this->flag = "R";
 
 					if ($field->hasFlag("U"))
 					{
-						$flag = "U";
+						$this->flag = "U";
 					}
 
-					$values[$field->name] = $field->value($flag);
+					$values[$field->name] = $field->value();
+
+					$this->flag = $moduleFlag;
 				}
 
 				return Response::json($values);
@@ -333,14 +374,14 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("U") && Request::hasPost($field->name))
 				{
-					$field->init("U");
+					$field->init();
 
 					$value = $field->unformat(Request::post($field->name, $field->defaultValue));
-					$field->save($value, "U");
+					$field->save($value);
 				}
 			}
 
-			$this->save("U");
+			$this->save();
 
 			$this->orm->update($id);
 
@@ -348,11 +389,11 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("U"))
 				{
-					$field->afterSave("U");
+					$field->afterSave();
 				}
 			}
 
-			$this->afterSave("U");
+			$this->afterSave();
 		});
 
 		Router::register("DELETE", "manager/api/" . $this->name . "/(:any)", function ($ids) {
@@ -373,19 +414,19 @@ class FormModule extends Module
 
 				foreach ($this->fields as $field)
 				{
-					$field->save("", "D");
+					$field->save("");
 				}
 
-				$this->save("D");
+				$this->save();
 
 				$this->orm->delete();
 
 				foreach ($this->fields as $field)
 				{
-					$field->afterSave("D");
+					$field->afterSave();
 				}
 
-				$this->afterSave("D");
+				$this->afterSave();
 			}
 		});
 	}
@@ -526,12 +567,12 @@ class FormModule extends Module
 		return ORM::make($this->tableName);
 	}
 
-	protected function save($flag)
+	protected function save()
 	{
 
 	}
 
-	protected function afterSave($flag)
+	protected function afterSave()
 	{
 
 	}
