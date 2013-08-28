@@ -35,9 +35,10 @@ class MysqlDB
 
 		mysql_set_charset('utf8', $this->res);
 		mysql_query("SET NAMES 'utf8'", $this->res);
-        mysql_query('SET character_set_connection=utf8', $this->res);
-        mysql_query('SET character_set_client=utf8', $this->res);
-        mysql_query('SET character_set_results=utf8', $this->res);
+		mysql_query('SET character_set_connection=utf8', $this->res);
+		mysql_query('SET character_set_client=utf8', $this->res);
+		mysql_query('SET character_set_results=utf8', $this->res);
+		//mysql_query('');
 	}
 
 	public function query($query, $params = null)
@@ -47,10 +48,11 @@ class MysqlDB
 		if (is_array($params) && strpos($query, "?") !== false)
 		{
 			$segments = explode("?", $query);
+			$segmentsLength = count($segments);
 
-			if (count($params) >= count($segments))
+			if (count($params) >= $segmentsLength)
 			{
-				$params = array_slice($params, 0, count($segments) - 1);
+				$params = array_slice($params, 0, $segmentsLength - 1);
 			}
 
 			$newQuery = $segments[0];

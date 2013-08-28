@@ -147,11 +147,12 @@ make_file("../app/config/routes.php");
 
 make_file("../app/config/application.php", function () {
 	$dict = array("f", "4", "G", "a", "D", "8", "P", "K", "Z", "u", "Y", "x", "c", "M", "y", "w", "r", "7", "5", "0", "S", "g", "F", "Q", "o", "R", "E", "h", "m", "t", "C", "s", "z", "9", "e", "V");
+	$dictLength = count($dict);
 
 	$key = "";
 	for ($i = 0; $i < 32; $i++)
 	{
-		$key .= $dict[rand(0, count($dict) - 1)];
+		$key .= $dict[rand(0, $dictLength - 1)];
 	}
 
 	return '<?php

@@ -18,6 +18,12 @@ class Router
 		'/(:all?)' => '(?:/(.*)',
 	);
 
+	/**
+	 * Returns a rote tha maches the method and URI
+	 * @param  string $method
+	 * @param  string $uri
+	 * @return mixed
+	 */
 	public static function route($method, $uri)
 	{
 		Config::load("routes", false);
@@ -37,6 +43,29 @@ class Router
 		}
 	}
 
+	/**
+	 * Register a route with the router.
+	 *
+	 * You can enable the cache on any call just by setting enableCache as true. The expiration time is expressed in seconds, default is 2 days.
+	 * 
+	 * <code>
+	 *		//Register a route with a callback function
+	 *		Router::register("GET", "/", function() { return "Index!"; });
+	 *
+	 *		//Register multiple routes with a view
+	 *		Router::register("GET", array("/", "index/"), "index");
+	 *		
+	 *		//Register a route with a controller's method
+	 *		Router::register("GET,POST", "/", "controller@method");
+	 * </code>
+	 *
+	 * @param  string        $method
+	 * @param  string|array  $route
+	 * @param  mixed         $action
+	 * @param  bool          $enableCache
+	 * @param  int           $cacheExpirationTime
+	 * @return void
+	 */
 	public static function register($method, $route, $action, $enableCache = false, $cacheExpirationTime = 172800)
 	{
 		if (is_string($method) && Str::contains($method, ","))
@@ -76,12 +105,12 @@ class Router
 
 			$uri = trim($uri, "/");
 
-			if ($uri == "")
+			if (empty($uri))
 			{
 				$uri = "/";
 			}
 
-			if ($uri{0} == '(')
+			if ($uri{0} == "(")
 			{
 				$routes =& self::$fallback;
 			}

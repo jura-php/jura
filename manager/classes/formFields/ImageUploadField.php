@@ -91,6 +91,15 @@ class ImageUploadField extends UploadField
 		$destPath = static::storagePath() . File::formatDir($this->path);
 		File::mkdir($destPath);
 
+		if (!is_writable($destPath))
+		{
+			Response::code(500);
+			return Response::json(array(
+				"error" => true,
+				"error_description" => "Directory '" . $destPath . "' is not writtable."
+			));
+		}
+
 		$files = json_decode(Session::get($this->sessionKey), true);
 
 		if ($flag == "U" || $flag == "D")
@@ -195,7 +204,6 @@ class ImageUploadField extends UploadField
 		}
 	}
 
-	//TODO:
 	private function delete($index)
 	{
 		if ($index >= 0)
@@ -223,12 +231,14 @@ class ImageUploadField extends UploadField
 			else
 			{
 				return array(
-					"error" => "Index inválido"
+					"error" => true,
+					"error_description" => "Index inválido"
 				);
 			}
 		}
 		return array(
-			"error" => "Index inválido"
+			"error" => true,
+			"error_description" => "Index inválido"
 		);
 	}
 

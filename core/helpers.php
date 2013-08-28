@@ -1,36 +1,38 @@
 <?php
-
-/*
-TODO:
-function dbfile($value, $index = 0)
-{
-	$value = @json_decode($value);
-
-	if ($value)
-	{
-		return $value[$index]->path;
-	}
-
-	return false;
-}
-
-function dbimage($value, $sample = null, $index = 0)
-{
-
-}*/
-
+/**
+ * Dups the var inside a pre tag
+ * @param  object $value
+ */
 function dump($value)
 {
 	echo "<pre>";
-	var_dump($value);
+	print_r($value);
 	echo "</pre>";
 }
 
+/**
+ * Escape the string to print right on a javascript content
+ * @param  string $value
+ */
 function js_string($value)
 {
 	return str_replace("'", "\\" . "'", $value);
 }
 
+/**
+ * Benchmarks the piece of code between 2 calls of this function.
+ * 
+ * <code>
+ * benchmark();
+ * for ($i = 0; $i < 100000; $i++)
+ * {
+ * 	$pow = $i * $i;
+ * }
+ * benchmark("Pow expression 100000 times");
+ * </code>
+ * 
+ * @param  string $message
+ */
 function benchmark($message = "")
 {
 	static $previousTime = 0;
@@ -49,14 +51,23 @@ function benchmark($message = "")
 	}
 }
 
+/**
+ * Time elapsed in milliseconds since the J framework has started
+ * @return int
+ */
 function elapsed_time()
 {
 	return microtime(true) - J_START;
 }
 
+/**
+ * Converts a SQL date to a PHP date
+ * @param  string $mysqlDate
+ * @return int
+ */
 function sql_php_date($mysqlDate)
 {
-	if ($mysqlDate == "")
+	if (empty($mysqlDate))
 	{
 		return 0;
 	}
@@ -66,9 +77,14 @@ function sql_php_date($mysqlDate)
 	return mktime(0, 0, 0, (int)$arr[1], (int)$arr[2], (int)$arr[0]);
 }
 
+/**
+ * Converts a SQL datetime to a PHP date
+ * @param  string $mysqlDateTime
+ * @return int
+ */
 function sql_php_datetime($mysqlDateTime)
 {
-	if ($mysqlDateTime == "")
+	if (empty($mysqlDateTime))
 	{
 		return 0;
 	}
@@ -80,19 +96,34 @@ function sql_php_datetime($mysqlDateTime)
 	return mktime((int)$arr3[0], (int)$arr3[1], (int)$arr3[2], (int)$arr2[1], (int)$arr2[2], (int)$arr2[0]);
 }
 
+/**
+ * Converts a PHP date to a SQL date
+ * @param  int $phpDate
+ * @return string
+ */
 function php_sql_date($phpDate)
 {
 	return date("Y-m-d", $phpDate);
 }
 
+/**
+ * Converts a PHP date to a SQL datetime
+ * @param  int $phpDateTime
+ * @return string
+ */
 function php_sql_datetime($phpDateTime)
 {
 	return date("Y-m-d H:i:s", $phpDateTime);
 }
 
+/**
+ * Converts a human readable date to a PHP date
+ * @param  string $date
+ * @return int
+ */
 function date_php($date)
 {
-	if ($date == "")
+	if (empty($date))
 	{
 		return 0;
 	}
@@ -102,9 +133,14 @@ function date_php($date)
 	return mktime(0, 0, 0, (int)$arr[1], (int)$arr[0], (int)$arr[2]);
 }
 
+/**
+ * Converts a human readable datetime to a PHP date
+ * @param  string $dateTime
+ * @return int
+ */
 function datetime_php($dateTime)
 {
-	if ($dateTime == "")
+	if (empty($dateTime))
 	{
 		return 0;
 	}
@@ -117,11 +153,21 @@ function datetime_php($dateTime)
 	return mktime((int)$arr3[0], (int)$arr3[1], (int)$arr3[2], (int)$arr2[1], (int)$arr2[0], (int)$arr2[2]);
 }
 
+/**
+ * Converts a PHP date to a human readable date
+ * @param  int $phpDate
+ * @return string
+ */
 function php_date($phpDate)
 {
 	return date("d/m/Y", $phpDate);
 }
 
+/**
+ * Converts a PHP date to a human readable datetime
+ * @param  int $phpDate
+ * @return string
+ */
 function php_datetime($phpDate)
 {
 	return date("d/m/Y H:i:s", $phpDate);
@@ -407,8 +453,6 @@ function magic_quotes()
 {
 	return function_exists('get_magic_quotes_gpc') and get_magic_quotes_gpc();
 }
-
-
 
 /**
  * Calculate the human-readable file size (with proper units).

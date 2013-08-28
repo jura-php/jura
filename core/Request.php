@@ -1,7 +1,7 @@
 <?php
 class Request
 {
-	private static $availableMethods = array("GET", "PUT", "POST", "DELETE", "PATCH");
+	private static $availableMethods = array("GET", "PUT", "POST", "DELETE", "PATCH", "HEAD", "OPTIONS");
 
 	private static $env;
 	private static $method;
@@ -92,19 +92,19 @@ class Request
 					}
 				}
 
-				if ($env != "")
+				if (!empty($env))
 				{
 					break;
 				}
 			}
 
-			if ($env != "")
+			if (!empty($env))
 			{
 				break;
 			}
 		}
 
-		if ($env == "")
+		if (empty($env))
 		{
 			$env = $envWithWildcard;
 		}
@@ -242,7 +242,7 @@ class Request
 
 		$pathInfo = array_get(self::$server, "PATH_INFO", "/");
 
-		if ($pathInfo == "")
+		if (empty($pathInfo))
 		{
 			$pathInfo = "/";
 		}

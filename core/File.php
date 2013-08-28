@@ -246,7 +246,7 @@ class File
 		return Str::finish($path, DS);
 	}
 
-	public static function lsdir($path, $mask = "", $options = fIterator::SKIP_DOTS)
+	public static function lsdir($path, $mask = null, $options = fIterator::SKIP_DOTS)
 	{
 		$files = array();
 		$items = new fIterator($path, $options);
@@ -255,7 +255,7 @@ class File
 		{
 			$itemFileName = $item->getBasename();
 
-			if (($mask == "") || (Str::contains($itemFileName, $mask)))
+			if (empty($mask) || Str::contains($itemFileName, $mask))
 			{
 				$files[] = $itemFileName;
 			}

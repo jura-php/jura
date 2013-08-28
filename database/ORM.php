@@ -270,14 +270,15 @@ class ORM implements ArrayAccess
 					$ids = array($this->field("id"));
 				}
 
-				if (count($ids) > 0)
+				$idsLength = count($ids);
+				if ($idsLength > 0)
 				{
 					foreach ($ids as $k => $id)
 					{
 						$ids[$k] = $db->escape($id);
 					}
 
-					$sql = "DELETE FROM " . $db->quoteID(J_TP . $this->tableName) . " WHERE id IN (" . implode(",", $ids) . ") LIMIT " . count($ids) . ";";
+					$sql = "DELETE FROM " . $db->quoteID(J_TP . $this->tableName) . " WHERE id IN (" . implode(",", $ids) . ") LIMIT " . $idsLength . ";";
 
 					static::$lastSQL = $sql;
 
@@ -571,10 +572,11 @@ class ORM implements ArrayAccess
 			if (strpos($raw, "?") !== false)
 			{
 				$segments = explode("?", $raw);
+				$segmentsLength = count($segments);
 
-				if (count($values) >= count($segments))
+				if (count($values) >= $segmentsLength)
 				{
-					$values = array_slice($values, 0, count($segments) - 1);
+					$values = array_slice($values, 0, $segmentsLength - 1);
 				}
 
 				$db = DB::conn($this->connName);

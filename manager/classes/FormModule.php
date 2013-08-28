@@ -224,11 +224,17 @@ class FormModule extends Module
 					$field->init();
 
 					$value = $field->unformat(Request::post($field->name, $field->defaultValue));
-					$field->save($value);
+					if ($return = $field->save($value))
+					{
+						return $return;
+					}
 				}
 			}
 
-			$this->save();
+			if ($return = $this->save())
+			{
+				return $return;
+			}
 
 			$this->orm->update($id);
 
@@ -236,11 +242,17 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("L") && $field->hasFlag("U"))
 				{
-					$field->afterSave();
+					if ($return = $field->afterSave())
+					{
+						return $return;
+					}
 				}
 			}
 
-			$this->afterSave();
+			if ($return = $this->afterSave())
+			{
+				return $return;
+			}
 		});
 
 		Router::register("GET", "manager/api/" . $this->name . "/new", function () {
@@ -283,11 +295,17 @@ class FormModule extends Module
 					$field->init();
 
 					$value = $field->unformat(Request::post($field->name, $field->defaultValue, true));
-					$field->save($value);
+					if ($return = $field->save($value))
+					{
+						return $return;
+					}
 				}
 			}
 
-			$this->save();
+			if ($return = $this->save())
+			{
+				return $return;
+			}
 
 			$this->orm->insert();
 
@@ -295,11 +313,17 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("C"))
 				{
-					$field->afterSave();
+					if ($return = $field->afterSave())
+					{
+						return $return;
+					}
 				}
 			}
 
-			$this->afterSave();
+			if ($return = $this->afterSave())
+			{
+				return $return;
+			}
 		});
 
 		Router::register("GET", "manager/api/" . $this->name . "/(:num)", function ($id) {
@@ -377,11 +401,17 @@ class FormModule extends Module
 					$field->init();
 
 					$value = $field->unformat(Request::post($field->name, $field->defaultValue));
-					$field->save($value);
+					if ($return = $field->save($value))
+					{
+						return $return;
+					}
 				}
 			}
 
-			$this->save();
+			if ($return = $this->save())
+			{
+				return $return;
+			}
 
 			$this->orm->update($id);
 
@@ -389,11 +419,17 @@ class FormModule extends Module
 			{
 				if ($field->hasFlag("U"))
 				{
-					$field->afterSave();
+					if ($return = $field->afterSave())
+					{
+						return $return;
+					}
 				}
 			}
 
-			$this->afterSave();
+			if ($return = $this->afterSave())
+			{
+				return $return;
+			}
 		});
 
 		Router::register("DELETE", "manager/api/" . $this->name . "/(:any)", function ($ids) {
@@ -414,19 +450,31 @@ class FormModule extends Module
 
 				foreach ($this->fields as $field)
 				{
-					$field->save("");
+					if ($return = $field->save(""))
+					{
+						return $return;
+					}
 				}
 
-				$this->save();
+				if ($return = $this->save())
+				{
+					return $return;
+				}
 
 				$this->orm->delete();
 
 				foreach ($this->fields as $field)
 				{
-					$field->afterSave();
+					if ($return = $field->afterSave())
+					{
+						return $return;
+					}
 				}
 
-				$this->afterSave();
+				if ($return = $this->afterSave())
+				{
+					return $return;
+				}
 			}
 		});
 	}

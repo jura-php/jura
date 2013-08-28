@@ -191,6 +191,15 @@ class UploadField extends Field
 		
 		File::mkdir($destPath);
 
+		if (!is_writable($destPath))
+		{
+			Response::code(500);
+			return Response::json(array(
+				"error" => true,
+				"error_description" => "Directory '" . $destPath . "' is not writtable."
+			));
+		}
+
 		$files = json_decode(Session::get($this->sessionKey), true);
 
 		if ($flag == "U" || $flag == "D")

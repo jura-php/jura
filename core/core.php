@@ -5,6 +5,7 @@ header('X-Powered-By: ');
 header("Content-Type: text/html;UTF-8");
 
 ini_set('default_charset','UTF-8');
+date_default_timezone_set('America/Sao_Paulo');
 chdir(J_PATH);
 
 $globalUniqueID = 1;

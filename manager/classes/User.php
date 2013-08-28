@@ -188,7 +188,7 @@ class User
 			}
 		}
 
-		if (!isset($result["token"]) || $token == "")
+		if (!isset($result["token"]) || empty($token))
 		{
 			if ($emitError)
 			{
