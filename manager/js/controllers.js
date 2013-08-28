@@ -183,8 +183,8 @@ angular.module('manager.controllers', [])
 				}
 			}, function(response){
 				$scope.saving = false;
-				$scope.error = response.error;
-				$scope.error_description = response.error_description;
+				$scope.error = response.data.error;
+				$scope.error_description = response.data.error_description;
 			})
 		}
 
