@@ -6,9 +6,6 @@ class ManyToOneField extends ItemsField
 	private $relationNameField;
 
 	public $items;
-	public $resourceURL;
-
-	private $tmpValue;
 
 	public function __construct($name, $label = null, $tableName, $keyField = "id", $nameField = "name")
 	{
@@ -27,7 +24,7 @@ class ManyToOneField extends ItemsField
 	public function init()
 	{
 		$flag = $this->module->flag;
-		
+
 		if ($flag == "C" || $flag == "R" || $flag == "U")
 		{
 			$this->addItemsFromTable($this->relationTableName, $this->relationKeyField, $this->relationNameField);
@@ -50,7 +47,7 @@ class ManyToOneField extends ItemsField
 		{
 			$this->module->orm
 					->select($this->relationTableName . "." . $this->relationNameField, $this->name)
-					->innerJoin($this->relationTableName, array($this->relationTableName . "." . $this->relationKeyField, "=", $this->module->orm->tableName . "." . $this->name));
+					->leftJoin($this->relationTableName, array($this->relationTableName . "." . $this->relationKeyField, "=", $this->module->orm->tableName . "." . $this->name));
 		}
 	}
 

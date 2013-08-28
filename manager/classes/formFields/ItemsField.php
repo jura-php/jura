@@ -27,7 +27,9 @@ class ItemsField extends Field
 				return $token;
 			}
 
-			$this->init("C");
+			$this->module->flag = "C";
+
+			$this->init();
 			return Response::json($this->items());
 		});
 	}

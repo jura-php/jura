@@ -115,9 +115,6 @@ angular.module('manager.controllers', [])
 
 			var item = Restangular.restangularizeElement(null, patch, table + '/' + data.id);
 			item.patch();
-
-			//this.data
-			//item.put();
 		}
 
 		$scope.urlSearch = function(){
