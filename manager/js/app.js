@@ -41,7 +41,7 @@ angular.module('manager', ['manager.filters', 'manager.services', 'manager.direc
 			if(response.code == 403) {
 				$location.path('/login');
 			} else {
-				alert('Um alert é constrangedor. Porém, ocorreu um erro com sua requisição.')
+				// alert('Um alert é constrangedor. Porém, ocorreu um erro com sua requisição.')
 			}
 
 		})

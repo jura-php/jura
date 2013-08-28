@@ -188,8 +188,9 @@ angular.module('manager.controllers', [])
 					}, 300)
 				}
 			}, function(response){
-				$scope.error = response.error;
-				$scope.error_description = response.error_description;
+				$scope.saving = false;
+				$scope.error = response.data.error;
+				$scope.error_description = response.data.error_description;
 			})
 		}
 
