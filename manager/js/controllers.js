@@ -69,9 +69,13 @@ angular.module('manager.controllers', [])
 		if(module) reset()
 
 		$scope.edit = function(e){
-			$timeout(function(){
-				angular.element(e.target).find('a').trigger("click");
-			}, 0, false)
+			if($rootScope.hasFlag($scope.module.flags, 'ru')) {
+				$location.path($scope.module.uri + '/edit/' + this.data.id)
+			}
+
+			// $timeout(function(){
+			// 	angular.element(e.target).find('a').trigger("click");
+			// }, 0, false)
 		}
 
 		$scope.doOrder = function(field, pagination){
