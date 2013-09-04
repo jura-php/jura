@@ -10,9 +10,9 @@ class FormModule extends Module
 	protected $pageSize;
 	protected $order;
 	protected $orderBy;
+	protected $name;
 
 	private $fields;
-	private $name;
 	private $buttons;
 
 	public function __construct()
@@ -106,7 +106,7 @@ class FormModule extends Module
 				if ($field->hasFlag("L"))
 				{
 					$field->init();
-					$field->select();
+					// $field->select();
 				}
 			}
 
@@ -124,6 +124,7 @@ class FormModule extends Module
 			}
 
 			$count = $this->orm->count('id');
+
 			$pageCount = max(1, ceil($count / $this->pageSize));
 			$page = max(1, min($pageCount, $page));
 			$nextPage = ($page < $pageCount) ? $page + 1 : false;

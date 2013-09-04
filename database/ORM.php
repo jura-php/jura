@@ -650,7 +650,7 @@ class ORM implements ArrayAccess
 
 	public function orderByExpr($expr)
 	{
-		$this->orderBys[] = $expr;
+		$this->orderBys[] = $expr . " ";
 		return $this;
 	}
 

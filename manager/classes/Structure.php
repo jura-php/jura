@@ -63,12 +63,31 @@ class Structure
 
 			foreach ($modules as &$module)
 			{
-				$className = $module["class"];
+				if (isset($module["class"]))
+				{
+					$className = $module["class"];
 
-				include_once J_MANAGERPATH . "modules/" . $className . ".php";
-				$c = new $className();
-				$objects[] = $c;
-				$module = $c->config($module);
+					include_once J_MANAGERPATH . "modules/" . $className . ".php";
+
+					if (isset($module["params"]))
+					{
+						$c = new $className($module["params"]);
+					}
+					else
+					{
+						$c = new $className();
+					}
+
+					$objects[] = $c;
+					$module = $c->config($module);
+				}
+				else if (array_search("separator", $module) !== false)
+				{
+					$module = array(
+						"menu" => "side",
+						"type" => "separator"
+					);
+				}
 			}
 
 			static::$modules = $modules;
