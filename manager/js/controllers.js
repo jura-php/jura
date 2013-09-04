@@ -12,7 +12,15 @@ angular.module('manager.controllers', [])
 			$http.post(config.api_url + 'token/', $scope.form)
 				.success(function(user){
 					$rootScope.structure.user = user;
-					$location.path($rootScope.redirectPath || '/' + $rootScope.defaultModule().uri);
+
+					var uri = $rootScope.redirectPath;
+
+					if (!uri || uri == "/login")
+					{
+						uri = '/' + $rootScope.defaultModule().uri;
+					}
+
+					$location.path(uri);
 				})
 				.error(function(error){
 					$scope.form.error = error.error_description;

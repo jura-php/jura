@@ -118,7 +118,7 @@ make_dir($folders);
 make_file("../deploy.sh", "chmod -Rf 777 app/storage/", function () {
 	echo "> exec sh delpoy.sh\n";
 
-	$out = shell_exec("cd ..; sh deploy.sh");
+	$out = shell_exec("cd ..; chmod +x deploy.sh; sh deploy.sh");
 	if ($out)
 	{
 		echo $out . "\n";

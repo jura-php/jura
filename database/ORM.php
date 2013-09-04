@@ -351,7 +351,7 @@ class ORM implements ArrayAccess
 			}
 		}
 
-		if (!$bypassPrefix && (strpos($name, ".") !== false && strpos($name, J_TP) !== 0))
+		if (!$bypassPrefix && (strpos($name, ".") !== false && J_TP != "" && strpos($name, J_TP) !== 0))
 		{
 			$name = J_TP . $name;
 		}

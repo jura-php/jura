@@ -101,7 +101,8 @@ class Response
 
 	public static function redirect($route = "/", $useJSFallback = true)
 	{
-		$url = Str::finish(URL::root() . $route, "/");
+		$url = URL::to($route);
+		//$url = Str::finish(URL::root() . $route, "/");
 
 		if (!(@header("Location: " . $url)))
 		{
