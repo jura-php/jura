@@ -1,4 +1,4 @@
-html, body {
+mhtml, body {
     height: 100%;
 }
 
@@ -100,6 +100,7 @@ button {
     top: 0;
     bottom: 0;
     left: 0;
+    overflow: auto;
 }
 
     #side .user-info {
@@ -147,10 +148,21 @@ button {
         background: #383e4b;
         border: 0;
         margin: 0;
-        min-height: 100%;
         position: relative;
         padding-top: 10px;
     }
+
+        #side .pure-menu li.separator {
+            height: 1px;
+            width: 100%;
+            box-shadow: 0 1px 0 0 rgba(255, 255, 255, .1);
+            background: rgba(0, 0, 0, .3);
+            margin: 10px 0;
+        }
+        #side .pure-menu li.separator a {
+            display: none;
+        }
+
         #side .pure-menu li a {
             color: #c8d2e7;
         }
