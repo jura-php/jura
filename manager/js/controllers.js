@@ -40,7 +40,7 @@ angular.module('manager.controllers', [])
 			$location.path(table + '/edit/' + module.uniqueID)
 		}
 
-		$scope.order = JSON.parse($cookieStore.get(table + '_order') || '\{\}');
+		$scope.order = JSON.parse($cookieStore.get(table + '_order') || JSON.stringify({by: module.orderBy, reverse: (module.order === 'ASC') ? false : true}));
 
 		$scope.$watch('order', function(order){
 			$cookieStore.put(table + '_order', JSON.stringify(order));
