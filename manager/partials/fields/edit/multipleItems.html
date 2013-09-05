@@ -1,0 +1,2 @@
+<label>{{field.label}}</label>
+<select multiple name="{{field.name}}" data-placeholder="Selecione" items-field chosen data-disable-search-threshold="10" class="pure-input-1" ng-model="data[field.name]" ng-options="o.v as o.l for o in options" ng-required="field.validation.required" pattern="{{field.validation.pattern}}" title="{{field.validation.title | label}}"></select>
