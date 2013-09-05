@@ -80,10 +80,14 @@ class ItemsField extends Field
 
 	public function config()
 	{
+		if ($this->multiple)
+		{
+			$this->type = "multipleItems";
+		}
+		
 		$arr = parent::config();
 
 		return array_merge([
-			'multiple' => $this->multiple,
 			'resource_url' => $this->resourceURL
 		], $arr);
 	}
