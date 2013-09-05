@@ -64,6 +64,20 @@ angular.module('manager.controllers', [])
 				$scope.pagination = response.pagination;
 				$scope.count = response.count;
 			});
+
+			_.each($scope.module.fields, function(field){
+				if(field.resource_url) {
+					Restangular.all(field.resource_url).getList().then(function(resource_data){
+						var data = {}
+						_.each(resource_data, function(item){
+							data[item.v] = item.l;
+						})
+
+						field.resource_data = data;
+					});
+
+				}
+			})
 		}
 
 		if(module) reset()
