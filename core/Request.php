@@ -47,11 +47,11 @@ class Request
 
 		//.Clean post input
 		array_map(function ($v) {
-			return self::clearValue($v);
+			return Request::clearValue($v);
 		}, $_POST);
 
 		//Remove /public/index.html from path_info..
-		foreach (array("PATH_INFO", "PATH_TRANSLATED", "PHP_SELF") as $k)
+		foreach (array("PATH_INFO", "ORIG_PATH_INFO", "PATH_TRANSLATED", "PHP_SELF") as $k)
 		{
 			if (isset($_SERVER[$k]))
 			{
@@ -59,9 +59,9 @@ class Request
 			}
 		}
 
-		self::$server = $_SERVER;
-		self::$get = $_GET;
-		self::$post = $_POST;
+		static::$server = $_SERVER;
+		static::$get = $_GET;
+		static::$post = $_POST;
 
 		$_GET = null;
 		$_POST = null;
@@ -72,7 +72,7 @@ class Request
 		$list = require J_PATH . "config" . DS . "environments" . EXT;
 		$env = "";
 		$envWithWildcard = array_first($list);
-		$hosts = array(array_get(self::$server, "HTTP_HOST", "localhost"), gethostname());
+		$hosts = array(array_get(static::$server, "HTTP_HOST", "localhost"), gethostname());
 
 		foreach ($hosts as $host)
 		{
@@ -109,59 +109,59 @@ class Request
 			$env = $envWithWildcard;
 		}
 
-		self::$env = $env;
+		static::$env = $env;
 
 		//Detect method
-		$method = strtoupper(array_get(self::$server, "REQUEST_METHOD", "GET"));
+		$method = strtoupper(array_get(static::$server, "REQUEST_METHOD", "GET"));
 
-		if ($method == "POST" && self::hasReq("_method"))
+		if ($method == "POST" && static::hasReq("_method"))
 		{
-			$methodReq = self::req("_method", "POST");
+			$methodReq = static::req("_method", "POST");
 
-			if (array_search($methodReq, self::$availableMethods) !== false)
+			if (array_search($methodReq, static::$availableMethods) !== false)
 			{
 				$method = $methodReq;
 			}
 		}
 
-		self::$method = $method;
+		static::$method = $method;
 	}
 
 	public static function env()
 	{
-		return self::$env;
+		return static::$env;
 	}
 
 	public static function isLocal()
 	{
-		if (is_null(self::$isLocal))
+		if (is_null(static::$isLocal))
 		{
-			self::$isLocal = (self::$env == J_LOCAL_ENV);
+			static::$isLocal = (static::$env == J_LOCAL_ENV);
 		}
 
-		return self::$isLocal;
+		return static::$isLocal;
 	}
 
 	public static function isPreview()
 	{
-		if (is_null(self::$isPreview))
+		if (is_null(static::$isPreview))
 		{
-			self::$isPreview = (self::$env == J_PREVIEW_ENV);
+			static::$isPreview = (static::$env == J_PREVIEW_ENV);
 		}
 
-		return self::$isPreview;
+		return static::$isPreview;
 	}
 
 	public static function method()
 	{
-		return self::$method;
+		return static::$method;
 	}
 
 	public static function get($key, $default = "")
 	{
-		if (isset(self::$get[$key]))
+		if (isset(static::$get[$key]))
 		{
-			return self::$get[$key];
+			return static::$get[$key];
 		}
 		else
 		{
@@ -171,14 +171,14 @@ class Request
 
 	public static function hasGet($key)
 	{
-		return isset(self::$get[$key]);
+		return isset(static::$get[$key]);
 	}
 
 	public static function post($key, $default = "")
 	{
-		if (isset(self::$post[$key]))
+		if (isset(static::$post[$key]))
 		{
-			return self::$post[$key];
+			return static::$post[$key];
 		}
 		else
 		{
@@ -195,7 +195,7 @@ class Request
 
 	public static function hasPost($key)
 	{
-		$has = isset(self::$post[$key]);
+		$has = isset(static::$post[$key]);
 
 		if (!$has)
 		{
@@ -225,92 +225,97 @@ class Request
 
 	public static function req($key, $default = "")
 	{
-		return self::post($key, self::get($key, $default));
+		return static::post($key, static::get($key, $default));
 	}
 
 	public static function hasReq($key)
 	{
-		return self::hasGet($key) || self::hasPost($key);
+		return static::hasGet($key) || static::hasPost($key);
 	}
 
 	public static function pathInfo()
 	{
-		if (!is_null(self::$pathInfo))
+		if (!is_null(static::$pathInfo))
 		{
-			return self::$pathInfo;
+			return static::$pathInfo;
 		}
 
-		$pathInfo = array_get(self::$server, "PATH_INFO", "/");
+		$pathInfo = array_get(static::$server, "PATH_INFO", "/");
+
+		if (empty($pathInfo) || $pathInfo == "/")
+		{
+			$pathInfo = array_get(static::$server, "ORIG_PATH_INFO", "/");
+		}
 
 		if (empty($pathInfo))
 		{
 			$pathInfo = "/";
 		}
 
-		self::$pathInfo = $pathInfo;
+		static::$pathInfo = $pathInfo;
 
 		return $pathInfo;
 	}
 
 	public static function ip()
 	{
-		return array_get(self::$server, "REMOTE_ADDR", "");
+		return array_get(static::$server, "REMOTE_ADDR", "");
 	}
 
 	public static function fullURI()
 	{
-		return array_get(self::$server, "REQUEST_URI", "");
+		return array_get(static::$server, "REQUEST_URI", "");
 	}
 
 	public static function rootURL()
 	{
-		if (is_null(self::$rootURL))
+		if (is_null(static::$rootURL))
 		{
-			$protocol = strtolower(array_get(self::$server, "SERVER_PROTOCOL", "http"));
+			$protocol = strtolower(array_get(static::$server, "SERVER_PROTOCOL", "http"));
 			$protocol = substr($protocol, 0, strpos($protocol, "/")) . (static::isSecure() ? "s" : "");
 
-			$port = array_get(self::$server, "SERVER_PORT", "80");
+			$port = array_get(static::$server, "SERVER_PORT", "80");
 			$port = ($port == "80") ? "" : (":" . $port);
 
-			$uri = self::fullURI();
-			$pathInfo = self::pathInfo();
+			$uri = static::fullURI();
+			$pathInfo = static::pathInfo();
 			if ($pathInfo != "/")
 			{
 				$uri = substr($uri, 0, strpos($uri, $pathInfo));
 			}
 
-			self::$rootURL = Str::finish($protocol . "://" . array_get(self::$server, "SERVER_NAME", "localhost") . $port . $uri, "/");
+			static::$rootURL = Str::finish($protocol . "://" . array_get(static::$server, "SERVER_NAME", "localhost") . $port . $uri, "/");
 		}
 
-		return self::$rootURL;
+		return static::$rootURL;
 	}
 
 	public static function isSecure()
 	{
-		if (is_null(self::$isSecure))
+		if (is_null(static::$isSecure))
 		{
-			self::$isSecure = isset(self::$server["HTTPS"]) && (self::$server["HTTPS"] == "on" || self::$server["HTTPS"] == 1);
+			static::$isSecure = isset(static::$server["HTTPS"]) && (static::$server["HTTPS"] == "on" || static::$server["HTTPS"] == 1);
 		}
 
-		return self::$isSecure;
+		return static::$isSecure;
 	}
 
 	public static function credentials()
 	{
-		if (!isset(self::$server["PHP_AUTH_USER"]) || !isset(self::$server["PHP_AUTH_PW"]))
+		if (!isset(static::$server["PHP_AUTH_USER"]) || !isset(static::$server["PHP_AUTH_PW"]))
 		{
 			return false;
 		}
 
-		return array(self::$server["PHP_AUTH_USER"], self::$server["PHP_AUTH_PW"]);
+		return array(static::$server["PHP_AUTH_USER"], static::$server["PHP_AUTH_PW"]);
 	}
 
-	private static function clearValue($value)
+	public static function clearValue($value)
 	{
 		if (is_array($value))
 		{
 			array_map(function ($v) {
-				return self::clearValue($v);
+				return static::clearValue($v);
 			}, $value);
 
 			return $value;
@@ -330,7 +335,7 @@ class Request
 
 	public static function availableMethods()
 	{
-		return self::$availableMethods;
+		return static::$availableMethods;
 	}
 }
 
