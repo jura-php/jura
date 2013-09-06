@@ -8,8 +8,9 @@ class MysqlDB
 
 	public function __construct($params)
 	{
-		Event::listen(J_EVENT_SHUTDOWN, function () {
-			$this->close();
+		$that = $this;
+		Event::listen(J_EVENT_SHUTDOWN, function () use ($that) {
+			$that->close();
 		});
 
 		if (isset($params["persistent"]) && $params["persistent"] == true)
