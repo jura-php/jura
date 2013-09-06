@@ -135,6 +135,10 @@ angular.module('manager.controllers', [])
 			Rest.doDELETE(to_delete).then(reset);
 		}
 
+		$scope.prevent = function(event) {
+			event.stopPropagation();
+		}
+
 		$scope.save = function(data, fieldName){
 			var patch = {};
 			patch[fieldName] = data[fieldName];
