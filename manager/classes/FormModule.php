@@ -106,7 +106,7 @@ class FormModule extends Module
 				if ($field->hasFlag("L"))
 				{
 					$field->init();
-					// $field->select();
+					$field->select();
 				}
 			}
 
