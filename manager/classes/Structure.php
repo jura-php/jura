@@ -25,7 +25,7 @@ class Structure
 		});
 
 		Router::register("GET", "manager/api/structure/", function () {
-			return Response::json(static::modules());
+			return Response::json(Structure::modules());
 		});
 
 		Router::register("POST", "manager/api/token/", function () {

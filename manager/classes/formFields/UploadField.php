@@ -80,23 +80,25 @@ class UploadField extends Field
 		$this->accepts = array();
 		$this->acceptsMask = null;
 
-		Router::register("POST", "manager/api/" . $this->resourceURL . "/(:segment)/(:num)/(:segment)", function ($action, $id, $flag) {
+		$that = $this;
+
+		Router::register("POST", "manager/api/" . $this->resourceURL . "/(:segment)/(:num)/(:segment)", function ($action, $id, $flag) use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
 			}
 
 			$flag = Str::upper($flag);
-			$this->module->flag = $flag;
+			$that->module->flag = $flag;
 
 			switch ($action) {
 				default:
 				case "update":
-					return Response::json($this->upload($flag, $id));
+					return Response::json($that->upload($flag, $id));
 
 					break;
 				case "delete":
-					return Response::json($this->delete((int)Request::post("index", -1)));
+					return Response::json($that->delete((int)Request::post("index", -1)));
 
 					break;
 			}
@@ -128,11 +130,11 @@ class UploadField extends Field
 	{
 		$arr = parent::config();
 
-		return array_merge([
+		return array_merge(array(
 			"limit" => $this->limit,
 			"resource_url" => "api/" . $this->resourceURL,
 			"accepts" => implode(",", $this->accepts)
-		], $arr);
+		), $arr);
 	}
 
 	public function init()
