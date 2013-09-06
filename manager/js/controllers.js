@@ -15,8 +15,7 @@ angular.module('manager.controllers', [])
 
 					var uri = $rootScope.redirectPath;
 
-					if (!uri || uri == "/login")
-					{
+					if (!uri || uri == "/login"){
 						uri = '/' + $rootScope.defaultModule().uri;
 					}
 
