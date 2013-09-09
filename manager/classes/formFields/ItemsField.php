@@ -21,16 +21,17 @@ class ItemsField extends Field
 		$this->resourceURL = 'fields/' . $this->type . uniqueID();
 		$this->validationLength = -1;
 
-		Router::register('GET', 'manager/api/' . $this->resourceURL, function () {
+		$that = $this;
+		Router::register('GET', 'manager/api/' . $this->resourceURL, function () use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
 			}
 
-			$this->module->flag = "C";
+			$that->module->flag = "C";
 
-			$this->init();
-			return Response::json($this->items());
+			$that->init();
+			return Response::json($that->items());
 		});
 	}
 
@@ -64,7 +65,7 @@ class ItemsField extends Field
 		$rs->close();
 	}
 
-	private function items()
+	public function items()
 	{
 		$items = array();
 		foreach ($this->items as $k => $v)
@@ -87,9 +88,9 @@ class ItemsField extends Field
 		
 		$arr = parent::config();
 
-		return array_merge([
+		return array_merge(array(
 			'resource_url' => $this->resourceURL
-		], $arr);
+		), $arr);
 	}
 
 	public function multiple($tableName, $fieldFrom, $fieldTo)

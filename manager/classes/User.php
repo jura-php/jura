@@ -2,6 +2,23 @@
 
 class User
 {
+	public static function logged()
+	{
+		$info = static::token(false);
+
+		if (!isset($info["error"]))
+		{
+			$orm = ORM::make("manager_users")
+						->select(array("id", "name", "profile", "username", "email"))
+						->where("id", "=", $info["userID"])
+						->findFirst();
+
+			return $orm;
+		}
+
+		return false;
+	}
+
 	public static function generateToken()
 	{
 		//Check user/pass params..

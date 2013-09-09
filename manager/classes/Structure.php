@@ -25,7 +25,7 @@ class Structure
 		});
 
 		Router::register("GET", "manager/api/structure/", function () {
-			return Response::json(static::modules());
+			return Response::json(Structure::modules());
 		});
 
 		Router::register("POST", "manager/api/token/", function () {
@@ -81,7 +81,7 @@ class Structure
 					$objects[] = $c;
 					$module = $c->config($module);
 				}
-				else if (array_search("separator", $module) !== false)
+				else if ((is_string($module) && $module = "separator") || (array_search("separator", $module) !== false))
 				{
 					$module = array(
 						"menu" => "side",

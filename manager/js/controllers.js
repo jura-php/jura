@@ -11,15 +11,20 @@ angular.module('manager.controllers', [])
 
 			$http.post(config.api_url + 'token/', $scope.form)
 				.success(function(user){
-					$rootScope.structure.user = user;
+					$http.get(config.api_url + 'structure')
+						.success(function(structure){
+							$rootScope.structure = structure;
+							$rootScope.structure.user = user;
 
-					var uri = $rootScope.redirectPath;
+							var uri = $rootScope.redirectPath;
 
-					if (!uri || uri == "/login"){
-						uri = '/' + $rootScope.defaultModule().uri;
-					}
+							if (!uri || uri == "/login" || !_.find($rootScope.structure, { uri: uri }))
+							{
+								uri = '/' + $rootScope.defaultModule().uri;
+							}
 
-					$location.path(uri);
+							$location.path(uri);
+						});
 				})
 				.error(function(error){
 					$scope.form.error = error.error_description;

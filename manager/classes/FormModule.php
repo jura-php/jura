@@ -6,14 +6,14 @@ class FormModule extends Module
 	public $tableName;
 	public $uniqueID;
 
-	protected $flags;
-	protected $pageSize;
-	protected $order;
-	protected $orderBy;
-	protected $name;
+	public $flags;
+	public $pageSize;
+	public $order;
+	public $orderBy;
+	public $name;
 
-	private $fields;
-	private $buttons;
+	public $fields;
+	public $buttons;
 
 	public function __construct()
 	{
@@ -85,23 +85,24 @@ class FormModule extends Module
 		$this->loadFields();
 
 		//TODO: Check module flags... eg.: dont allow update if it hasn't the U flag
+		$that = $this;
 
-		Router::register("GET", array("manager/api/" . $this->name), function () {
+		Router::register("GET", array("manager/api/" . $this->name), function () use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
 			}
 
-			$this->flag = "L";
+			$that->flag = "L";
 
 			$page = (int)Request::get("page", 1);
 			$search = Request::get("search", "");
-			$order = Request::get("order", $this->order);
-			$orderBy = Request::get("orderBy", $this->orderBy);
+			$order = Request::get("order", $that->order);
+			$orderBy = Request::get("orderBy", $that->orderBy);
 
-			$this->orm = $this->listCountORM();
+			$that->orm = $that->listCountORM();
 
-			foreach ($this->fields as $field)
+			foreach ($that->fields as $field)
 			{
 				if ($field->hasFlag("L"))
 				{
@@ -112,8 +113,8 @@ class FormModule extends Module
 
 			if ($search != "")
 			{
-				$this->orm->whereGroup("OR", function ($orm) use ($search) {
-					foreach ($this->fields as $field)
+				$that->orm->whereGroup("OR", function ($orm) use ($search, $that) {
+					foreach ($that->fields as $field)
 					{
 						if ($field->hasFlag("F"))
 						{
@@ -123,18 +124,18 @@ class FormModule extends Module
 				});
 			}
 
-			$count = $this->orm->count('id');
+			$count = $that->orm->count('id');
 
-			$pageCount = max(1, ceil($count / $this->pageSize));
+			$pageCount = max(1, ceil($count / $that->pageSize));
 			$page = max(1, min($pageCount, $page));
 			$nextPage = ($page < $pageCount) ? $page + 1 : false;
 			$previousPage = ($page > 1) ? $page - 1 : false;
 
 			$results = array();
 			$fields = array();
-			$this->orm = $this->listORM();
+			$that->orm = $that->listORM();
 
-			foreach ($this->fields as $field)
+			foreach ($that->fields as $field)
 			{
 				if ($field->hasFlag("L"))
 				{
@@ -146,8 +147,8 @@ class FormModule extends Module
 
 			if ($search != "")
 			{
-				$this->orm->whereGroup("OR", function ($orm) use ($search) {
-					foreach ($this->fields as $field)
+				$that->orm->whereGroup("OR", function ($orm) use ($search, $that) {
+					foreach ($that->fields as $field)
 					{
 						if ($field->hasFlag("F"))
 						{
@@ -157,9 +158,9 @@ class FormModule extends Module
 				});
 			}
 
-			$entries = $this->orm
-						->offset(($page - 1) * $this->pageSize)
-						->limit($this->pageSize);
+			$entries = $that->orm
+						->offset(($page - 1) * $that->pageSize)
+						->limit($that->pageSize);
 
 
 			if ($orderBy != "")
@@ -176,7 +177,7 @@ class FormModule extends Module
 
 			foreach ($entries->find() as $entry)
 			{
-				$this->orm = $entry;
+				$that->orm = $entry;
 
 				$values = array();
 				$values["id"] = (int)$entry->id;
@@ -207,18 +208,18 @@ class FormModule extends Module
 			));
 		});
 
-		Router::register("PATCH", "manager/api/" . $this->name . "/(:num)", function ($id) {
+		Router::register("PATCH", "manager/api/" . $this->name . "/(:num)", function ($id) use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
 			}
 
-			$this->flag = "U";
+			$that->flag = "U";
 
-			$this->orm = ORM::make($this->tableName)
+			$that->orm = ORM::make($that->tableName)
 										->findFirst($id);
 
-			foreach ($this->fields as $field)
+			foreach ($that->fields as $field)
 			{
 				if ($field->hasFlag("L") && $field->hasFlag("U") && Request::hasPost($field->name))
 				{
@@ -232,14 +233,14 @@ class FormModule extends Module
 				}
 			}
 
-			if ($return = $this->save())
+			if ($return = $that->save())
 			{
 				return $return;
 			}
 
-			$this->orm->update($id);
+			$that->orm->update($id);
 
-			foreach ($this->fields as $field)
+			foreach ($that->fields as $field)
 			{
 				if ($field->hasFlag("L") && $field->hasFlag("U"))
 				{
@@ -250,23 +251,23 @@ class FormModule extends Module
 				}
 			}
 
-			if ($return = $this->afterSave())
+			if ($return = $that->afterSave())
 			{
 				return $return;
 			}
 		});
 
-		Router::register("GET", "manager/api/" . $this->name . "/new", function () {
+		Router::register("GET", "manager/api/" . $this->name . "/new", function () use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
 			}
 
-			$this->flag = "C";
+			$that->flag = "C";
 
 			$values = array();
 
-			foreach ($this->fields as $field)
+			foreach ($that->fields as $field)
 			{
 				if ($field->hasFlag("C"))
 				{
@@ -279,17 +280,17 @@ class FormModule extends Module
 			return Response::json($values);
 		});
 
-		Router::register("POST", "manager/api/" . $this->name, function () {
+		Router::register("POST", "manager/api/" . $this->name, function () use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
 			}
 
-			$this->flag = "C";
+			$that->flag = "C";
 
-			$this->orm = ORM::make($this->tableName);
+			$that->orm = ORM::make($that->tableName);
 
-			foreach ($this->fields as $field)
+			foreach ($that->fields as $field)
 			{
 				if ($field->hasFlag("C"))
 				{
@@ -303,14 +304,14 @@ class FormModule extends Module
 				}
 			}
 
-			if ($return = $this->save())
+			if ($return = $that->save())
 			{
 				return $return;
 			}
 
-			$this->orm->insert();
+			$that->orm->insert();
 
-			foreach ($this->fields as $field)
+			foreach ($that->fields as $field)
 			{
 				if ($field->hasFlag("C"))
 				{
@@ -321,26 +322,26 @@ class FormModule extends Module
 				}
 			}
 
-			if ($return = $this->afterSave())
+			if ($return = $that->afterSave())
 			{
 				return $return;
 			}
 		});
 
-		Router::register("GET", "manager/api/" . $this->name . "/(:num)", function ($id) {
+		Router::register("GET", "manager/api/" . $this->name . "/(:num)", function ($id) use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
 			}
 
-			$this->flag = "R";
+			$that->flag = "R";
 
 			$fields = array();
-			$this->orm = $this->orm = ORM::make($this->tableName)
+			$that->orm = $that->orm = ORM::make($that->tableName)
 						->select("id");
 			$hasUpdateFlag = false;
 
-			foreach ($this->fields as $field)
+			foreach ($that->fields as $field)
 			{
 				if ($field->hasFlag("R") || $field->hasFlag("U"))
 				{
@@ -350,32 +351,32 @@ class FormModule extends Module
 
 					if ($field->includeOnSQL())
 					{
-						$this->orm->select($field->name);
+						$that->orm->select($field->name);
 					}
 				}
 			}
 
-			$this->orm = $this->orm->findFirst($id);
+			$that->orm = $that->orm->findFirst($id);
 
-			$moduleFlag = $this->flag;
+			$moduleFlag = $that->flag;
 
-			if ($this->orm)
+			if ($that->orm)
 			{
 				$values = array();
-				$values["id"] = (int)$this->orm->id;
+				$values["id"] = (int)$that->orm->id;
 
 				foreach ($fields as $field)
 				{
-					$this->flag = "R";
+					$that->flag = "R";
 
 					if ($field->hasFlag("U"))
 					{
-						$this->flag = "U";
+						$that->flag = "U";
 					}
 
 					$values[$field->name] = $field->value();
 
-					$this->flag = $moduleFlag;
+					$that->flag = $moduleFlag;
 				}
 
 				return Response::json($values);
@@ -384,18 +385,18 @@ class FormModule extends Module
 			return Response::code(404);
 		});
 
-		Router::register("PUT", "manager/api/" . $this->name . "/(:num)", function ($id) {
+		Router::register("PUT", "manager/api/" . $this->name . "/(:num)", function ($id) use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
 			}
 
-			$this->flag = "U";
+			$that->flag = "U";
 
-			$this->orm = ORM::make($this->tableName)
+			$that->orm = ORM::make($that->tableName)
 										->findFirst($id);
 
-			foreach ($this->fields as $field)
+			foreach ($that->fields as $field)
 			{
 				if ($field->hasFlag("U") && Request::hasPost($field->name))
 				{
@@ -409,14 +410,14 @@ class FormModule extends Module
 				}
 			}
 
-			if ($return = $this->save())
+			if ($return = $that->save())
 			{
 				return $return;
 			}
 
-			$this->orm->update($id);
+			$that->orm->update($id);
 
-			foreach ($this->fields as $field)
+			foreach ($that->fields as $field)
 			{
 				if ($field->hasFlag("U"))
 				{
@@ -427,29 +428,29 @@ class FormModule extends Module
 				}
 			}
 
-			if ($return = $this->afterSave())
+			if ($return = $that->afterSave())
 			{
 				return $return;
 			}
 		});
 
-		Router::register("DELETE", "manager/api/" . $this->name . "/(:any)", function ($ids) {
+		Router::register("DELETE", "manager/api/" . $this->name . "/(:any)", function ($ids) use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
 			}
 
-			$this->flag = "D";
+			$that->flag = "D";
 
 			$ids = explode('-', $ids);
 
-			$orm = ORM::make($this->tableName);
+			$orm = ORM::make($that->tableName);
 
 			foreach ($ids as $id)
 			{
-				$this->orm = $orm->findFirst($id);
+				$that->orm = $orm->findFirst($id);
 
-				foreach ($this->fields as $field)
+				foreach ($that->fields as $field)
 				{
 					if ($return = $field->save(""))
 					{
@@ -457,14 +458,14 @@ class FormModule extends Module
 					}
 				}
 
-				if ($return = $this->save())
+				if ($return = $that->save())
 				{
 					return $return;
 				}
 
-				$this->orm->delete();
+				$that->orm->delete();
 
-				foreach ($this->fields as $field)
+				foreach ($that->fields as $field)
 				{
 					if ($return = $field->afterSave())
 					{
@@ -472,7 +473,7 @@ class FormModule extends Module
 					}
 				}
 
-				if ($return = $this->afterSave())
+				if ($return = $that->afterSave())
 				{
 					return $return;
 				}
@@ -579,23 +580,24 @@ class FormModule extends Module
 			$uri = "manager/api/button" . uniqueID();
 			$info["url"] = URL::root(false) . $uri;
 
-			Router::register("GET", $uri, function () use ($callback) {
+			$that = $this;
+			Router::register("GET", $uri, function () use ($callback, $that) {
 				if (($token = User::validateToken()) !== true)
 				{
 					return $token;
 				}
 
 				$id = (int)Request::get("id", 0);
-				$this->flag = Str::upper(Request::get("flag", "L"));
+				$that->flag = Str::upper(Request::get("flag", "L"));
 
-				if ($this->flag == "RU")
+				if ($that->flag == "RU")
 				{
-					$this->flag == "R";
+					$that->flag == "R";
 				}
 
 				if ($id > 0)
 				{
-					$this->orm = ORM::make($this->tableName)->where("id", $id)->findFirst();
+					$that->orm = ORM::make($that->tableName)->where("id", $id)->findFirst();
 				}
 
 				return call_user_func($callback);
@@ -605,23 +607,23 @@ class FormModule extends Module
 		$this->buttons[] = $info;
 	}
 
-	protected function listORM()
+	public function listORM()
 	{
 		return $orm = ORM::make($this->tableName)
 						->select("id");
 	}
 
-	protected function listCountORM()
+	public function listCountORM()
 	{
 		return ORM::make($this->tableName);
 	}
 
-	protected function save()
+	public function save()
 	{
 
 	}
 
-	protected function afterSave()
+	public function afterSave()
 	{
 
 	}
