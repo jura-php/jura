@@ -12,8 +12,8 @@ class FormModule extends Module
 	public $orderBy;
 	public $name;
 
-	private $fields;
-	private $buttons;
+	public $fields;
+	public $buttons;
 
 	public function __construct()
 	{
@@ -113,7 +113,7 @@ class FormModule extends Module
 
 			if ($search != "")
 			{
-				$that->orm->whereGroup("OR", function ($orm) use ($search) {
+				$that->orm->whereGroup("OR", function ($orm) use ($search, $that) {
 					foreach ($that->fields as $field)
 					{
 						if ($field->hasFlag("F"))
@@ -147,7 +147,7 @@ class FormModule extends Module
 
 			if ($search != "")
 			{
-				$that->orm->whereGroup("OR", function ($orm) use ($search) {
+				$that->orm->whereGroup("OR", function ($orm) use ($search, $that) {
 					foreach ($that->fields as $field)
 					{
 						if ($field->hasFlag("F"))
@@ -208,7 +208,7 @@ class FormModule extends Module
 			));
 		});
 
-		Router::register("PATCH", "manager/api/" . $this->name . "/(:num)", function ($id) {
+		Router::register("PATCH", "manager/api/" . $this->name . "/(:num)", function ($id) use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
@@ -257,7 +257,7 @@ class FormModule extends Module
 			}
 		});
 
-		Router::register("GET", "manager/api/" . $this->name . "/new", function () {
+		Router::register("GET", "manager/api/" . $this->name . "/new", function () use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
@@ -280,7 +280,7 @@ class FormModule extends Module
 			return Response::json($values);
 		});
 
-		Router::register("POST", "manager/api/" . $this->name, function () {
+		Router::register("POST", "manager/api/" . $this->name, function () use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
@@ -328,7 +328,7 @@ class FormModule extends Module
 			}
 		});
 
-		Router::register("GET", "manager/api/" . $this->name . "/(:num)", function ($id) {
+		Router::register("GET", "manager/api/" . $this->name . "/(:num)", function ($id) use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
@@ -385,7 +385,7 @@ class FormModule extends Module
 			return Response::code(404);
 		});
 
-		Router::register("PUT", "manager/api/" . $this->name . "/(:num)", function ($id) {
+		Router::register("PUT", "manager/api/" . $this->name . "/(:num)", function ($id) use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
@@ -434,7 +434,7 @@ class FormModule extends Module
 			}
 		});
 
-		Router::register("DELETE", "manager/api/" . $this->name . "/(:any)", function ($ids) {
+		Router::register("DELETE", "manager/api/" . $this->name . "/(:any)", function ($ids) use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
@@ -580,23 +580,24 @@ class FormModule extends Module
 			$uri = "manager/api/button" . uniqueID();
 			$info["url"] = URL::root(false) . $uri;
 
-			Router::register("GET", $uri, function () use ($callback) {
+			$that = $this;
+			Router::register("GET", $uri, function () use ($callback, $that) {
 				if (($token = User::validateToken()) !== true)
 				{
 					return $token;
 				}
 
 				$id = (int)Request::get("id", 0);
-				$this->flag = Str::upper(Request::get("flag", "L"));
+				$that->flag = Str::upper(Request::get("flag", "L"));
 
-				if ($this->flag == "RU")
+				if ($that->flag == "RU")
 				{
-					$this->flag == "R";
+					$that->flag == "R";
 				}
 
 				if ($id > 0)
 				{
-					$this->orm = ORM::make($this->tableName)->where("id", $id)->findFirst();
+					$that->orm = ORM::make($that->tableName)->where("id", $id)->findFirst();
 				}
 
 				return call_user_func($callback);

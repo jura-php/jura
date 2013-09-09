@@ -65,7 +65,7 @@ class ItemsField extends Field
 		$rs->close();
 	}
 
-	private function items()
+	public function items()
 	{
 		$items = array();
 		foreach ($this->items as $k => $v)
