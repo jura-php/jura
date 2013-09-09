@@ -221,13 +221,11 @@ class FormModule extends Module
 
 			foreach ($that->fields as $field)
 			{
-				echo $field->flags . "\n";
 				if ($field->hasFlag("L") && $field->hasFlag("U") && Request::hasPost($field->name))
 				{
 					$field->init();
 
 					$value = $field->unformat(Request::post($field->name, $field->defaultValue));
-					echo $field->name . "-" . $value . "\n";
 					if ($return = $field->save($value))
 					{
 						return $return;
@@ -241,9 +239,6 @@ class FormModule extends Module
 			}
 
 			$that->orm->update($id);
-
-			echo ORM::lastSQL();
-			die();
 
 			foreach ($that->fields as $field)
 			{
