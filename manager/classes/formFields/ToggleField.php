@@ -11,6 +11,11 @@ class ToggleField extends Field
 
 	public function format($value)
 	{
+		if ($this->module->flag == "R")
+		{
+			return ((int)$value == 1) ? "Sim" : "Não";
+		}
+
 		return (string)$value;
 	}
 

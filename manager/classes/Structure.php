@@ -81,7 +81,7 @@ class Structure
 					$objects[] = $c;
 					$module = $c->config($module);
 				}
-				else if (array_search("separator", $module) !== false)
+				else if ((is_string($module) && $module = "separator") || (array_search("separator", $module) !== false))
 				{
 					$module = array(
 						"menu" => "side",
