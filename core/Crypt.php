@@ -23,6 +23,22 @@ class Crypt {
 	    return rtrim($string, "\0");
 	}
 
+	public static function sslencode($string)
+	{
+		$key = hash("sha256", Config::item("application", "key"));
+		$iv = substr(hash("sha256", "123"), 0, 16);
+
+		return static::to64(openssl_encrypt($string, "AES-256-CBC", $key, 0, $iv));
+	}
+
+	public static function ssldecode($string)
+	{
+		$key = hash("sha256", Config::item("application", "key"));
+		$iv = substr(hash("sha256", "123"), 0, 16);
+
+		return openssl_decrypt(static::from64($string), "AES-256-CBC", $key, 0, $iv);
+	}
+
 	private static function to64($string)
 	{
 		$string = base64_encode($string);
