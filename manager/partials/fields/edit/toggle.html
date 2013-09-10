@@ -119,11 +119,22 @@
 		background: #4fb845;
 	}
 
+	.switch-disabled .icon-ok {
+		color: rgb(28, 184, 65);
+	}
+	.switch-disabled .icon-remove {
+		color: rgb(223, 30, 30);
+	}
+
 </style>
 
 <label>{{field.label}}</label>
-<label class="switch switch-green">
+<label class="switch switch-green" ng-show="hasFlag(field.flags, 'u')">
 	<input type="checkbox" class="switch-input" ng-true-value="1" ng-false-value="2" ng-model="data[field.name]" />
 	<span class="switch-label" data-on="Sim" data-off="Não"></span>
 	<span class="switch-handle"></span>
 </label>
+
+<div class="center switch-disabled">
+	<i ng-class="{'icon-ok': (data[field.name] == 1), 'icon-remove': (data[field.name] == 0)}"></i>
+</div>
