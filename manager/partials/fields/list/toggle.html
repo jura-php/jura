@@ -134,6 +134,6 @@
 	<span class="switch-handle"></span>
 </label>
 
-<div class="center switch-disabled">
+<div class="center switch-disabled" ng-show="!hasFlag(field.flags, 'u')">
 	<i ng-class="{'icon-ok': (data[field.name] == 1), 'icon-remove': (data[field.name] == 0)}"></i>
 </div>
