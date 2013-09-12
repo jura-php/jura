@@ -27,7 +27,11 @@ angular.module('manager.controllers', [])
 						});
 				})
 				.error(function(error){
-					$scope.form.error = error.error_description;
+					var error_messages = {
+						'invalid_client' : 'Usuário ou senha inválida'
+					}
+
+					$scope.form.error = error_messages[error.error_description] || error.error_description;
 				})
 		}
 	}])
