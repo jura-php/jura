@@ -40,7 +40,7 @@
 			<tbody>
 				<tr ng-repeat="data in data | orderBy:order.by:order.reverse">
 					<td need-flag="d" width="15"><input type="checkbox" ng-model="checkboxes[data.id]" /></td>
-					<td ng-repeat="field in module.fields | fieldsByFlags" ng-click="edit(field, $event)" ng-include="'partials/fields/list/'+field.type+'.html'"></td>
+					<td ng-repeat="field in module.fields | fieldsByFlags" ng-click="edit(field, $event)" ng-include="partialFieldPath(field, 'list')"></td>
 				</tr>
 			</tbody>
 		</table>

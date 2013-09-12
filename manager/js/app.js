@@ -1,7 +1,7 @@
 'use strict';
 
 // Declare app level module which depends on filters, and services
-angular.module('manager', ['manager.filters', 'manager.services', 'manager.directives', 'manager.controllers', 'restangular', 'jdUpload', 'ngCookies'])
+angular.module('manager', ['manager.filters', 'manager.services', 'manager.directives', 'manager.controllers', 'manager.custom', 'restangular', 'jdUpload', 'ngCookies'])
 	.config(['$routeProvider', 'RestangularProvider', function($routeProvider, Restangular) {
 
 		Restangular.setBaseUrl(config.api_url.replace(/\/$/, ""));
@@ -69,6 +69,34 @@ angular.module('manager', ['manager.filters', 'manager.services', 'manager.direc
 			} else {
 				window.webkitNotifications.requestPermission();
 			}
+		}
+
+
+		$rootScope.partialFieldPath = function(field, action) {
+			var default_field_types = [
+				'date',
+				'datetime',
+				'id',
+				'imageupload',
+				'items',
+				'markdown',
+				'multipleItems',
+				'number',
+				'readonly',
+				'text',
+				'time',
+				'toggle',
+				'upload'
+			];
+
+			var result_type = (action == 'list' || this.module.actionFlag == 'c' || $rootScope.hasFlag(field.flags, 'u')) ?  field.type : 'readonly';
+
+			if(_.indexOf(default_field_types, field.type) !== -1) {
+				return 'partials/fields/' + action + '/' + result_type + '.html'
+			} else {
+				return '../manager/formFieldsPartials/' + action + '/' + result_type + '.html'
+			}
+
 		}
 
 

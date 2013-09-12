@@ -22,7 +22,7 @@
 			</div>
 
 			<fieldset ng-show="data">
-				<div class="pure-control-group" ng-repeat="field in module.fields | fieldsByFlags" ng-include="'partials/fields/edit/'+ ((actionFlag == 'c' || hasFlag(field.flags, 'u')) && field.type || 'readonly') + '.html'"></div>
+				<div class="pure-control-group" ng-repeat="field in module.fields | fieldsByFlags" ng-include="partialFieldPath(field, 'edit')"></div>
 			</fieldset>
 		</form>
 
