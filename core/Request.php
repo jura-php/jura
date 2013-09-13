@@ -72,7 +72,7 @@ class Request
 		$list = require J_PATH . "config" . DS . "environments" . EXT;
 		$env = "";
 		$envWithWildcard = array_first($list);
-		$hosts = array(array_get(static::$server, "HTTP_HOST", "localhost"), gethostname());
+		$hosts = array(array_get(static::$server, "HTTP_HOST", "localhost"), array_get(static::$server, "SERVER_NAME", "localhost"), gethostname());
 
 		foreach ($hosts as $host)
 		{
