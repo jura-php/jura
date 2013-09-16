@@ -39,6 +39,14 @@ class Structure
 		Router::register("GET", "manager/api/logout/", function () {
 			return User::logout();
 		});
+
+		Router::register("GET", "manager/api/customJS/", function () {
+			$path = J_MANAGERPATH . "custom.js";
+			if (file_exists($path))
+			{
+				return File::get($path);
+			}
+		});
 	}
 
 	public static function modules()

@@ -91,10 +91,10 @@ var Manager = angular.module('manager', ['manager.filters', 'manager.services', 
 
 			var result_type = (action == 'list' || this.module.actionFlag == 'c' || $rootScope.hasFlag(field.flags, 'u')) ?  field.type : 'readonly';
 
-			if(_.indexOf(default_field_types, field.type) !== -1) {
+			if(_.indexOf(default_field_types, result_type) !== -1) {
 				return 'partials/fields/' + action + '/' + result_type + '.html'
 			} else {
-				return '../manager/formFieldsPartials/' + action + '/' + result_type + '.html'
+				return '../manager/formFields/partials/' + action + '/' + result_type + '.html'
 			}
 
 		}
