@@ -1,2 +1,85 @@
+<style>
+
+.markdownHelp {
+    position: relative;
+    text-align: right;
+    height: 40px;
+    margin-bottom: -20px;
+    margin-top: 10px;
+    width: 80px;
+    left: 100%;
+    margin-left: -80px;
+}
+
+.markdownHelp-help {
+    cursor: pointer;
+    color: #666;
+}
+
+.markdownHelp-container {
+    font-size: 14px;
+    line-height: 100%;
+    padding: 10px 30px;
+    margin-top: 20px;
+    background: #eee;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    position: absolute;
+    right: 0;
+    top: 8px;
+    text-align: left;
+    display: none;
+    width: 500px;
+    /*box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .4);*/
+}
+
+.markdownHelp:hover .markdownHelp-container {
+    display: block;
+}
+
+.markdownHelp-title {
+    font-size: 30px;
+}
+
+.markdownHelp-subtitle {
+    font-size: 20px;
+}
+
+.markdownHelp-emphasis {
+    font-weight: bold;
+}
+
+.markdownHelp-italic {
+    font-style: italic;
+}
+
+.markdownHelp-list {
+    white-space: pre-line;
+    margin-top: -10px;
+    display: block;
+}
+
+
+</style>
+
+
 <label>{{field.label}}</label>
 <div epic class="markdown" id="epic-{{field.name}}" ng-model="data[field.name]"></div>
+
+
+<div class="markdownHelp clearfix">
+
+	<a class="markdownHelp-help"><i class="icon-question-sign"></i> Ajuda</a>
+
+	<div class="markdownHelp-container">
+		<p class="markdownHelp-title">#título principal</p>
+		<p class="markdownHelp-subtitle">##título secundário</p>
+		<p class="markdownHelp-text">Texto em <span class="markdownHelp-emphasis">**negrito**</span> ou <span class="markdownHelp-italic">*itálico*</span></p>
+		<p class="markdownHelp-link">[texto do link](http://www.enderecodolink.com.br)</p>
+		<p class="markdownHelp-image">![texto alternativo da imagem](http://www.enderecodaimagem.com.br/imagem.jpg)</p>
+		<p class="markdownHelp-list">
+			- lista de itens
+			- lista de itens
+			- lista de itens
+		</p>
+</div>

@@ -40,6 +40,12 @@ button {
     vertical-align: middle;
 }
 
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
 .LOCKSCREEN {
     position: fixed;
     left: 0;
