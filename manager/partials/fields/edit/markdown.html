@@ -25,16 +25,23 @@
     border: 1px solid #ddd;
     border-radius: 5px;
     position: absolute;
-    right: 0;
-    top: 8px;
+    right: -700px;
+    bottom: 0px;
     text-align: left;
-    display: none;
+    display: block;
     width: 500px;
+    opacity: 0;
+    -webkit-transition: all 300ms ease;
+    -moz-transition: all 300ms ease;
+    -ms-transition: all 300ms ease;
+    -o-transition: all 300ms ease;
+    transition: all 300ms ease;
     /*box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .4);*/
 }
 
 .markdownHelp:hover .markdownHelp-container {
-    display: block;
+    opacity: 1;
+    right: 0;
 }
 
 .markdownHelp-title {
