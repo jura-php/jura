@@ -107,7 +107,7 @@ class ItemsField extends Field
 		
 		if ($flag == "L" || $flag == "R")
 		{
-			return $this->items[$value];
+			return array_get($this->items, $value);
 		}
 		else if ($flag == "C" || $flag == "U")
 		{

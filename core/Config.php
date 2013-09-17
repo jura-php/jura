@@ -67,7 +67,7 @@ class Config
 		return null;
 	}
 
-	public static function item($group, $name = false)
+	public static function item($group, $name = false, $default = null)
 	{
 		if(!$name) {
 			$name = $group;
@@ -82,7 +82,7 @@ class Config
 			return $value;
 		}
 
-		return false;
+		return $default;
 	}
 }
 ?>
