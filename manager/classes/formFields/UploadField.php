@@ -1,6 +1,4 @@
 <?php
-//TODO: Fazer verificação de extensões válidas no upload
-
 class UploadField extends Field
 {
 	public $limit;
@@ -10,7 +8,7 @@ class UploadField extends Field
 	protected $accepts;
 	protected $acceptsMask;
 
-	private $resourceURL;
+	private $updateURL;
 
 	protected static function storagePath()
 	{
@@ -73,7 +71,7 @@ class UploadField extends Field
 
 		$id = uniqueID();
 		$this->sessionKey = "manager_" . $this->type . $id;
-		$this->resourceURL = "fields/" . $this->type . $id;
+		$this->updateURL = "fields/" . $this->type . $id;
 		$this->limit = 1;
 		$this->path = $path;
 		$this->defaultValue = array();
@@ -82,7 +80,7 @@ class UploadField extends Field
 
 		$that = $this;
 
-		Router::register("POST", "manager/api/" . $this->resourceURL . "/(:segment)/(:num)/(:segment)", function ($action, $id, $flag) use ($that) {
+		Router::register("POST", "manager/api/" . $this->updateURL . "/(:segment)/(:num)/(:segment)", function ($action, $id, $flag) use ($that) {
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
@@ -132,7 +130,7 @@ class UploadField extends Field
 
 		return array_merge(array(
 			"limit" => $this->limit,
-			"resource_url" => "api/" . $this->resourceURL,
+			"update_url" => "api/" . $this->updateURL,
 			"accepts" => implode(",", $this->accepts)
 		), $arr);
 	}

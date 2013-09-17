@@ -7,7 +7,18 @@ class TimeField extends Field
 
 		$this->type = "time";
 
-		$this->validationLength = 19;
+		$this->validationLength = 8;
+		$this->defaultValue = "00:00:00";
+	}
+
+	public function format($value)
+	{
+		if (empty($value))
+		{
+			return $this->defaultValue;
+		}
+
+		return $value;
 	}
 
 }
