@@ -140,7 +140,7 @@ Router::register("GET", "thumb/", function () {
 
 	$path = implode(DS, $pieces);
 
-	$allowedPaths = Config::item("application", "thumbPaths");
+	$allowedPaths = Config::item("application", "thumbPaths", array("app/storage/"));
 	$allowed = false;
 
 	foreach ($allowedPaths as $dir)
