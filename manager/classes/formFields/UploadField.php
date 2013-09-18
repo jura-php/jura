@@ -301,17 +301,7 @@ class UploadField extends Field
 				if (count($this->accepts) > 0)
 				{
 					$mime = File::mime($ext);
-					$accepted = false;
-					foreach ($this->accepts as $accept)
-					{
-						if (array_search($mime, $this->accepts))
-						{
-							$accepted = true;
-							break;
-						}
-					}
-
-					if (!$accepted)
+					if (!array_search($mime, $this->accepts) === false)
 					{
 						$acceptError++;
 						continue;
