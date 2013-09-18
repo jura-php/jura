@@ -113,7 +113,7 @@ angular.module('manager.directives', []).
 						// parser: marked,
 						file: {
 						//     name: 'epiceditor',
-							defaultContent: data[scope.field.name],
+							defaultContent: data[scope.field.name] || "",
 						//     autoSave: 100
 						},
 						theme: {
