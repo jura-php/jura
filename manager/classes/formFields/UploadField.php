@@ -277,39 +277,86 @@ class UploadField extends Field
 			$info = $_FILES["attachment"];
 			$num = count($info["name"]);
 
-			//TODO: Check allowed extension
+			$files = json_decode(Session::get($this->sessionKey), true);
+
+			$remaining = $this->limit - count($files);
+			$num = min($num, $remaining);
+
+			if ($remaining <= 0)
+			{
+				return array(
+					"error" => true,
+					"error_description" => "Limite de arquivos excedido."
+				);
+			}
+
+			$ok = 0;
+			$acceptError = 0;
+			$permissionError = 0;
 
 			for ($i = 0; $i < $num; $i++)
 			{
 				$ext = File::extension($info["name"][$i]);
+
+				if (count($this->accepts) > 0)
+				{
+					$mime = File::mime($ext);
+					$accepted = false;
+					foreach ($this->accepts as $accept)
+					{
+						if (array_search($mime, $this->accepts))
+						{
+							$accepted = true;
+							break;
+						}
+					}
+
+					if (!$accepted)
+					{
+						$acceptError++;
+						continue;
+					}
+				}
 
 				$fileName = File::removeExtension($info["name"][$i]);
 				$destFile = $fileName . static::tmpKey() . "." . $ext;
 
 				if (@move_uploaded_file($info["tmp_name"][$i], static::tmpPath() . $destFile))
 				{
-					$files = json_decode(Session::get($this->sessionKey), true);
-
 					$files[] = array(
 						"_name" => $fileName . "." . $ext,
 						"_tmpName" => $destFile
 					);
 
-					Session::set($this->sessionKey, json_encode($files));
-
-					return array(
-						"error" => false,
-						"items" => $this->items()
-					);
+					$ok++;
 				}
 				else
 				{
-					return array(
-						"error" => true,
-						"error_description" => "Erro de permissão de arquivo. Contate o desenvolvedor."
-					);
+					$permissionError++;
 				}
 			}
+
+			Session::set($this->sessionKey, json_encode($files));
+
+			if ($permissionError > 0 && $ok == 0)
+			{
+				return array(
+					"error" => true,
+					"error_description" => "Erro de permissão de arquivo. Contate o desenvolvedor."
+				);
+			}
+			else if ($acceptError > 0 && $ok == 0)
+			{
+				return array(
+					"error" => true,
+					"error_description" => "Extensão não permitida."
+				);
+			}
+
+			return array(
+				"error" => false,
+				"items" => $this->items()
+			);
 		}
 
 		return array(

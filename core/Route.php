@@ -26,7 +26,7 @@ class Route
 
 	public function call()
 	{
-		$cacheEnabled = array_get($this->action, "cacheEnabled");
+		$cacheEnabled = array_get($this->action, "cacheEnabled") && Config::item("application", "cache", true);
 
 		if ($cacheEnabled && ($data = Cache::get(URI::current())))
 		{

@@ -95,6 +95,14 @@ class FormModule extends Module
 
 			$that->flag = "L";
 
+			if (!$this->hasFlag($this->flag))
+			{
+				return Response::json(array(
+					"error" => true,
+					"error_description" => "Operação não permitida."
+				));
+			}
+
 			$page = (int)Request::get("page", 1);
 			$search = Request::get("search", "");
 			$order = Request::get("order", $that->order);
@@ -216,6 +224,14 @@ class FormModule extends Module
 
 			$that->flag = "U";
 
+			if (!$this->hasFlag($this->flag))
+			{
+				return Response::json(array(
+					"error" => true,
+					"error_description" => "Operação não permitida."
+				));
+			}
+
 			$that->orm = ORM::make($that->tableName)
 										->findFirst($id);
 
@@ -265,6 +281,14 @@ class FormModule extends Module
 
 			$that->flag = "C";
 
+			if (!$this->hasFlag($this->flag))
+			{
+				return Response::json(array(
+					"error" => true,
+					"error_description" => "Operação não permitida."
+				));
+			}
+
 			$values = array();
 
 			foreach ($that->fields as $field)
@@ -287,6 +311,14 @@ class FormModule extends Module
 			}
 
 			$that->flag = "C";
+
+			if (!$this->hasFlag($this->flag))
+			{
+				return Response::json(array(
+					"error" => true,
+					"error_description" => "Operação não permitida."
+				));
+			}
 
 			$that->orm = ORM::make($that->tableName);
 
@@ -335,6 +367,14 @@ class FormModule extends Module
 			}
 
 			$that->flag = "R";
+
+			if (!$this->hasFlag($this->flag))
+			{
+				return Response::json(array(
+					"error" => true,
+					"error_description" => "Operação não permitida."
+				));
+			}
 
 			$fields = array();
 			$that->orm = $that->orm = ORM::make($that->tableName)
@@ -393,6 +433,14 @@ class FormModule extends Module
 
 			$that->flag = "U";
 
+			if (!$this->hasFlag($this->flag))
+			{
+				return Response::json(array(
+					"error" => true,
+					"error_description" => "Operação não permitida."
+				));
+			}
+
 			$that->orm = ORM::make($that->tableName)
 										->findFirst($id);
 
@@ -442,6 +490,14 @@ class FormModule extends Module
 
 			$that->flag = "D";
 
+			if (!$this->hasFlag($this->flag))
+			{
+				return Response::json(array(
+					"error" => true,
+					"error_description" => "Operação não permitida."
+				));
+			}
+
 			$ids = explode('-', $ids);
 
 			$orm = ORM::make($that->tableName);
@@ -479,6 +535,11 @@ class FormModule extends Module
 				}
 			}
 		});
+	}
+
+	public function hasFlag($flag)
+	{
+		return (Str::contains($this->flags, $flag));
 	}
 
 	private function loadFields()

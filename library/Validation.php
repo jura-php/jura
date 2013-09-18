@@ -52,5 +52,51 @@ class Validation
 			return true;
 		}
 	}
+
+	public static function creditCard($value)
+	{
+		$value = preg_replace('/[^0-9]/', '', $value);
+
+		if (!preg_match('/^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$/', $value))
+		{
+			return false;
+		}
+
+		$len = strlen($value) - 1;
+
+		if ($len <= 5)
+		{
+			return false;
+		}
+
+		$sum = 0;
+		$double = false;
+		for ($i = $len; $i >= 0; $i--)
+		{
+			$digit = (int)substr($value, $i, 1);
+			if ($double)
+			{
+				$digit *= 2;
+				if ($digit >= 10)
+				{
+					$digit = ($digit % 10) + 1;
+				}
+
+				$sum += $digit;
+			}
+			else
+			{
+				$sum += $digit;
+			}
+
+			$double = !$double;
+		}
+		if (($sum % 10) !== 0)
+		{
+			return false;
+		}
+
+		return true;
+	}
 }
 ?>
