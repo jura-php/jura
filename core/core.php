@@ -92,7 +92,7 @@ Request::init();
 // {
 // 	error_reporting(0);
 // 	ini_set("error_log", J_APPPATH . "storage" . DS . "errors.log");
-}
+// }
 
 require J_SYSTEMPATH . "core" . DS . "URI" . EXT;
 require J_SYSTEMPATH . "core" . DS . "URL" . EXT;
