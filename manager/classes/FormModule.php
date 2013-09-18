@@ -95,7 +95,7 @@ class FormModule extends Module
 
 			$that->flag = "L";
 
-			if (!$this->hasFlag($this->flag))
+			if (!$that->hasFlag($that->flag))
 			{
 				return Response::json(array(
 					"error" => true,
@@ -224,7 +224,7 @@ class FormModule extends Module
 
 			$that->flag = "U";
 
-			if (!$this->hasFlag($this->flag))
+			if (!$that->hasFlag($that->flag))
 			{
 				return Response::json(array(
 					"error" => true,
@@ -281,7 +281,7 @@ class FormModule extends Module
 
 			$that->flag = "C";
 
-			if (!$this->hasFlag($this->flag))
+			if (!$that->hasFlag($that->flag))
 			{
 				return Response::json(array(
 					"error" => true,
@@ -312,7 +312,7 @@ class FormModule extends Module
 
 			$that->flag = "C";
 
-			if (!$this->hasFlag($this->flag))
+			if (!$that->hasFlag($that->flag))
 			{
 				return Response::json(array(
 					"error" => true,
@@ -368,7 +368,7 @@ class FormModule extends Module
 
 			$that->flag = "R";
 
-			if (!$this->hasFlag($this->flag))
+			if (!$that->hasFlag($that->flag))
 			{
 				return Response::json(array(
 					"error" => true,
@@ -433,7 +433,7 @@ class FormModule extends Module
 
 			$that->flag = "U";
 
-			if (!$this->hasFlag($this->flag))
+			if (!$that->hasFlag($that->flag))
 			{
 				return Response::json(array(
 					"error" => true,
@@ -490,7 +490,7 @@ class FormModule extends Module
 
 			$that->flag = "D";
 
-			if (!$this->hasFlag($this->flag))
+			if (!$that->hasFlag($that->flag))
 			{
 				return Response::json(array(
 					"error" => true,
