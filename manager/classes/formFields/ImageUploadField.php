@@ -204,7 +204,7 @@ class ImageUploadField extends UploadField
 		}
 	}
 
-	private function delete($index)
+	public function delete($index)
 	{
 		if ($index >= 0)
 		{
