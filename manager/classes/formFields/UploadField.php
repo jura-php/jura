@@ -270,7 +270,7 @@ class UploadField extends Field
 		}
 	}
 
-	private function upload($flag, $id)
+	public function upload($flag, $id)
 	{
 		if (isset($_FILES["attachment"]))
 		{
@@ -355,7 +355,7 @@ class UploadField extends Field
 		);
 	}
 
-	private function delete($index)
+	public function delete($index)
 	{
 		if ($index >= 0)
 		{
