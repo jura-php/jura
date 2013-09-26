@@ -62,7 +62,7 @@ class MysqlRecordSet
 			if (Request::isLocal() || Request::isPreview()) //TODO: Error class
 			{
 				echo ": " . $query;
-				echo "<br> <b>'" . mysql_error($this->conn->res) . "'</b>";
+				echo "\n<br> <b>'" . mysql_error($this->conn->res) . "'</b>";
 			}
 
 			die();

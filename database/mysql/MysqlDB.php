@@ -39,14 +39,13 @@ class MysqlDB
 		mysql_query('SET character_set_connection=utf8', $this->res);
 		mysql_query('SET character_set_client=utf8', $this->res);
 		mysql_query('SET character_set_results=utf8', $this->res);
-		//mysql_query('');
 	}
 
 	public function query($query, $params = null)
 	{
 		$params = (array)$params;
 
-		if (is_array($params) && strpos($query, "?") !== false)
+		if (is_array($params) && count($params) > 0 && strpos($query, "?") !== false)
 		{
 			$segments = explode("?", $query);
 			$segmentsLength = count($segments);
