@@ -123,7 +123,7 @@ class Route
 					}
 				}
 
-				require $path;
+				return require $path;
 			}
 		}
 
@@ -135,7 +135,7 @@ class Route
 			return is_callable($value);
 		});*/
 
-		if (!is_null($handler))
+		if (!is_null($handler) && is_callable($handler))
 		{
 			return call_user_func_array($handler, $route->parameters);
 		}

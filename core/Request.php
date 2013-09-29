@@ -245,6 +245,11 @@ class Request
 		if (empty($pathInfo) || $pathInfo == "/")
 		{
 			$pathInfo = array_get(static::$server, "ORIG_PATH_INFO", "/");
+
+			if (strpos($pathInfo, "/index.php") === 0)
+			{
+				$pathInfo = str_replace("/index.php", "", $pathInfo);
+			}
 		}
 
 		if (empty($pathInfo))
