@@ -127,6 +127,11 @@ class Request
 		static::$method = $method;
 	}
 
+	public static function serverVars()
+	{
+		print_r(static::$server);
+	}
+
 	public static function env()
 	{
 		return static::$env;

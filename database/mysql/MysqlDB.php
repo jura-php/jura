@@ -24,14 +24,12 @@ class MysqlDB
 
 		if (!$this->res)
 		{
-			echo "Can't connect to server <b>'" . $params["host"] . "'</b>"; //TODO: Error class...
-			exit();
+			trigger_error("Can't connect to server <b>'" . $params["host"] . "'</b>");
 		}
 
 		if (!@mysql_select_db($params["database"], $this->res))
 		{
-			echo "Can't select database <b>'" . $params["database"] . "'</b>"; //TODO: Error class...
-			exit();
+			trigger_error("Can't select database <b>'" . $params["database"] . "'</b>");
 		}
 
 		mysql_set_charset('utf8', $this->res);

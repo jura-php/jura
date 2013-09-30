@@ -10,15 +10,14 @@ class Cache
 
 		if (Request::isLocal())
 		{
+
 			if (!File::exists(static::$path))
 			{
-				echo "Directory <b>" . static::$path . "</b> doesn't exists."; //TODO: Put this on the Error class.
-				die();
+				trigger_error("Directory <b>" . static::$path . "</b> doesn't exists.");
 			}
 			else if (!is_writable(static::$path))
 			{
-				echo "Directory <b>" . static::$path . "</b> is not writable."; //TODO: Put this on the Error class.
-				die();
+				trigger_error("Directory <b>" . static::$path . "</b> is not writable.");
 			}
 		}
 	}

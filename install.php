@@ -20,10 +20,16 @@ function make_dir($node, $path = null, $root = null)
 
 	$root = trim($root, "/") . DIRECTORY_SEPARATOR;
 	$keep = false;
+	$ignore = false;
 
 	if ($node == "#keep#")
 	{
 		$keep = true;
+		$node = null;
+	}
+	else if ($node == "#ignore#")
+	{
+		$ignore = true;
 		$node = null;
 	}
 
@@ -50,6 +56,16 @@ function make_dir($node, $path = null, $root = null)
 		{
 			echo "> file " . $keep . "\n";
 			file_put_contents($keep, "");
+		}
+	}
+	else if ($ignore)
+	{
+		$ignore = $root . ".gitignore";
+
+		if (!file_exists($ignore))
+		{
+			echo "> file " . $ignore . "\n";
+			file_put_contents($ignore, "");
 		}
 	}
 
@@ -98,8 +114,9 @@ $folders = array(
 		"controllers" => "#keep#",
 		"models" => "#keep#",
 		"storage" => array(
-			"cache" => "#keep#",
-			"tmp" => "#keep#"
+			"cache" => "#ignore#",
+			"tmp" => "#ignore#",
+			"logs" => "#ignore#"
 		),
 		"views" => "#keep#"
 	),
@@ -181,12 +198,39 @@ return array(
 ?>';
 });
 
+make_file("../config/errors.php", '<?php
+return array(
+	//Output errors
+	"show" => true,
+
+	//Log errors into file (app/storage/logs/YYYY-mm-dd.log)
+	"log" => true,
+
+	//Ignore errors specified by its code
+	// Ex. array(8191, 8192)
+	"ignore" => array()
+);
+?>');
+
+make_file("../config/production/errors.php", '<?php
+return array(
+	//Output errors
+	"show" => false,
+
+	//Log errors into file (app/storage/logs/YYYY-mm-dd.log)
+	"log" => true,
+
+	//Ignore errors specified by its code
+	// Ex. array(8191, 8192)
+	"ignore" => array()
+);
+?>');
+
 make_file("../.gitignore", "node_modules/
 public/_dist/
-config/databases.php
-app/storage/");
+config/databases.php");
 
-make_file(array("../config/databases.sample.php", "../config/databases.php"), '<?php
+make_file(array("../config/databases.sample.php", "../config/databases.php", "../config/production/databases.php"), '<?php
 return array(
 	"mysql" => array(
 		"type" => "mysql",
@@ -246,7 +290,7 @@ make_file("../.htaccess", '<IfModule mod_rewrite.c>
 
 	#App public
 	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule ^(.*)\.(html|css|js|jpg|png|gif|ttf|eot|svg|woff) public/$1.$2 [QSA]
+	RewriteRule ^(.*)\.(html|css|js|jpg|png|gif|ttf|eot|svg|woff|pdf) public/$1.$2 [QSA]
 
 	#App public index.html
 	RewriteRule ^$ public/index.html [QSA]
@@ -254,6 +298,9 @@ make_file("../.htaccess", '<IfModule mod_rewrite.c>
 	#Routes
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteRule ^(.+)$ index.php/$1 [L,QSA]
+
+	#IE htc files
+	AddType text/x-component .htc
 </IfModule>', null, true);
 
 ?>

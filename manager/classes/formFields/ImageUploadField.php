@@ -28,8 +28,7 @@ class ImageUploadField extends UploadField
 
 		if ($key == "_name" || $key == "_tmpName")
 		{
-			echo "ERROR: ImageUploadField::sample - Protected key"; //TODO: Error class
-			die();
+			trigger_error("ERROR: ImageUploadField::sample - Protected key");
 		}
 
 		$this->samples[] = array(

@@ -43,8 +43,7 @@ class DB
 
 					break;
 				default:
-					echo "Database type <b>'" . $config["type"] . "'</b> not suported."; //TODO: Error class..
-					die();
+					trigger_error("Database type <b>'" . $config["type"] . "'</b> not suported.");
 
 					break;
 			}
