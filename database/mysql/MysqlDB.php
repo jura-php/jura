@@ -33,12 +33,7 @@ class MysqlDB
 		}
 
 		mysql_set_charset('utf8', $this->res);
-		mysql_query("SET NAMES 'utf8'", $this->res);
-		mysql_query("SET character_set_connection=utf8", $this->res);
-		mysql_query("SET character_set_client=utf8", $this->res);
-		mysql_query("SET character_set_results=utf8", $this->res);
-		mysql_query("SET character_set_database=utf8", $this->res);
-		mysql_query("SET character_set_server=utf8", $this->res);
+		mysql_query("SET NAMES 'utf8'; SET character_set_connection=utf8; SET character_set_client=utf8; SET character_set_results=utf8; SET character_set_database=utf8; SET character_set_server=utf8", $this->res);
 	}
 
 	public function query($query, $params = null)
