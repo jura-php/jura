@@ -120,7 +120,7 @@ class Route
 					}
 				}
 
-				return require $path;
+				require $path;
 			}
 		}
 
