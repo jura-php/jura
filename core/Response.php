@@ -35,6 +35,13 @@ class Response
 
 	public static function downloadContent($content, $name, $headers = array())
 	{
+		static::downloadHeader($name, $headers, strlen($content));
+
+		echo $content;
+	}
+
+	public static function downloadHeader($name, $headers = array(), $length = 0)
+	{
 		$ext = File::extension($name);
 
 		if ($ext == "")
@@ -50,7 +57,7 @@ class Response
 			'Expires' => 0,
 			'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
 			'Pragma' => 'public',
-			'Content-Length' => strlen($content),
+			'Content-Length' => $length,
 			'Content-Disposition' => 'attachment; filename="' . str_replace('"', '\\"', $name) . '"'
 		), $headers);
 
@@ -58,8 +65,6 @@ class Response
 		{
 			header($k . ": " . $v);
 		}
-
-		echo $content;
 	}
 
 	public static function download($path, $name = null, $headers = array())
