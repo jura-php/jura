@@ -1,11 +1,11 @@
 <?php
 //Hides server critial information
 // header('Server: ');
-header('X-Powered-By: ');
+header("X-Powered-By: ");
 header("Content-Type: text/html;UTF-8");
 
-ini_set('default_charset','UTF-8');
-date_default_timezone_set('America/Sao_Paulo');
+ini_set("default_charset","UTF-8");
+date_default_timezone_set("America/Sao_Paulo");
 chdir(J_PATH);
 
 $globalUniqueID = 1;
