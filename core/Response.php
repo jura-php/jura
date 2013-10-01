@@ -50,16 +50,22 @@ class Response
 			$name .= ".txt";
 		}
 
-		$headers = array_merge(array(
+		$overHeaders = array(
 			'Content-Description' => 'File Transfer',
 			'Content-Type' => File::mime($ext),
 			'Content-Transfer-Encoding' => 'binary',
 			'Expires' => 0,
 			'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
 			'Pragma' => 'public',
-			'Content-Length' => $length,
 			'Content-Disposition' => 'attachment; filename="' . str_replace('"', '\\"', $name) . '"'
-		), $headers);
+		);
+
+		if ($length > 0)
+		{
+			$overHeaders['Content-Length'] = $length;
+		}
+
+		$headers = array_merge($overHeaders, $headers);
 
 		foreach ($headers as $k => $v)
 		{
