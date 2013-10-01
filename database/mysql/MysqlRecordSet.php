@@ -154,6 +154,8 @@ class MysqlRecordSet
 	{
 		mysql_data_seek($this->res, $this->index);
 
+		unset($this->fields);
+
 		if (!($this->fields = mysql_fetch_assoc($this->res)))
 		{
 			$this->EOF = true;
