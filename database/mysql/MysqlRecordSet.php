@@ -155,6 +155,10 @@ class MysqlRecordSet
 		mysql_data_seek($this->res, $this->index);
 
 		unset($this->fields);
+		$this->fields = null;
+
+		unset($this->rowOrm);
+		$this->rowOrm = null;
 
 		if (!($this->fields = mysql_fetch_assoc($this->res)))
 		{
@@ -164,8 +168,6 @@ class MysqlRecordSet
 		{
 			$this->EOF = false;
 		}
-
-		$this->rowOrm = null;
 	}
 }
 ?>
