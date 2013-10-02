@@ -121,7 +121,8 @@ $folders = array(
 		"views" => "#keep#"
 	),
 	"config" => array(
-		"preview"
+		"preview",
+		"production"
 	),
 	"manager" => array(
 		"config",
@@ -252,7 +253,7 @@ return array(
 		"pass" => "brocolis11",
 		"database" => "#sample#",
 		"tablePrefix" => "s_"
-	) 
+	)
 );
 ?>');
 
