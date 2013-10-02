@@ -179,10 +179,8 @@ return array(
 	"key" => "' . $key . '",
 
 	//use or not the build version
-	"build" => array(
-		"css" => false,
-		"js" => false
-	),
+	"usedist" => false,
+	"publicDist" => "_dist/",
 
 	//allowed directories that can have files downloaded from
 	"downloadPaths" => array(
