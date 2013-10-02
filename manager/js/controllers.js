@@ -39,6 +39,7 @@ angular.module('manager.controllers', [])
 	.controller('read', ['$rootScope', '$scope', '$routeParams', '$timeout', '$location', 'Restangular', '$cookieStore', function($rootScope, $scope, $routeParams, $timeout, $location, Restangular, $cookieStore) {
 
 		if(!$rootScope.structure.user) return;
+		if(_.where($rootScope.structure.modules, {uri: $routeParams.table}).length < 1) return $location.path($rootScope.defaultModule().uri);
 
 		var table = $routeParams.table;
 		var module = _.where($rootScope.structure.modules, {uri: table})[0];

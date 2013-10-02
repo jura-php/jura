@@ -9,6 +9,7 @@ angular.module('manager.directives', []).
 		return {
 			restrict: 'A',
 			link: function(scope, elm, attrs) {
+				if(!scope.module) return;
 				if(!$rootScope.hasFlag(scope.module.flags, attrs.needFlag)) {
 					elm.remove();
 				}
