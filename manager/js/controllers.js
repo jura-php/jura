@@ -310,6 +310,19 @@ angular.module('manager.controllers', [])
 			$scope.module = module;
 			$scope.uploads = {};
 			$scope.data = Restangular.one(table, 'new').get();
+
+			if($routeParams.force){
+				var force = $routeParams.force.split(':');
+				$scope.data.then(function(data){
+					try {
+						data[force[0]] = parseInt(force[1], 10);
+					} catch(e) {
+						console.error(e)
+					}
+
+				})
+			}
+
 		}
 
 

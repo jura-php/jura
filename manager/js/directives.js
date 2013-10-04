@@ -331,6 +331,24 @@ angular.module('manager.directives', []).
 						$location.path(button.url)
 					}
 
+					//type redirect with param
+					if(button.type == 'redirectWithParam'){
+
+
+						$scope.data.then(function(data){
+							_.each(button.param, function(value, key){
+								value = value.split(':')
+								value[1] = data[value[1]]
+
+								var search = {};
+									search[key] = value.join(':');
+
+								$location.path(button.url).search(search);
+								return false;
+							})
+						})
+					}
+
 					//type print
 					if(button.type == 'print'){
 						window.print();

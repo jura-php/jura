@@ -63,6 +63,13 @@ class FormModule extends Module
 				$info["url"] = $button["callback"];
 			}
 
+			if ($button["type"] == "redirectWithParam")
+			{
+				$button["type"] = "redirect";
+				$info["url"] = $button["callback"];
+				$info["param"] = $button["additional_data"];
+			}
+
 			$buttons[] = $info;
 		}
 		$config["buttons"] = $buttons;
@@ -594,7 +601,7 @@ class FormModule extends Module
 		));
 	});
 	*/
-	protected function button($type, $flags, $label = null, $icon = null, $callback = null)
+	protected function button($type, $flags, $label = null, $icon = null, $callback = null, $additional_data = null)
 	{
 		if ($type == "print")
 		{
@@ -633,7 +640,8 @@ class FormModule extends Module
 			"flags" => $flags,
 			"label" => $label,
 			"icon" => $icon,
-			"callback" => $callback
+			"callback" => $callback,
+			"additional_data" => $additional_data
 		);
 
 		if ($type == "export" || $type == "request")
