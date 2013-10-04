@@ -342,3 +342,8 @@ angular.module('manager.controllers', [])
 		}
 
 	}])
+
+
+	.controller('error', ['$scope', function($scope) {
+
+	}])
