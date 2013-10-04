@@ -90,7 +90,7 @@ class MysqlDB
 		{
 			return (int)$value;
 		}
-		else if (is_null($value))
+		else if (is_null($value) || empty($value))
 		{
 			return "NULL";
 		}
