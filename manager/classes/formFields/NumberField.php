@@ -5,6 +5,7 @@ class NumberField extends Field
 	{
 		parent::__construct($name, $label);
 
+		$this->validationType = "int";
 		$this->type = "number";
 	}
 
@@ -29,19 +30,48 @@ class NumberField extends Field
 				//TODO: Format, Unformat
 
 				break;
+			case "currency":
+				$this->validationPattern = "^\\$?(([1-9](\\d*|\\d{0,2}(.\\d{3})*))|0)(\\,\\d{1,2})?$"; //?
+				$this->validationLength = 30;
+				//TODO: Mask
+
+				break;
 			case "int":
 				$this->validationPattern = "\d+";
 				$this->validationLength = 20;
 
 				break;
-			case "currency":
-				$this->validationPattern = "^\\$?(([1-9](\\d*|\\d{0,2}(.\\d{3})*))|0)(\\,\\d{1,2})?$"; //?
-				$this->validationLength = 30;
-				//TODO: Mask
-				//TODO: Format, Unformat
-
-				break;
 		}
+
+		$this->validationType = $type;
+	}
+
+	public function format($value)
+	{
+		switch ($this->validationType)
+		{
+			case "currency":
+				return number_format((float)$value, 2, ",", ".");
+				break;
+
+			default:
+				return $value;
+		}
+
+	}
+
+	public function unformat($value)
+	{
+		switch ($this->validationType)
+		{
+			case "currency":
+				return (float)str_replace(",", ".", str_replace(".", "", $value));
+				break;
+
+			default:
+				return $value;
+		}
+
 	}
 }
 ?>
