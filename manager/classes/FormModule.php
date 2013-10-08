@@ -506,9 +506,6 @@ class FormModule extends Module
 
 			$ids = explode('-', $ids);
 
-			// print_r($ids);
-			// die();
-
 			$orm = ORM::make($that->tableName);
 
 			foreach ($ids as $id)
