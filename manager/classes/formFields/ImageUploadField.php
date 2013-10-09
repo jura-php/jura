@@ -52,7 +52,7 @@ class ImageUploadField extends UploadField
 				$items[] = array(
 					"path" => static::tmpRoot() . $file["_tmpName"],
 					"name" => $file["_name"],
-					"thumb" => URL::thumb("app/storage/tmp/" . $file["_tmpName"], 100, 100)
+					"thumb" => URL::thumb("app/storage/tmp/" . $file["_tmpName"], 100, 100, Image::RESIZE_METHOD_FIT_NO_MARGING)
 				);
 			}
 			else
@@ -61,7 +61,7 @@ class ImageUploadField extends UploadField
 				$items[] = array(
 					"path" => static::storageRoot() . $first,
 					"name" => File::fileName($first),
-					"thumb" => URL::thumb("app/storage/" . $first, 100, 100)
+					"thumb" => URL::thumb("app/storage/" . $first, 100, 100, Image::RESIZE_METHOD_FIT_NO_MARGING)
 				);
 			}
 		}
