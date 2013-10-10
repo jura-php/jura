@@ -91,7 +91,6 @@ class FormModule extends Module
 	{
 		$this->loadFields();
 
-		//TODO: Check module flags... eg.: dont allow update if it hasn't the U flag
 		$that = $this;
 
 		Router::register("GET", array("manager/api/" . $this->name), function () use ($that) {
@@ -511,34 +510,37 @@ class FormModule extends Module
 
 			foreach ($ids as $id)
 			{
-				$that->orm = $orm->findFirst($id);
+				$that->orm = $orm->reset()->findFirst($id);
 
-				foreach ($that->fields as $field)
+				if ($that->orm)
 				{
-					if ($return = $field->save(""))
+					foreach ($that->fields as $field)
+					{
+						if ($return = $field->save(""))
+						{
+							return $return;
+						}
+					}
+
+					if ($return = $that->save())
 					{
 						return $return;
 					}
-				}
 
-				if ($return = $that->save())
-				{
-					return $return;
-				}
+					$that->orm->delete();
 
-				$that->orm->delete();
+					foreach ($that->fields as $field)
+					{
+						if ($return = $field->afterSave())
+						{
+							return $return;
+						}
+					}
 
-				foreach ($that->fields as $field)
-				{
-					if ($return = $field->afterSave())
+					if ($return = $that->afterSave())
 					{
 						return $return;
 					}
-				}
-
-				if ($return = $that->afterSave())
-				{
-					return $return;
 				}
 			}
 		});

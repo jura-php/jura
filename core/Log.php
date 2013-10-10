@@ -19,9 +19,6 @@ class Log
 	 *		// Write an "error" message to the log file
 	 *		Log::write('error', 'Something went horribly wrong!');
 	 *
-	 *		// Write an "error" message using the class' magic method
-	 *		Log::error('Something went horribly wrong!');
-	 *
 	 *		// Log an arrays data
 	 *		Log::write('info', array('name' => 'Sawny', 'passwd' => '1234', array(1337, 21, 0)), true);
 	 *      //Result: Array ( [name] => Sawny [passwd] => 1234 [0] => Array ( [0] => 1337 [1] => 21 [2] => 0 ) )

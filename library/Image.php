@@ -97,6 +97,7 @@ class Image
 				break;
 			case "png":
 				$this->resourceID = @imagecreatefrompng($path);
+				imagesavealpha($this->resourceID, true);
 				
 				break;
 			case Image::DATA:

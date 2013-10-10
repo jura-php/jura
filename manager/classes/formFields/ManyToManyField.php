@@ -27,7 +27,7 @@ class ManyToManyField extends ItemsField
 
 	public function addItemsFromArray($arr)
 	{
-		echo "ERROR..."; //TODO: Put on error class
+		trigger_error("addItemsFromArray not suported for this field");
 	}
 
 	public function format($value)
