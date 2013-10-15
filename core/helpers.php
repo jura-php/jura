@@ -130,6 +130,12 @@ function date_php($date)
 
 	$arr = explode("/", $date);
 
+	if (count($arr) != 3)
+	{
+		echo "date error: '" . $date . "'";
+		return 0;
+	}
+
 	return mktime(0, 0, 0, (int)$arr[1], (int)$arr[0], (int)$arr[2]);
 }
 
@@ -146,9 +152,19 @@ function datetime_php($dateTime)
 	}
 
 	$arr1 = explode(" ", $dateTime);
+
+	if (count($arr1) != 2)
+	{
+		return 0;
+	}
+
 	$arr2 = explode("/", $arr1[0]);
 	$arr3 = explode(":", $arr1[1]);
 
+	if (count($arr2) != 3 || count($arr3) != 3)
+	{
+		return 0;
+	}
 
 	return mktime((int)$arr3[0], (int)$arr3[1], (int)$arr3[2], (int)$arr2[1], (int)$arr2[0], (int)$arr2[2]);
 }

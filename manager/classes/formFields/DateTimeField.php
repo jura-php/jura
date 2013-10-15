@@ -30,5 +30,19 @@ class DateTimeField extends Field
 
 		return "";
 	}
+
+	public function filter($search)
+	{
+		$orm = $this->module->orm;
+		$name = $orm->quoteField($this->name);
+		$search = "%" . $search . "%";
+
+		$orm->whereGroup("OR", function ($orm) use ($name, $search) {
+			$orm->whereRaw("DATE_FORMAT(" . $name . ", '%e/%c/%Y') LIKE ?", $search);
+			$orm->whereRaw("DATE_FORMAT(" . $name . ", '%d/%m/%Y') LIKE ?", $search);
+			$orm->whereRaw("DATE_FORMAT(" . $name . ", '%e/%c/%Y %k:%i:%s') LIKE ?", $search);
+			$orm->whereRaw("DATE_FORMAT(" . $name . ", '%d/%m/%Y %H:%i:%s') LIKE ?", $search);
+		});
+	}
 }
 ?>
