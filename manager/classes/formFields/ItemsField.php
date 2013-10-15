@@ -113,7 +113,7 @@ class ItemsField extends Field
 		{
 			if (!is_array($value))
 			{
-				if ($value == (int)$value)
+				if (is_numeric($value))
 				{
 					$value = (int)$value;
 				}
