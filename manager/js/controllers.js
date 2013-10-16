@@ -55,7 +55,6 @@ angular.module('manager.controllers', [])
 			$cookieStore.put(table + '_order', JSON.stringify(order));
 		}, true)
 
-
 		function reset() {
 			$scope.actionFlag = 'l';
 			$scope.module = module;
@@ -66,8 +65,8 @@ angular.module('manager.controllers', [])
 			Restangular.all(table).getList({
 				page: $routeParams.page || 1,
 				search: $routeParams.search || '',
-				orderBy: $scope.order.reqBy || '',
-				order: ($scope.order.reqReverse) ? 'DESC' : 'ASC'
+				orderBy: $scope.order.by || '',
+				order: ($scope.order.reverse) ? 'DESC' : 'ASC'
 			}).then(function(response){
 				$scope.data = response.data;
 				$scope.pagination = response.pagination;
@@ -75,7 +74,7 @@ angular.module('manager.controllers', [])
 			});
 
 			_.each($scope.module.fields, function(field){
-				if(field.resource_url) {
+				if(field.resource_url && !field.resource_data) {
 					Restangular.all(field.resource_url).getList().then(function(resource_data){
 						var data = {}
 						_.each(resource_data, function(item){
@@ -103,24 +102,27 @@ angular.module('manager.controllers', [])
 
 		$scope.doOrder = function(field, pagination){
 			if(!$rootScope.hasFlag(field.flags, 'O')) return;
-			if(pagination.count > 1) return $scope.doOrderByRequest(field, pagination)
 
-			console.log($scope.order)
+			return $scope.doOrderByRequest(field, pagination);
 
+			// if(pagination.count > 1)
+
+			// console.log($scope.order)
+
+			// if($scope.order.by == field.name) {
+			// 	$scope.order.reverse = !$scope.order.reverse;
+			// } else {
+			// 	$scope.order.by = field.name;
+			// 	$scope.order.reverse = false;
+			// }
+		}
+
+		$scope.doOrderByRequest = function(field, pagination){
 			if($scope.order.by == field.name) {
 				$scope.order.reverse = !$scope.order.reverse;
 			} else {
 				$scope.order.by = field.name;
 				$scope.order.reverse = false;
-			}
-		}
-
-		$scope.doOrderByRequest = function(field, pagination){
-			if($scope.order.reqBy == field.name) {
-				$scope.order.reqReverse = !$scope.order.reqReverse;
-			} else {
-				$scope.order.reqBy = field.name;
-				$scope.order.reqReverse = false;
 			}
 
 			reset();
