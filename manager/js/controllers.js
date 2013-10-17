@@ -219,20 +219,24 @@ angular.module('manager.controllers', [])
 			}
 		}
 
+		$scope.refresh = function () {
+			$scope.data = Restangular.one(table, id).get();
+		};
+
 		if(module) {
 			// module.uniqueID = 4;
 			$scope.acao = 'Editar';
 			$scope.actionFlag = 'ru';
 			$scope.module = module;
 			$scope.uploads = {};
-			$scope.data = Restangular.one(table, id).get();
+			$scope.refresh();
 		}
 
 
 		$scope.$watch('data', function(data, oldValue){
 			if(!data || !oldValue) return;
 			$scope.button_save = save_states['ready'];
-		}, true)
+		}, true);
 
 		$scope.$watch('uploads.uploading', function(uploading, oldValue){
 			if(uploading) {
@@ -240,7 +244,7 @@ angular.module('manager.controllers', [])
 			} else {
 				$scope.button_save = save_states['ready'];
 			}
-		}, true)
+		}, true);
 
 
 		$scope.save = function(model){
@@ -261,7 +265,7 @@ angular.module('manager.controllers', [])
 				save_states['error']['label'] = response.data.error_description || 'Erro inesperado';
 				$scope.button_save = save_states['error'];
 			})
-		}
+		};
 
 
 	}])
@@ -306,12 +310,16 @@ angular.module('manager.controllers', [])
 			}
 		}
 
+		$scope.refresh = function () {
+			$scope.data = Restangular.one(table, 'new').get();
+		};
+
 		if(module) {
 			$scope.acao = 'Criar';
 			$scope.actionFlag = 'c';
 			$scope.module = module;
 			$scope.uploads = {};
-			$scope.data = Restangular.one(table, 'new').get();
+			$scope.refresh();
 
 			if($routeParams.force){
 				var force = $routeParams.force.split(':');

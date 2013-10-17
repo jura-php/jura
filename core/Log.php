@@ -20,18 +20,17 @@ class Log
 	 *		Log::write('error', 'Something went horribly wrong!');
 	 *
 	 *		// Log an arrays data
-	 *		Log::write('info', array('name' => 'Sawny', 'passwd' => '1234', array(1337, 21, 0)), true);
+	 *		Log::write('info', array('name' => 'Sawny', 'passwd' => '1234', array(1337, 21, 0)));
 	 *      //Result: Array ( [name] => Sawny [passwd] => 1234 [0] => Array ( [0] => 1337 [1] => 21 [2] => 0 ) )
-	 *      //If we had omit the third parameter the result had been: Array
 	 * </code>
 	 *
 	 * @param  string  $type
 	 * @param  string  $message
 	 * @return void
 	 */
-	public static function write($type, $message, $pretty = false)
+	public static function write($type, $message)
 	{
-		if ($pretty)
+		if (is_array($message) || is_object($message))
 		{
 			$message = print_r($message, true);
 		}

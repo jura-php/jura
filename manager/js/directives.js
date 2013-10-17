@@ -315,6 +315,11 @@ angular.module('manager.directives', []).
 							.success(function(response){
 								button.loading = false;
 								if(!response.error){
+									if (response.refresh)
+									{
+										$scope.refresh();
+									}
+									
 									alert(response.message)
 								} else {
 									alert(response.error_description)
