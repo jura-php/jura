@@ -61,14 +61,15 @@ class FormModule extends Module
 			if ($button["type"] == "redirect")
 			{
 				$info["url"] = $button["callback"];
+				$info["params"] = $button["params"];
 			}
 
-			if ($button["type"] == "redirectWithParam")
-			{
-				$button["type"] = "redirect";
-				$info["url"] = $button["callback"];
-				$info["param"] = $button["additional_data"];
-			}
+			// if ($button["type"] == "redirectWithParam")
+			// {
+			// 	$button["type"] = "redirect";
+			// 	$info["url"] = $button["callback"];
+			// 	$info["param"] = $button["params"];
+			// }
 
 			$buttons[] = $info;
 		}
@@ -607,7 +608,7 @@ class FormModule extends Module
 
 
 	*/
-	protected function button($type, $flags, $label = null, $icon = null, $callback = null, $additional_data = null)
+	protected function button($type, $flags, $label = null, $icon = null, $callback = null, $params = null)
 	{
 		$originalType = $type;
 
@@ -642,11 +643,16 @@ class FormModule extends Module
 				$flags = "L";
 			}
 		}
-		else if ($type == "redirect" || $type == "request")
+		else if ($type == "redirect" || $type == "redirectWithParam" || $type == "request")
 		{
 			if (is_null($icon))
 			{
 				$icon = "icon-arrow-right";
+			}
+
+			if ($type == "redirectWithParam")
+			{
+				$type = "redirect";
 			}
 		}
 
@@ -656,7 +662,7 @@ class FormModule extends Module
 			"label" => $label,
 			"icon" => $icon,
 			"callback" => $callback,
-			"additional_data" => $additional_data
+			"params" => $params
 		);
 
 		if ($type == "export" || $type == "request")

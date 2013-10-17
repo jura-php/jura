@@ -5,6 +5,8 @@ class ManyToOneField extends ItemsField
 	private $relationKeyField;
 	private $relationNameField;
 
+	private $filterFields;
+
 	public $items;
 
 	public function __construct($name, $label = null, $tableName, $keyField = "id", $nameField = "name")
@@ -19,6 +21,17 @@ class ManyToOneField extends ItemsField
 	public function addItemsFromArray($arr)
 	{
 		trigger_error("addItemsFromArray not suported for this field");
+	}
+
+	//Comparison possibilities: =, %
+	public function alsoFilter($fieldName, $comparison = "=")
+	{
+		if (is_null($this->filterFields))
+		{
+			$this->filterFields = array();
+		}
+
+		$this->filterFields[] = array($fieldName, $comparison);
 	}
 
 	public function init()
@@ -54,6 +67,27 @@ class ManyToOneField extends ItemsField
 	public function filter($search)
 	{
 		$this->module->orm->whereLike($this->relationTableName . "." . $this->relationNameField, "%" . $search . "%");
+
+		if (!is_null($this->filterFields))
+		{
+			foreach ($this->filterFields as $field)
+			{
+				$comparation = $field[1];
+
+				switch ($comparation)
+				{
+					case "=":
+					default:
+						$this->module->orm->where($this->relationTableName . "." . $field[0], $search);
+
+						break;
+					case "%":
+						$this->module->orm->whereLike($this->relationTableName . "." . $field[0], "%" . $search . "%");
+
+						break;
+				}
+			}
+		}
 	}
 }
 ?>

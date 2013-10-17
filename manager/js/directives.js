@@ -328,25 +328,34 @@ angular.module('manager.directives', []).
 
 					//type redirect
 					if(button.type == 'redirect'){
-						$location.path(button.url)
-					}
-
-					//type redirect with param
-					if(button.type == 'redirectWithParam'){
-
-
-						$scope.data.then(function(data){
-							_.each(button.param, function(value, key){
-								value = value.split(':')
-								value[1] = data[value[1]]
-
+						if (button.params)
+						{
+							$scope.data.then(function(data){
 								var search = {};
-									search[key] = value.join(':');
+
+								_.each(button.params, function(value, key) {
+									if (value.indexOf(":") > -1)
+									{
+										value = value.split(':');
+										value[1] = data[value[1]];
+										value = value.join(':');
+									}
+									else
+									{
+										value = data[value];
+									}
+
+									search[key] = value;
+								});
 
 								$location.path(button.url).search(search);
 								return false;
 							})
-						})
+						}
+						else
+						{
+							$location.path(button.url);
+						}
 					}
 
 					//type print
