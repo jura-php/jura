@@ -4,6 +4,8 @@ class Image
 {
 	const BLANK = "blank";
 
+	const DATA = "data";
+
 	const RESIZE_METHOD_NONE = "none";
 	const RESIZE_METHOD_FIT = "fit";
 	const RESIZE_METHOD_FIT_NO_MARGING = "fitNoMarging";
@@ -70,7 +72,7 @@ class Image
 		return false;
 	}
 	
-	public function load($path, $extension = null)
+	public function load($path, $extension = null, $content = null)
 	{
 		global $F;
 	
@@ -95,7 +97,12 @@ class Image
 				break;
 			case "png":
 				$this->resourceID = @imagecreatefrompng($path);
+				imagesavealpha($this->resourceID, true);
 				
+				break;
+			case Image::DATA:
+				$this->resourceID = @imagecreatefromstring($content);
+
 				break;
 		}
 		

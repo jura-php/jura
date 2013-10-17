@@ -270,7 +270,7 @@ class UploadField extends Field
 		}
 	}
 
-	private function upload($flag, $id)
+	public function upload($flag, $id)
 	{
 		if (isset($_FILES["attachment"]))
 		{
@@ -301,18 +301,11 @@ class UploadField extends Field
 				if (count($this->accepts) > 0)
 				{
 					$mime = File::mime($ext);
-					$accepted = false;
-					foreach ($this->accepts as $accept)
+					if (array_search($mime, $this->accepts) === false)
 					{
-						if (array_search($mime, $this->accepts))
-						{
-							$accepted = true;
-							break;
-						}
-					}
+						echo $mime . "\n";
+						print_r($this->accepts);
 
-					if (!$accepted)
-					{
 						$acceptError++;
 						continue;
 					}
@@ -365,7 +358,7 @@ class UploadField extends Field
 		);
 	}
 
-	private function delete($index)
+	public function delete($index)
 	{
 		if ($index >= 0)
 		{

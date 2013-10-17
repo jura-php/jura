@@ -9,6 +9,8 @@ class ManyToManyField extends ItemsField
 	private $relationKeyField;
 	private $relationNameField;
 
+	private $filterFields;
+
 	public function __construct($name, $label = null, $linkTableName, $linkFromKeyField, $linkToKeyField, $relationTableName, $relationKeyField = "id", $relationNameField = "name")
 	{
 		parent::__construct($name, $label);
@@ -27,7 +29,18 @@ class ManyToManyField extends ItemsField
 
 	public function addItemsFromArray($arr)
 	{
-		echo "ERROR..."; //TODO: Put on error class
+		trigger_error("addItemsFromArray not suported for this field");
+	}
+
+	//Comparison possibilities: =, %
+	public function alsoFilter($fieldName, $comparison = "=")
+	{
+		if (is_null($this->filterFields))
+		{
+			$this->filterFields = array();
+		}
+
+		$this->filterFields[] = array($fieldName, $comparison);
 	}
 
 	public function format($value)
@@ -52,6 +65,27 @@ class ManyToManyField extends ItemsField
 	public function filter($search)
 	{
 		$this->module->orm->whereLike($this->relationTableName . "." . $this->relationNameField, "%" . $search . "%");
+
+		if (!is_null($this->filterFields))
+		{
+			foreach ($this->filterFields as $field)
+			{
+				$comparation = $field[1];
+
+				switch ($comparation)
+				{
+					case "=":
+					default:
+						$this->module->orm->where($this->relationTableName . "." . $field[0], $search);
+
+						break;
+					case "%":
+						$this->module->orm->whereLike($this->relationTableName . "." . $field[0], "%" . $search . "%");
+
+						break;
+				}
+			}
+		}
 	}
 
 	public function value()

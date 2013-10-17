@@ -1,11 +1,11 @@
 <?php
 //Hides server critial information
-header('Server: ');
-header('X-Powered-By: ');
+// header('Server: ');
+header("X-Powered-By: ");
 header("Content-Type: text/html;UTF-8");
 
-ini_set('default_charset','UTF-8');
-date_default_timezone_set('America/Sao_Paulo');
+ini_set("default_charset","UTF-8");
+date_default_timezone_set("America/Sao_Paulo");
 chdir(J_PATH);
 
 $globalUniqueID = 1;
@@ -16,7 +16,7 @@ function uniqueID()
 	return $globalUniqueID++;
 }
 
-function j_autoload($name)
+spl_autoload_register(function ($name)
 {
 	//System core
 	$file = J_SYSTEMPATH . "core" . DS . $name . EXT;
@@ -66,38 +66,37 @@ function j_autoload($name)
 	{
 		return include $file;
 	}
-}
-spl_autoload_register("j_autoload");
+});
 
 require J_SYSTEMPATH . "core" . DS . "helpers" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Str" . EXT;
 require J_SYSTEMPATH . "core" . DS . "Event" . EXT;
 
-function j_shutdown()
+register_shutdown_function(function ()
 {
 	Event::fire(J_EVENT_SHUTDOWN);
-}
-register_shutdown_function("j_shutdown");
+});
 
 require J_SYSTEMPATH . "core" . DS . "Request" . EXT;
 Request::init();
 
-//TODO: Place it on a Error class.. Create error handlers..
-if (Request::isLocal() || Request::isPreview())
-{
-	error_reporting(E_ALL);
-	ini_set('display_errors','1');
-}
-else
-{
-	error_reporting(0);
-	ini_set("error_log", J_APPPATH . "storage" . DS . "errors.log");
-}
-
 require J_SYSTEMPATH . "core" . DS . "URI" . EXT;
 require J_SYSTEMPATH . "core" . DS . "URL" . EXT;
-
 require J_SYSTEMPATH . "core" . DS . "Config" . EXT;
+require J_SYSTEMPATH . "core" . DS . "Error" . EXT;
+
+error_reporting(E_ALL ^ E_NOTICE);
+ini_set("display_errors","On");
+
+set_exception_handler(function($e)
+{
+	Error::exception($e);
+});
+
+set_error_handler(function($code, $error, $file, $line)
+{
+	Error::native($code, $error, $file, $line);
+});
 
 require J_SYSTEMPATH . "database" . DS . "DB" . EXT;
 DB::init();

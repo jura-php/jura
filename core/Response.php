@@ -35,6 +35,13 @@ class Response
 
 	public static function downloadContent($content, $name, $headers = array())
 	{
+		static::downloadHeader($name, $headers, strlen($content));
+
+		echo $content;
+	}
+
+	public static function downloadHeader($name, $headers = array(), $length = 0)
+	{
 		$ext = File::extension($name);
 
 		if ($ext == "")
@@ -43,23 +50,27 @@ class Response
 			$name .= ".txt";
 		}
 
-		$headers = array_merge(array(
+		$overHeaders = array(
 			'Content-Description' => 'File Transfer',
 			'Content-Type' => File::mime($ext),
 			'Content-Transfer-Encoding' => 'binary',
 			'Expires' => 0,
 			'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
 			'Pragma' => 'public',
-			'Content-Length' => strlen($content),
 			'Content-Disposition' => 'attachment; filename="' . str_replace('"', '\\"', $name) . '"'
-		), $headers);
+		);
+
+		if ($length > 0)
+		{
+			$overHeaders['Content-Length'] = $length;
+		}
+
+		$headers = array_merge($overHeaders, $headers);
 
 		foreach ($headers as $k => $v)
 		{
 			header($k . ": " . $v);
 		}
-
-		echo $content;
 	}
 
 	public static function download($path, $name = null, $headers = array())

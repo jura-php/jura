@@ -57,18 +57,9 @@ class MysqlRecordSet
 		}
 		else
 		{
-			echo "SQL error";
-
-			if (Request::isLocal() || Request::isPreview()) //TODO: Error class
-			{
-				echo ": " . $query;
-				echo "<br> <b>'" . mysql_error($this->conn->res) . "'</b>";
-			}
-
-			die();
+			trigger_error("SQL error: " . $query . "\n<br><b>'" . mysql_error($this->conn->res) . "'</b>");
 		}
 	}
-
 
 	public function moveFirst()
 	{
@@ -126,7 +117,7 @@ class MysqlRecordSet
 	{
 		if ($key == "fields" && $this->BOF && $this->EOF)
 		{
-			echo "SQL error: <br>Trying to access a field of an empty RecordSet"; //TODO: Error class
+			trigger_error("SQL error: <br>Trying to access a field of an empty RecordSet");
 
 			return null;
 		}
@@ -163,6 +154,12 @@ class MysqlRecordSet
 	{
 		mysql_data_seek($this->res, $this->index);
 
+		unset($this->fields);
+		$this->fields = null;
+
+		unset($this->rowOrm);
+		$this->rowOrm = null;
+
 		if (!($this->fields = mysql_fetch_assoc($this->res)))
 		{
 			$this->EOF = true;
@@ -171,8 +168,6 @@ class MysqlRecordSet
 		{
 			$this->EOF = false;
 		}
-
-		$this->rowOrm = null;
 	}
 }
 ?>

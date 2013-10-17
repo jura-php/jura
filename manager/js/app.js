@@ -8,6 +8,7 @@ var Manager = angular.module('manager', ['manager.filters', 'manager.services', 
 
 		$routeProvider
 			.when('/login', {templateUrl: 'partials/login.html', controller: 'login'})
+			.when('/error', {templateUrl: 'partials/error.html', controller: 'error'})
 			.when('/:table', {templateUrl: 'partials/list.html', controller: 'read'})
 			.when('/:table/new', {templateUrl: 'partials/edit.html', controller: 'new'})
 			.when('/:table/:page', {templateUrl: 'partials/list.html', controller: 'read'})
@@ -125,6 +126,15 @@ $(function(){
 
 			angular.bootstrap(document, ['manager', 'structure']);
 
+		})
+		.error(function(){
+			angular.module('structure', [])
+				.run(['$location', function($location){
+					$location.path('/error');
+
+				}])
+
+			angular.bootstrap(document, ['manager', 'structure']);
 		})
 })
 

@@ -28,8 +28,7 @@ class ImageUploadField extends UploadField
 
 		if ($key == "_name" || $key == "_tmpName")
 		{
-			echo "ERROR: ImageUploadField::sample - Protected key"; //TODO: Error class
-			die();
+			trigger_error("ERROR: ImageUploadField::sample - Protected key");
 		}
 
 		$this->samples[] = array(
@@ -53,7 +52,7 @@ class ImageUploadField extends UploadField
 				$items[] = array(
 					"path" => static::tmpRoot() . $file["_tmpName"],
 					"name" => $file["_name"],
-					"thumb" => URL::thumb("app/storage/tmp/" . $file["_tmpName"], 100, 100)
+					"thumb" => URL::thumb("app/storage/tmp/" . $file["_tmpName"], 100, 100, Image::RESIZE_METHOD_FIT_NO_MARGING)
 				);
 			}
 			else
@@ -62,7 +61,7 @@ class ImageUploadField extends UploadField
 				$items[] = array(
 					"path" => static::storageRoot() . $first,
 					"name" => File::fileName($first),
-					"thumb" => URL::thumb("app/storage/" . $first, 100, 100)
+					"thumb" => URL::thumb("app/storage/" . $first, 100, 100, Image::RESIZE_METHOD_FIT_NO_MARGING)
 				);
 			}
 		}
@@ -204,7 +203,7 @@ class ImageUploadField extends UploadField
 		}
 	}
 
-	private function delete($index)
+	public function delete($index)
 	{
 		if ($index >= 0)
 		{

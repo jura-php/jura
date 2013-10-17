@@ -39,6 +39,7 @@ angular.module('manager.controllers', [])
 	.controller('read', ['$rootScope', '$scope', '$routeParams', '$timeout', '$location', 'Restangular', '$cookieStore', function($rootScope, $scope, $routeParams, $timeout, $location, Restangular, $cookieStore) {
 
 		if(!$rootScope.structure.user) return;
+		if(_.where($rootScope.structure.modules, {uri: $routeParams.table}).length < 1) return $location.path($rootScope.defaultModule().uri);
 
 		var table = $routeParams.table;
 		var module = _.where($rootScope.structure.modules, {uri: table})[0];
@@ -54,7 +55,6 @@ angular.module('manager.controllers', [])
 			$cookieStore.put(table + '_order', JSON.stringify(order));
 		}, true)
 
-
 		function reset() {
 			$scope.actionFlag = 'l';
 			$scope.module = module;
@@ -65,8 +65,8 @@ angular.module('manager.controllers', [])
 			Restangular.all(table).getList({
 				page: $routeParams.page || 1,
 				search: $routeParams.search || '',
-				orderBy: $scope.order.reqBy || '',
-				order: ($scope.order.reqReverse) ? 'DESC' : 'ASC'
+				orderBy: $scope.order.by || '',
+				order: ($scope.order.reverse) ? 'DESC' : 'ASC'
 			}).then(function(response){
 				$scope.data = response.data;
 				$scope.pagination = response.pagination;
@@ -74,7 +74,7 @@ angular.module('manager.controllers', [])
 			});
 
 			_.each($scope.module.fields, function(field){
-				if(field.resource_url) {
+				if(field.resource_url && !field.resource_data) {
 					Restangular.all(field.resource_url).getList().then(function(resource_data){
 						var data = {}
 						_.each(resource_data, function(item){
@@ -102,24 +102,27 @@ angular.module('manager.controllers', [])
 
 		$scope.doOrder = function(field, pagination){
 			if(!$rootScope.hasFlag(field.flags, 'O')) return;
-			if(pagination.count > 1) return $scope.doOrderByRequest(field, pagination)
 
-			console.log($scope.order)
+			return $scope.doOrderByRequest(field, pagination);
 
+			// if(pagination.count > 1)
+
+			// console.log($scope.order)
+
+			// if($scope.order.by == field.name) {
+			// 	$scope.order.reverse = !$scope.order.reverse;
+			// } else {
+			// 	$scope.order.by = field.name;
+			// 	$scope.order.reverse = false;
+			// }
+		}
+
+		$scope.doOrderByRequest = function(field, pagination){
 			if($scope.order.by == field.name) {
 				$scope.order.reverse = !$scope.order.reverse;
 			} else {
 				$scope.order.by = field.name;
 				$scope.order.reverse = false;
-			}
-		}
-
-		$scope.doOrderByRequest = function(field, pagination){
-			if($scope.order.reqBy == field.name) {
-				$scope.order.reqReverse = !$scope.order.reqReverse;
-			} else {
-				$scope.order.reqBy = field.name;
-				$scope.order.reqReverse = false;
 			}
 
 			reset();
@@ -216,20 +219,24 @@ angular.module('manager.controllers', [])
 			}
 		}
 
+		$scope.refresh = function () {
+			$scope.data = Restangular.one(table, id).get();
+		};
+
 		if(module) {
 			// module.uniqueID = 4;
 			$scope.acao = 'Editar';
 			$scope.actionFlag = 'ru';
 			$scope.module = module;
 			$scope.uploads = {};
-			$scope.data = Restangular.one(table, id).get();
+			$scope.refresh();
 		}
 
 
 		$scope.$watch('data', function(data, oldValue){
 			if(!data || !oldValue) return;
 			$scope.button_save = save_states['ready'];
-		}, true)
+		}, true);
 
 		$scope.$watch('uploads.uploading', function(uploading, oldValue){
 			if(uploading) {
@@ -237,7 +244,7 @@ angular.module('manager.controllers', [])
 			} else {
 				$scope.button_save = save_states['ready'];
 			}
-		}, true)
+		}, true);
 
 
 		$scope.save = function(model){
@@ -258,7 +265,7 @@ angular.module('manager.controllers', [])
 				save_states['error']['label'] = response.data.error_description || 'Erro inesperado';
 				$scope.button_save = save_states['error'];
 			})
-		}
+		};
 
 
 	}])
@@ -303,12 +310,29 @@ angular.module('manager.controllers', [])
 			}
 		}
 
+		$scope.refresh = function () {
+			$scope.data = Restangular.one(table, 'new').get();
+		};
+
 		if(module) {
 			$scope.acao = 'Criar';
 			$scope.actionFlag = 'c';
 			$scope.module = module;
 			$scope.uploads = {};
-			$scope.data = Restangular.one(table, 'new').get();
+			$scope.refresh();
+
+			if($routeParams.force){
+				var force = $routeParams.force.split(':');
+				$scope.data.then(function(data){
+					try {
+						data[force[0]] = parseInt(force[1], 10);
+					} catch(e) {
+						console.error(e)
+					}
+
+				})
+			}
+
 		}
 
 
@@ -339,5 +363,10 @@ angular.module('manager.controllers', [])
 			})
 
 		}
+
+	}])
+
+
+	.controller('error', ['$scope', function($scope) {
 
 	}])

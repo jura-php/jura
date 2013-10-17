@@ -127,6 +127,11 @@ class Request
 		static::$method = $method;
 	}
 
+	public static function serverVars()
+	{
+		print_r(static::$server);
+	}
+
 	public static function env()
 	{
 		return static::$env;
@@ -245,6 +250,11 @@ class Request
 		if (empty($pathInfo) || $pathInfo == "/")
 		{
 			$pathInfo = array_get(static::$server, "ORIG_PATH_INFO", "/");
+
+			if (strpos($pathInfo, "/index.php") === 0)
+			{
+				$pathInfo = str_replace("/index.php", "", $pathInfo);
+			}
 		}
 
 		if (empty($pathInfo))

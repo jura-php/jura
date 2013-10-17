@@ -24,29 +24,23 @@ class MysqlDB
 
 		if (!$this->res)
 		{
-			echo "Can't connect to server <b>'" . $params["host"] . "'</b>"; //TODO: Error class...
-			exit();
+			trigger_error("Can't connect to server <b>'" . $params["host"] . "'</b>");
 		}
 
 		if (!@mysql_select_db($params["database"], $this->res))
 		{
-			echo "Can't select database <b>'" . $params["database"] . "'</b>"; //TODO: Error class...
-			exit();
+			trigger_error("Can't select database <b>'" . $params["database"] . "'</b>");
 		}
 
 		mysql_set_charset('utf8', $this->res);
-		mysql_query("SET NAMES 'utf8'", $this->res);
-		mysql_query('SET character_set_connection=utf8', $this->res);
-		mysql_query('SET character_set_client=utf8', $this->res);
-		mysql_query('SET character_set_results=utf8', $this->res);
-		//mysql_query('');
+		mysql_query("SET NAMES 'utf8'; SET character_set_connection=utf8; SET character_set_client=utf8; SET character_set_results=utf8; SET character_set_database=utf8; SET character_set_server=utf8", $this->res);
 	}
 
 	public function query($query, $params = null)
 	{
 		$params = (array)$params;
 
-		if (is_array($params) && strpos($query, "?") !== false)
+		if (is_array($params) && count($params) > 0 && strpos($query, "?") !== false)
 		{
 			$segments = explode("?", $query);
 			$segmentsLength = count($segments);
@@ -96,7 +90,7 @@ class MysqlDB
 		{
 			return (int)$value;
 		}
-		else if (is_null($value))
+		else if (is_null($value) || empty($value))
 		{
 			return "NULL";
 		}

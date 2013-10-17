@@ -71,7 +71,7 @@ class Config
 	{
 		if(!$name) {
 			$name = $group;
-			$group = 'application';
+			$group = "application";
 		}
 
 		static::loadOnce($group);

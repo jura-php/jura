@@ -9,6 +9,7 @@ angular.module('manager.directives', []).
 		return {
 			restrict: 'A',
 			link: function(scope, elm, attrs) {
+				if(!scope.module) return;
 				if(!$rootScope.hasFlag(scope.module.flags, attrs.needFlag)) {
 					elm.remove();
 				}
@@ -309,7 +310,7 @@ angular.module('manager.directives', []).
 						// parser: marked,
 						file: {
 						//     name: 'epiceditor',
-							defaultContent: data[scope.field.name],
+							defaultContent: data[scope.field.name] || "",
 						//     autoSave: 100
 						},
 						theme: {
@@ -510,6 +511,11 @@ angular.module('manager.directives', []).
 							.success(function(response){
 								button.loading = false;
 								if(!response.error){
+									if (response.refresh)
+									{
+										$scope.refresh();
+									}
+									
 									alert(response.message)
 								} else {
 									alert(response.error_description)
@@ -523,7 +529,34 @@ angular.module('manager.directives', []).
 
 					//type redirect
 					if(button.type == 'redirect'){
-						$location.path(button.url)
+						if (button.params)
+						{
+							$scope.data.then(function(data){
+								var search = {};
+
+								_.each(button.params, function(value, key) {
+									if (value.indexOf(":") > -1)
+									{
+										value = value.split(':');
+										value[1] = data[value[1]];
+										value = value.join(':');
+									}
+									else
+									{
+										value = data[value];
+									}
+
+									search[key] = value;
+								});
+
+								$location.path(button.url).search(search);
+								return false;
+							})
+						}
+						else
+						{
+							$location.path(button.url);
+						}
 					}
 
 					//type print

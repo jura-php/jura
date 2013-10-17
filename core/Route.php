@@ -89,8 +89,7 @@ class Route
 				{
 					if (!File::exists($path))
 					{
-						echo "File <b>" . $path . "</b> doesn't exists"; //TODO: Put this on error class
-						die();
+						trigger_error("File <b>" . $path . "</b> doesn't exists");
 					}
 				}
 
@@ -102,8 +101,7 @@ class Route
 				{
 					if (!method_exists($class, $method))
 					{
-						echo "Method <b>" . $method . "</b> doesn't exists on class <b>" . $className . "</b>"; //TODO: Put this on error class..
-						die();
+						trigger_error("Method <b>" . $method . "</b> doesn't exists on class <b>" . $className . "</b>");
 					}
 				}
 
@@ -118,8 +116,7 @@ class Route
 				{
 					if (!File::exists($path))
 					{
-						echo "File <b>" . $path . "</b> doesn't exists"; //TODO: Put this on error class
-						die();
+						trigger_error("File <b>" . $path . "</b> doesn't exists");
 					}
 				}
 
@@ -135,7 +132,7 @@ class Route
 			return is_callable($value);
 		});*/
 
-		if (!is_null($handler))
+		if (!is_null($handler) && is_callable($handler))
 		{
 			return call_user_func_array($handler, $route->parameters);
 		}

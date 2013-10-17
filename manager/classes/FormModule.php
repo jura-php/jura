@@ -61,7 +61,15 @@ class FormModule extends Module
 			if ($button["type"] == "redirect")
 			{
 				$info["url"] = $button["callback"];
+				$info["params"] = $button["params"];
 			}
+
+			// if ($button["type"] == "redirectWithParam")
+			// {
+			// 	$button["type"] = "redirect";
+			// 	$info["url"] = $button["callback"];
+			// 	$info["param"] = $button["params"];
+			// }
 
 			$buttons[] = $info;
 		}
@@ -84,7 +92,6 @@ class FormModule extends Module
 	{
 		$this->loadFields();
 
-		//TODO: Check module flags... eg.: dont allow update if it hasn't the U flag
 		$that = $this;
 
 		Router::register("GET", array("manager/api/" . $this->name), function () use ($that) {
@@ -95,7 +102,7 @@ class FormModule extends Module
 
 			$that->flag = "L";
 
-			if (!$this->hasFlag($this->flag))
+			if (!$that->hasFlag($that->flag))
 			{
 				return Response::json(array(
 					"error" => true,
@@ -198,11 +205,11 @@ class FormModule extends Module
 				$results[] = $values;
 			}
 
-			//echo ORM::lastSQL();
-			//die();
+			// echo ORM::lastSQL();
+			// die();
 
 			return Response::json(array(
-				"search" => "",
+				"search" => $search,
 				"pagination" => array(
 					"count" => $pageCount,
 					"current" => $page,
@@ -224,7 +231,7 @@ class FormModule extends Module
 
 			$that->flag = "U";
 
-			if (!$this->hasFlag($this->flag))
+			if (!$that->hasFlag($that->flag))
 			{
 				return Response::json(array(
 					"error" => true,
@@ -281,7 +288,7 @@ class FormModule extends Module
 
 			$that->flag = "C";
 
-			if (!$this->hasFlag($this->flag))
+			if (!$that->hasFlag($that->flag))
 			{
 				return Response::json(array(
 					"error" => true,
@@ -312,7 +319,7 @@ class FormModule extends Module
 
 			$that->flag = "C";
 
-			if (!$this->hasFlag($this->flag))
+			if (!$that->hasFlag($that->flag))
 			{
 				return Response::json(array(
 					"error" => true,
@@ -368,7 +375,7 @@ class FormModule extends Module
 
 			$that->flag = "R";
 
-			if (!$this->hasFlag($this->flag))
+			if (!$that->hasFlag($that->flag))
 			{
 				return Response::json(array(
 					"error" => true,
@@ -433,7 +440,7 @@ class FormModule extends Module
 
 			$that->flag = "U";
 
-			if (!$this->hasFlag($this->flag))
+			if (!$that->hasFlag($that->flag))
 			{
 				return Response::json(array(
 					"error" => true,
@@ -490,7 +497,7 @@ class FormModule extends Module
 
 			$that->flag = "D";
 
-			if (!$this->hasFlag($this->flag))
+			if (!$that->hasFlag($that->flag))
 			{
 				return Response::json(array(
 					"error" => true,
@@ -504,34 +511,37 @@ class FormModule extends Module
 
 			foreach ($ids as $id)
 			{
-				$that->orm = $orm->findFirst($id);
+				$that->orm = $orm->reset()->findFirst($id);
 
-				foreach ($that->fields as $field)
+				if ($that->orm)
 				{
-					if ($return = $field->save(""))
+					foreach ($that->fields as $field)
+					{
+						if ($return = $field->save(""))
+						{
+							return $return;
+						}
+					}
+
+					if ($return = $that->save())
 					{
 						return $return;
 					}
-				}
 
-				if ($return = $that->save())
-				{
-					return $return;
-				}
+					$that->orm->delete();
 
-				$that->orm->delete();
+					foreach ($that->fields as $field)
+					{
+						if ($return = $field->afterSave())
+						{
+							return $return;
+						}
+					}
 
-				foreach ($that->fields as $field)
-				{
-					if ($return = $field->afterSave())
+					if ($return = $that->afterSave())
 					{
 						return $return;
 					}
-				}
-
-				if ($return = $that->afterSave())
-				{
-					return $return;
 				}
 			}
 		});
@@ -586,6 +596,8 @@ class FormModule extends Module
 		return Response::downloadContent("content", "export.csv");
 	});
 
+	$this->button("exportAuto", "L", null, null, "usuarios");
+
 	$this->button("redirect", "LR", "Usuários", null, "/registers");
 
 	$this->button("request", "LR", "Request", null, function () {
@@ -593,9 +605,13 @@ class FormModule extends Module
 			"message" => $this->flag . " - " . ($this->orm ? $this->orm->id : "(sem id)")
 		));
 	});
+
+
 	*/
-	protected function button($type, $flags, $label = null, $icon = null, $callback = null)
+	protected function button($type, $flags, $label = null, $icon = null, $callback = null, $params = null)
 	{
+		$originalType = $type;
+
 		if ($type == "print")
 		{
 			if (is_null($label))
@@ -608,7 +624,7 @@ class FormModule extends Module
 				$icon = "icon-print";
 			}
 		}
-		else if ($type == "export")
+		else if ($type == "export" || $type == "exportAuto")
 		{
 			if (is_null($label))
 			{
@@ -619,12 +635,24 @@ class FormModule extends Module
 			{
 				$icon = "icon-share";
 			}
+
+			$type = "export";
+
+			if ($originalType == "exportAuto")
+			{
+				$flags = "L";
+			}
 		}
-		else if ($type == "redirect" || $type == "request")
+		else if ($type == "redirect" || $type == "redirectWithParam" || $type == "request")
 		{
 			if (is_null($icon))
 			{
 				$icon = "icon-arrow-right";
+			}
+
+			if ($type == "redirectWithParam")
+			{
+				$type = "redirect";
 			}
 		}
 
@@ -633,36 +661,100 @@ class FormModule extends Module
 			"flags" => $flags,
 			"label" => $label,
 			"icon" => $icon,
-			"callback" => $callback
+			"callback" => $callback,
+			"params" => $params
 		);
 
 		if ($type == "export" || $type == "request")
 		{
 			$uri = "manager/api/button" . uniqueID();
 			$info["url"] = URL::root(false) . $uri;
-
 			$that = $this;
-			Router::register("GET", $uri, function () use ($callback, $that) {
-				if (($token = User::validateToken()) !== true)
-				{
-					return $token;
-				}
 
-				$id = (int)Request::get("id", 0);
-				$that->flag = Str::upper(Request::get("flag", "L"));
+			if ($originalType == "exportAuto")
+			{
+				Router::register("GET", $uri, function () use ($that, $callback) {
+					if (($token = User::validateToken()) !== true)
+					{
+						return $token;
+					}
 
-				if ($that->flag == "RU")
-				{
-					$that->flag == "R";
-				}
+					$that->flag = Str::upper(Request::get("flag", "L"));
 
-				if ($id > 0)
-				{
-					$that->orm = ORM::make($that->tableName)->where("id", $id)->findFirst();
-				}
+					if ($that->flag == "L")
+					{
+						set_time_limit(60 * 60); // 1 hr
+						ob_get_level() and ob_end_clean();
 
-				return call_user_func($callback);
-			});
+						$name = $callback;
+						Response::downloadHeader($name . ".csv");
+
+						$fields = array();
+						$that->orm = $that->listORM();
+
+						foreach ($that->fields as $field)
+						{
+							if ($field->hasFlag("L"))
+							{
+								$fields[] = $field;
+
+								$field->select();
+							}
+						}
+
+						$labels = array();
+
+						foreach ($fields as $field)
+						{
+							$labels[] = $field->label;
+						}
+
+						$out = fopen('php://output', 'w');
+						fputcsv($out, $labels);
+
+						foreach ($that->orm->find() as $entry)
+						{
+							$that->orm = $entry;
+
+							$values = array();
+							// $values["id"] = (int)$entry->id;
+
+							foreach ($fields as $field)
+							{
+								$values[] = $field->value();
+							}
+
+							fputcsv($out, $values);
+						}
+
+						fclose($out);
+					}
+				});
+			}
+			else
+			{
+				Router::register("GET", $uri, function () use ($callback, $that) {
+					if (($token = User::validateToken()) !== true)
+					{
+						return $token;
+					}
+
+					$id = (int)Request::get("id", 0);
+					$that->flag = Str::upper(Request::get("flag", "L"));
+
+					if ($that->flag == "RU")
+					{
+						$that->flag == "R";
+					}
+
+					if ($id > 0)
+					{
+						$that->orm = ORM::make($that->tableName)->where("id", $id)->findFirst();
+					}
+
+					return call_user_func($callback);
+				});
+			}
 		}
 
 		$this->buttons[] = $info;

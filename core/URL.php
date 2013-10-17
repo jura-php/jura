@@ -7,7 +7,7 @@ class URL
 	 */
 	public static function full()
 	{
-		return Request::rootURL() . Request::fullURI();
+		return trim(Request::rootURL(), "/") . Request::pathInfo();
 	}
 
 	/**

@@ -18,6 +18,42 @@ class Structure
 		Router::register("GET", "manager/api/config/", function () {
 			header("Content-Type: text/javascript; charset=utf-8");
 
+			if (Request::isLocal())
+			{
+				if (@DB::query("select id from " . J_TP . "manager_users LIMIT 1;")->success === false)
+				{
+					DB::query("CREATE TABLE `" . J_TP . "manager_users` (
+								`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+								`name` varchar(255) DEFAULT NULL,
+								`email` varchar(255) DEFAULT NULL,
+								`username` varchar(255) DEFAULT NULL,
+								`password` varchar(40) DEFAULT NULL,
+								`active` int(11) DEFAULT NULL,
+								PRIMARY KEY (`id`)
+							) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+					$user = ORM::make("manager_users");
+					$user->name = "Joy Interactive";
+					$user->email = "dev@joy-interactive.com";
+					$user->username = "joy";
+					$user->password = "202cb962ac59075b964b07152d234b70";
+					$user->active = 1;
+					$user->save();
+				}
+
+				if (@DB::query("select id from " . J_TP . "manager_tokens LIMIT 1;")->success === false)
+				{
+					DB::query("CREATE TABLE `" . J_TP . "manager_tokens` (
+								`id` int(40) NOT NULL AUTO_INCREMENT,
+								`userID` int(11) DEFAULT NULL,
+								`token` varchar(100) DEFAULT NULL,
+								`expirationDate` datetime DEFAULT NULL,
+								PRIMARY KEY (`id`)
+							) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+				}
+				
+			}
+
 			$config = array();
 			$config["api_url"] = URL::to("api/");
 

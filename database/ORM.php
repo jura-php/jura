@@ -147,6 +147,16 @@ class ORM implements ArrayAccess
 
 				if (!is_null($this->joins))
 				{
+					natsort($this->joins);
+
+					foreach ($this->joins as $k => $join)
+					{
+						$pieces = explode("#", $join);
+						array_splice($pieces, 0, 1);
+
+						$this->joins[$k] = implode("", $pieces);
+					}
+
 					$sql .= implode(" ", $this->joins) . " ";
 				}
 
@@ -330,7 +340,7 @@ class ORM implements ArrayAccess
 		return join(" " . $wheres["concat"] . " ", $outs);
 	}
 
-	private function quoteField($name)
+	public function quoteField($name)
 	{
 		$bypassPrefix = false;
 
@@ -399,7 +409,7 @@ class ORM implements ArrayAccess
 		return $this;
 	}
 
-	private function addJoin($operator, $tableName, $constraints, $tableAlias = null)
+	private function addJoin($operator, $tableName, $constraints, $tableAlias = null, $order = -1)
 	{
 		$db = DB::conn($this->connName);
 
@@ -457,34 +467,39 @@ class ORM implements ArrayAccess
 			$this->joins = array();
 		}
 
-		$this->joins[] = $operator . " " . $tableName . " ON (" . $constraints . ")";
+		if ($order == -1)
+		{
+			$order = count($this->joins);
+		}
+
+		$this->joins[] = $order . "#" . $operator . " " . $tableName . " ON (" . $constraints . ")";
 
 		return $this;
 	}
 
-	public function join($tableName, $constraints, $tableAlias = null)
+	public function join($tableName, $constraints, $tableAlias = null, $order = -1)
 	{
-		return $this->addJoin("", $tableName, $constraints, $tableAlias);
+		return $this->addJoin("", $tableName, $constraints, $tableAlias, $order);
 	}
 
-	public function innerJoin($tableName, $constraints, $tableAlias = null)
+	public function innerJoin($tableName, $constraints, $tableAlias = null, $order = -1)
 	{
-		return $this->addJoin("INNER", $tableName, $constraints, $tableAlias);
+		return $this->addJoin("INNER", $tableName, $constraints, $tableAlias, $order);
 	}
 
-	public function leftJoin($tableName, $constraints, $tableAlias = null)
+	public function leftJoin($tableName, $constraints, $tableAlias = null, $order = -1)
 	{
-		return $this->addJoin("LEFT OUTER", $tableName, $constraints, $tableAlias);
+		return $this->addJoin("LEFT OUTER", $tableName, $constraints, $tableAlias, $order);
 	}
 
-	public function rightJoin($tableName, $constraints, $tableAlias = null)
+	public function rightJoin($tableName, $constraints, $tableAlias = null, $order = -1)
 	{
-		return $this->addJoin("RIGHT OUTER", $tableName, $constraints, $tableAlias);
+		return $this->addJoin("RIGHT OUTER", $tableName, $constraints, $tableAlias, $order);
 	}
 
-	/*public function fullOutherJoin($tableName, $constraints, $tableAlias = null)
+	/*public function fullOutherJoin($tableName, $constraints, $tableAlias = null, $order = -1)
 	{
-		return $this->addJoin("FULL", $tableName, $constraints, $tableAlias);
+		return $this->addJoin("FULL", $tableName, $constraints, $tableAlias, $order);
 	}*/
 
 	public function where($name, $method, $value = null)
@@ -811,6 +826,11 @@ class ORM implements ArrayAccess
 	public function isNew()
 	{
 		return !isset($this->fields["id"]);
+	}
+
+	public function connName()
+	{
+		return $this->connName;
 	}
 
 	public function fieldNames()
