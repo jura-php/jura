@@ -387,14 +387,14 @@ angular.module('manager.directives', []).
 					$scope.deleteFile = function(index, access_token){
 						var that = this;
 
-						$http.post(that.field.update_url + "/delete/" + ((data.id) ? data.id + "/U/" : "0/C/"), {index: index}, {params: {access_token: access_token}})
+						$http.post(that.field.update_url + "/delete/" + ((data.data.id) ? data.data.id + "/U/" : "0/C/"), {index: index}, {params: {access_token: access_token}})
 							.success(function (content) {
-								$scope.data.$$v[that.field.name] = content.items;
+								$scope.data.$$v.data[that.field.name] = content.items;
 							})
 					}
 
 					$scope.jdUploadURL = function () {
-						return this.field.update_url + "/upload/" + ((data.id) ? data.id + "/U/" : "0/C/");
+						return this.field.update_url + "/upload/" + ((data.data.id) ? data.data.id + "/U/" : "0/C/");
 					}
 
 					$scope.jdLog = function(content) {
@@ -409,7 +409,7 @@ angular.module('manager.directives', []).
 						if (content.error) {
 							$scope.uploads.error = content.error_description;
 						} else {
-							$scope.data.$$v[name] = content.items;
+							$scope.data.$$v.data[name] = content.items;
 						}
 					};
 
