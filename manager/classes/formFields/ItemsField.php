@@ -6,7 +6,7 @@ class ItemsField extends Field
 	private $multipleFieldFrom;
 	private $multipleFieldTo;
 
-	public $items;
+	private $items;
 
 	private $resourceURL;
 	private $tmpValue;
@@ -21,18 +21,18 @@ class ItemsField extends Field
 		$this->resourceURL = 'fields/' . $this->type . uniqueID();
 		$this->validationLength = -1;
 
-		$that = $this;
-		Router::register('GET', 'manager/api/' . $this->resourceURL, function () use ($that) {
-			if (($token = User::validateToken()) !== true)
-			{
-				return $token;
-			}
+		// $that = $this;
+		// Router::register('GET', 'manager/api/' . $this->resourceURL, function () use ($that) {
+		// 	if (($token = User::validateToken()) !== true)
+		// 	{
+		// 		return $token;
+		// 	}
 
-			$that->module->flag = "C";
+		// 	$that->module->flag = "C";
 
-			$that->init();
-			return Response::json($that->items());
-		});
+		// 	$that->init();
+		// 	return Response::json($that->items);
+		// });
 	}
 
 	public function addItemsFromArray($arr)
@@ -65,32 +65,14 @@ class ItemsField extends Field
 		$rs->close();
 	}
 
-	public function items()
-	{
-		$items = array();
-		foreach ($this->items as $k => $v)
-		{
-			$items[] = array(
-				"v" => $k,
-				"l" => $v
-			);
-		}
-
-		return $items;
-	}
-
 	public function config()
 	{
 		if ($this->multiple)
 		{
 			$this->type = "multipleItems";
 		}
-		
-		$arr = parent::config();
 
-		return array_merge(array(
-			'resource_url' => $this->resourceURL
-		), $arr);
+		return parent::config();
 	}
 
 	public function multiple($tableName, $fieldFrom, $fieldTo)
@@ -188,7 +170,6 @@ class ItemsField extends Field
 
 				if (!$found)
 				{
-
 					$entry->delete();
 				}
 			}
@@ -228,6 +209,11 @@ class ItemsField extends Field
 
 			return $values;
 		}
+	}
+
+	public function extraData()
+	{
+		return $this->items;
 	}
 }
 ?>

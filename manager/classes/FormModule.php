@@ -114,12 +114,13 @@ class FormModule extends Module
 			$search = Request::get("search", "");
 			$order = Request::get("order", $that->order);
 			$orderBy = Request::get("orderBy", $that->orderBy);
+			$withExtraData = (int)Request::get("withExtraData", 1) == 1;
 
 			$that->orm = $that->listCountORM();
 
 			foreach ($that->fields as $field)
 			{
-				if ($field->hasFlag("L"))
+				if ($field->hasFlag(array("L", "F")))
 				{
 					$field->init();
 					$field->select();
@@ -149,14 +150,20 @@ class FormModule extends Module
 			$results = array();
 			$fields = array();
 			$that->orm = $that->listORM();
+			$extra = array();
 
 			foreach ($that->fields as $field)
 			{
-				if ($field->hasFlag("L"))
+				if ($field->hasFlag(array("L", "F")))
 				{
 					$fields[] = $field;
 
 					$field->select();
+
+					if ($field->hasFlag("L") && $withExtraData && $extraData = $field->extraData())
+					{
+						$extra[$field->name] = $field->extraData();
+					}
 				}
 			}
 
@@ -207,8 +214,8 @@ class FormModule extends Module
 
 			// echo ORM::lastSQL();
 			// die();
-
-			return Response::json(array(
+			// 
+			$response = array(
 				"search" => $search,
 				"pagination" => array(
 					"count" => $pageCount,
@@ -220,7 +227,14 @@ class FormModule extends Module
 				"order" => $order,
 				"orderBy" => $orderBy,
 				"data" => $results
-			));
+			);
+
+			if ($withExtraData)
+			{
+				$response["extraData"] = $extra;
+			}
+
+			return Response::json($response);
 		});
 
 		Router::register("PATCH", "manager/api/" . $this->name . "/(:num)", function ($id) use ($that) {
@@ -244,11 +258,11 @@ class FormModule extends Module
 
 			foreach ($that->fields as $field)
 			{
-				if ($field->hasFlag("L") && $field->hasFlag("U") && Request::hasPost($field->name))
+				if ($field->hasFlag("L") && $field->hasFlag("U") && Request::hasPost("data." . $field->name))
 				{
 					$field->init();
 
-					$value = $field->unformat(Request::post($field->name, $field->defaultValue));
+					$value = $field->unformat(Request::post("data." . $field->name, $field->defaultValue));
 					if ($return = $field->save($value))
 					{
 						return $return;
@@ -297,6 +311,7 @@ class FormModule extends Module
 			}
 
 			$values = array();
+			$extra = array();
 
 			foreach ($that->fields as $field)
 			{
@@ -305,10 +320,18 @@ class FormModule extends Module
 					$field->init();
 
 					$values[$field->name] = $field->format($field->defaultValue);
+
+					if ($extraData = $field->extraData())
+					{
+						$extra[$field->name] = $extraData;
+					}
 				}
 			}
 
-			return Response::json($values);
+			return Response::json(array(
+				"data" => $values,
+				"extraData" => $extra
+			));
 		});
 
 		Router::register("POST", "manager/api/" . $this->name, function () use ($that) {
@@ -335,7 +358,7 @@ class FormModule extends Module
 				{
 					$field->init();
 
-					$value = $field->unformat(Request::post($field->name, $field->defaultValue, true));
+					$value = $field->unformat(Request::post("data." . $field->name, $field->defaultValue));
 					if ($return = $field->save($value))
 					{
 						return $return;
@@ -410,6 +433,8 @@ class FormModule extends Module
 			if ($that->orm)
 			{
 				$values = array();
+				$extra = array();
+
 				$values["id"] = (int)$that->orm->id;
 
 				foreach ($fields as $field)
@@ -423,10 +448,18 @@ class FormModule extends Module
 
 					$values[$field->name] = $field->value();
 
+					if ($extraData = $field->extraData())
+					{
+						$extra[$field->name] = $field->extraData();
+					}
+
 					$that->flag = $moduleFlag;
 				}
 
-				return Response::json($values);
+				return Response::json(array(
+					"data" => $values,
+					"extraData" => $extra
+				));
 			}
 
 			return Response::code(404);
@@ -453,11 +486,11 @@ class FormModule extends Module
 
 			foreach ($that->fields as $field)
 			{
-				if ($field->hasFlag("U") && Request::hasPost($field->name))
+				if ($field->hasFlag("U") && Request::hasPost("data." . $field->name))
 				{
 					$field->init();
 
-					$value = $field->unformat(Request::post($field->name, $field->defaultValue));
+					$value = $field->unformat(Request::post("data." . $field->name, $field->defaultValue));
 					if ($return = $field->save($value))
 					{
 						return $return;

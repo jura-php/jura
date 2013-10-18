@@ -56,12 +56,9 @@ class ManyToOneField extends ItemsField
 
 	public function select()
 	{
-		if ($this->includeOnSQL())
-		{
-			$this->module->orm
-					->select($this->relationTableName . "." . $this->relationNameField, $this->name)
-					->leftJoin($this->relationTableName, array($this->relationTableName . "." . $this->relationKeyField, "=", $this->module->orm->tableName . "." . $this->name));
-		}
+		$this->module->orm
+				->select($this->relationTableName . "." . $this->relationNameField, $this->name)
+				->leftJoin($this->relationTableName, array($this->relationTableName . "." . $this->relationKeyField, "=", $this->module->orm->tableName . "." . $this->name));
 	}
 
 	public function filter($search)

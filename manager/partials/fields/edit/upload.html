@@ -1,7 +1,7 @@
 <div upload>
 	<label>{{field.label}}</label>
 
-	<span ng-show="data[field.name].length < field.limit">
+	<span ng-show="data.data[field.name].length < field.limit">
 		<input
 			jd-upload
 
@@ -26,7 +26,7 @@
 
 	<div class="form-error" ng-show="uploads.error">{{uploads.error}}</div>
 
-	<table class="pure-table pure-table-odd" ng-show="data[field.name].length > 0">
+	<table class="pure-table pure-table-odd" ng-show="data.data[field.name].length > 0">
 		<thead>
 			<tr>
 				<th width="100%">Arquivo</th>
@@ -34,7 +34,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="(index, file) in data[field.name]">
+			<tr ng-repeat="(index, file) in data.data[field.name]">
 				<td>{{file.name}}</td>
 				<td>
 					<button ng-click="deleteFile(index, structure.user.access_token)" type="button" class="pure-button pure-button-error"><i class="icon-remove"></i></button>

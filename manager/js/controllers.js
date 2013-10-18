@@ -66,26 +66,18 @@ angular.module('manager.controllers', [])
 				page: $routeParams.page || 1,
 				search: $routeParams.search || '',
 				orderBy: $scope.order.by || '',
-				order: ($scope.order.reverse) ? 'DESC' : 'ASC'
+				order: ($scope.order.reverse) ? 'DESC' : 'ASC',
+				withExtraData: (_.size($scope.extraData) > 0 ? 0 : 1)
 			}).then(function(response){
 				$scope.data = response.data;
 				$scope.pagination = response.pagination;
 				$scope.count = response.count;
-			});
 
-			_.each($scope.module.fields, function(field){
-				if(field.resource_url && !field.resource_data) {
-					Restangular.all(field.resource_url).getList().then(function(resource_data){
-						var data = {}
-						_.each(resource_data, function(item){
-							data[item.v] = item.l;
-						})
-
-						field.resource_data = data;
-					});
-
+				if (response.extraData)
+				{
+					$scope.extraData = response.extraData;
 				}
-			})
+			});
 		}
 
 		if(module) reset()
@@ -154,7 +146,7 @@ angular.module('manager.controllers', [])
 			var patch = {};
 			patch[fieldName] = data[fieldName];
 
-			var item = Restangular.restangularizeElement(null, patch, table + '/' + data.id);
+			var item = Restangular.restangularizeElement(null, { data: patch }, table + '/' + data.id);
 			item.patch();
 		}
 
@@ -229,6 +221,7 @@ angular.module('manager.controllers', [])
 			$scope.actionFlag = 'ru';
 			$scope.module = module;
 			$scope.uploads = {};
+			$scope.data = null;
 			$scope.refresh();
 		}
 
@@ -251,7 +244,7 @@ angular.module('manager.controllers', [])
 			if(!$scope.form.$valid || !$scope.button_save.can_save) return;
 			$scope.button_save = save_states['saving'];
 
-			model.put().then(function(){
+			Restangular.restangularizeElement(null, { data: model.data }, table + '/' + model.data.id).put().then(function(){
 				$scope.button_save = save_states['saved'];
 
 				if(module.uniqueID) {
@@ -264,7 +257,7 @@ angular.module('manager.controllers', [])
 			}, function(response){
 				save_states['error']['label'] = response.data.error_description || 'Erro inesperado';
 				$scope.button_save = save_states['error'];
-			})
+			});
 		};
 
 
@@ -311,7 +304,7 @@ angular.module('manager.controllers', [])
 		}
 
 		$scope.refresh = function () {
-			$scope.data = Restangular.one(table, 'new').get();
+			$scope.data = Restangular.one(table, "new").get();
 		};
 
 		if(module) {
@@ -319,6 +312,7 @@ angular.module('manager.controllers', [])
 			$scope.actionFlag = 'c';
 			$scope.module = module;
 			$scope.uploads = {};
+			$scope.data = null;
 			$scope.refresh();
 
 			if($routeParams.force){
@@ -335,7 +329,6 @@ angular.module('manager.controllers', [])
 
 		}
 
-
 		$scope.$watch('data', function(data, oldValue){
 			if(!data || !oldValue) return;
 			$scope.button_save = save_states['ready'];
@@ -349,19 +342,17 @@ angular.module('manager.controllers', [])
 			}
 		}, true)
 
-
 		$scope.save = function(model){
 			if(!$scope.form.$valid || !$scope.button_save.can_save) return;
 			$scope.button_save = save_states['saving'];
 
-			model.post().then(function(){
+			Restangular.restangularizeElement(null, { data: model.data }, table + '/' + model.data.id).post().then(function(){
 				$scope.button_save = save_states['saved'];
 				$location.path(table);
 			}, function(response){
 				save_states['error']['label'] = response.data.error_description || 'Erro inesperado';
 				$scope.button_save = save_states['error'];
-			})
-
+			});
 		}
 
 	}])

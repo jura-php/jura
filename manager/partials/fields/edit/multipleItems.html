@@ -1,5 +1,2 @@
 <label>{{field.label}}</label>
-<select multiple name="{{field.name}}" data-placeholder="Selecione" items-field ui-select2="{ minimumResultsForSearch: 10 }" class="pure-input-1" ng-model="data[field.name]" ng-required="field.validation.required" pattern="{{field.validation.pattern}}" title="{{field.validation.title | label}}">
-	<option value=""></option>
-	<option ng-repeat="o in options" value="{{o.v}}">{{o.l}}</option>
-</select>
+<input type="hidden" name="{{field.name}}" data-placeholder="Selecione" items-field multiple class="pure-input-1" ng-model="data.data[field.name]" ng-required="field.validation.required" pattern="{{field.validation.pattern}}" title="{{field.validation.title | label}}">

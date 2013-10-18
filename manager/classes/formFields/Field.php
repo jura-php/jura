@@ -114,5 +114,10 @@ class Field
 			$this->module->orm->select($this->name);
 		}
 	}
+
+	public function extraData()
+	{
+		return null;
+	}
 }
 ?>

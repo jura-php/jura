@@ -1,1 +1,1 @@
-<span ng-repeat="(indx, id) in data[field.name]">{{data[field.name].length-1 == indx && field.resource_data[id] || field.resource_data[id] + ', '}}</span>
+<span ng-repeat="(indx, id) in data[field.name]">{{data[field.name].length-1 == indx && extraData[field.name][id] || extraData[field.name][id] + ', '}}</span>

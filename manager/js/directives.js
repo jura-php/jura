@@ -18,178 +18,122 @@ angular.module('manager.directives', []).
 		}
 	}]).
 
-	directive('itemsField', function(){
+	directive('itemsField', ["Restangular", "$timeout", "$http", "$q", "$rootScope", function(Restangular, $timeout, $http, $q, $rootScope){
 		return {
 			restrict: 'A',
-			controller: ["Restangular", '$scope', function(Restangular, $scope) {
-				$scope.options = Restangular.all($scope.field.resource_url).getList();
-			}]
-		}
-	}).
-
-	// directive('chosen', ['$timeout', function($timeout) {
-	// 	var CHOSEN_OPTION_WHITELIST, NG_OPTIONS_REGEXP, chosen, isEmpty, snakeCase;
-
-	// 	NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w\d]*)|(?:\(\s*([\$\w][\$\w\d]*)\s*,\s*([\$\w][\$\w\d]*)\s*\)))\s+in\s+(.*)$/;
-	// 	CHOSEN_OPTION_WHITELIST = ['noResultsText', 'allowSingleDeselect', 'disableSearchThreshold', 'disableSearch'];
-	// 	snakeCase = function(input) {
-	// 		return input.replace(/[A-Z]/g, function($1) {
-	// 			return "_" + ($1.toLowerCase());
-	// 		});
-	// 	};
-	// 	isEmpty = function(value) {
-	// 		var key, _i, _len;
-
-	// 		if (angular.isArray(value)) {
-	// 			return value.length === 0;
-	// 		} else if (angular.isObject(value)) {
-	// 			for (_i = 0, _len = value.length; _i < _len; _i++) {
-	// 				key = value[_i];
-	// 				if (value.hasOwnProperty(key)) {
-	// 					return false;
-	// 				}
-	// 			}
-	// 		}
-	// 		return true;
-	// 	};
-	// 	return chosen = {
-	// 		restrict: 'A',
-	// 		link: function(scope, element, attr) {
-	// 			scope.data.then(function(){
-	// 				var disableWithMessage, match, options, startLoading, stopLoading, valuesExpr;
-
-	// 				options = scope.$eval(attr.chosen) || {};
-	// 				angular.forEach(attr, function(value, key) {
-	// 					if (_.indexOf(CHOSEN_OPTION_WHITELIST, key) >= 0) {
-	// 						return options[snakeCase(key)] = scope.$eval(value);
-	// 					}
-	// 				});
-	// 				startLoading = function() {
-	// 					return element.addClass('loading').attr('disabled', true).trigger('liszt:updated');
-	// 				};
-	// 				stopLoading = function() {
-	// 					return element.removeClass('loading').attr('disabled', false).trigger('liszt:updated');
-	// 				};
-	// 				disableWithMessage = function(message) {
-	// 					return element.empty().append("<option selected>" + message + "</option>").attr('disabled', true).trigger('liszt:updated');
-	// 				};
-	// 				$timeout(function() {
-	// 					return element.chosen(options);
-	// 				});
-	// 				if (attr.ngOptions) {
-	// 					match = attr.ngOptions.match(NG_OPTIONS_REGEXP);
-	// 					valuesExpr = match[7];
-	// 					if (angular.isUndefined(scope.$eval(valuesExpr))) {
-	// 						startLoading();
-	// 					}
-	// 					return scope.$watch(valuesExpr, function(newVal, oldVal) {
-	// 						if (newVal !== oldVal) {
-	// 							stopLoading();
-	// 							if (isEmpty(newVal)) {
-	// 								return disableWithMessage(options.no_results_text || 'No values available');
-	// 							}
-	// 						}
-	// 					});
-	// 				}
-	// 			})
-	// 		}
-	// 	};
-
-	// }]).
-
-	value('uiSelect2Config', {}).
-	directive('uiSelect2', ['uiSelect2Config', '$timeout', function (uiSelect2Config, $timeout) {
-		var options = {};
-		if (uiSelect2Config) {
-			angular.extend(options, uiSelect2Config);
-		}
-		return {
 			require: 'ngModel',
 			compile: function (tElm, tAttrs) {
-				var watch,
-					repeatOption,
-					repeatAttr,
-					isSelect = tElm.is('select'),
-					isMultiple = angular.isDefined(tAttrs.multiple);
-
-				// Enable watching of the options dataset if in use
-				if (tElm.is('select')) {
-					repeatOption = tElm.find('option[ng-repeat], option[data-ng-repeat]');
-
-					if (repeatOption.length) {
-						repeatAttr = repeatOption.attr('ng-repeat') || repeatOption.attr('data-ng-repeat');
-						watch = jQuery.trim(repeatAttr.split('|')[0]).split(' ').pop();
-					}
-				}
-
 				return function (scope, elm, attrs, controller) {
-					// instance-specific options
-					var opts = angular.extend({}, options, scope.$eval(attrs.uiSelect2));
+					scope.data.then(function (data) {
+						var items = data.extraData[scope.field.name];
+						var size = _.size(items);
+						var isMultiple = angular.isDefined(tAttrs.multiple);
+						var opts = {
+							minimumResultsForSearch: 10,
+							multiple: isMultiple
+						};
 
-					/*
-					Convert from Select2 view-model to Angular view-model.
-					*/
-					var convertToAngularModel = function(select2_data) {
-						var model;
-						if (opts.simple_tags) {
-							model = [];
-							angular.forEach(select2_data, function(value, index) {
-								model.push(value.id);
-							});
-						} else {
-							model = select2_data;
-						}
-						return model;
-					};
+						var toAngular = function (select2Data)
+						{
+							var model;
+							if (opts.multiple)
+							{
+								model = [];
+								_.each(select2Data, function (value, key) {
+									model.push(value.id);
+								});
+							}
+							else
+							{
+								model = select2Data.id;
+							}
 
-					/*
-					Convert from Angular view-model to Select2 view-model.
-					*/
-					var convertToSelect2Model = function(angular_data) {
-						var model = [];
-						if (!angular_data) {
 							return model;
 						}
 
-						if (opts.simple_tags) {
-							model = [];
-							angular.forEach(
-								angular_data,
-								function(value, index) {
-									model.push({'id': value, 'text': value});
+						var toSelect2 = function (angularData)
+						{
+							var model;
+							if (opts.multiple)
+							{
+								model = [];
+								_.each(angularData, function (value, key) {
+									model.push(formatValue(value, items[value]));
 								});
-						} else {
-							model = angular_data;
+							}
+							else
+							{
+								model = formatValue(angularData, items[angularData]);
+							}
+
+							return model;
 						}
-						return model;
-					};
 
-					if (isSelect) {
-						// Use <select multiple> instead
-						delete opts.multiple;
-						delete opts.initSelection;
-					} else if (isMultiple) {
-						opts.multiple = true;
-					}
+						var formatValue = function (key, value)
+						{
+							if (key == parseInt(key))
+							{
+								key = parseInt(key);
+							}
 
-					if (controller) {
-						// Watch the model for programmatic changes
-						 scope.$watch(tAttrs.ngModel, function(current, old) {
-							if (!current) {
-								return;
-							}
-							if (current === old) {
-								return;
-							}
-							controller.$render();
-						}, true);
-						controller.$render = function () {
-							if (isSelect) {
-								elm.select2('val', controller.$viewValue);
-							} else {
+							return { id: key, text: value };
+						}
+
+						if (size > 35)
+						{
+							opts.query = function (info)
+							{
+								var results = [];
+
+								_.each(items, function (value, key) {
+									if (!info.term || value.toLowerCase().indexOf(info.term.toLowerCase()) != -1)
+									{
+										results.push(formatValue(key, value));
+									}
+								});
+
+								info.callback({ results: results });
+							};
+
+							opts.initSelection = function(element, callback)
+							{
+								var id = $(element).val();
+
+								callback({
+									id: id,
+									text: items[id]
+								});
+							};
+
+							opts.minimumInputLength = size < 70 ? 1 : size < 200 ? 2 : 3;
+						}
+						else
+						{
+							var results = [];
+
+							_.each(items, function (value, key) {
+								results.push(formatValue(key, value));
+							});
+
+							opts.data = results;
+						}
+
+						if (controller)
+						{
+							// Watch the model for programmatic changes
+							scope.$watch(attrs.ngModel, function(current, old) {
+								if (!current) {
+									return;
+								}
+								if (current === old) {
+									return;
+								}
+								controller.$render();
+							}, true);
+
+							controller.$render = function () {
 								if (opts.multiple) {
-									elm.select2(
-										'data', convertToSelect2Model(controller.$viewValue));
+									elm.select2('data', toSelect2(controller.$viewValue));
 								} else {
 									if (angular.isObject(controller.$viewValue)) {
 										elm.select2('data', controller.$viewValue);
@@ -199,96 +143,77 @@ angular.module('manager.directives', []).
 										elm.select2('val', controller.$viewValue);
 									}
 								}
-							}
-						};
+							};
 
-						// Watch the options dataset for changes
-						if (watch) {
-							scope.$watch(watch, function (newVal, oldVal, scope) {
-								if (!newVal) {
-									return;
-								}
-								// Delayed so that the options have time to be rendered
-								$timeout(function () {
-									elm.select2('val', controller.$viewValue);
-									// Refresh angular to remove the superfluous option
-									elm.trigger('change');
-								});
+							// Update valid and dirty statuses
+							controller.$parsers.push(function (value) {
+								var div = elm.prev();
+								div .toggleClass('ng-invalid', !controller.$valid)
+									.toggleClass('ng-valid', controller.$valid)
+									.toggleClass('ng-invalid-required', !controller.$valid)
+									.toggleClass('ng-valid-required', controller.$valid)
+									.toggleClass('ng-dirty', controller.$dirty)
+									.toggleClass('ng-pristine', controller.$pristine);
+								return value;
 							});
-						}
 
-						// Update valid and dirty statuses
-						controller.$parsers.push(function (value) {
-							var div = elm.prev();
-							div
-								.toggleClass('ng-invalid', !controller.$valid)
-								.toggleClass('ng-valid', controller.$valid)
-								.toggleClass('ng-invalid-required', !controller.$valid)
-								.toggleClass('ng-valid-required', controller.$valid)
-								.toggleClass('ng-dirty', controller.$dirty)
-								.toggleClass('ng-pristine', controller.$pristine);
-							return value;
-						});
-
-						if (!isSelect) {
 							// Set the view and model value and update the angular template manually for the ajax/multiple select2.
 							elm.bind("change", function () {
-								if (scope.$$phase) {
+								if (scope.$$phase)
+								{
 									return;
 								}
+
 								scope.$apply(function () {
-									controller.$setViewValue(
-										convertToAngularModel(elm.select2('data')));
+									controller.$setViewValue(toAngular(elm.select2('data')));
 								});
 							});
 
-							if (opts.initSelection) {
+							if (opts.initSelection)
+							{
 								var initSelection = opts.initSelection;
-								opts.initSelection = function (element, callback) {
+								opts.initSelection = function (element, callback)
+								{
 									initSelection(element, function (value) {
-										controller.$setViewValue(convertToAngularModel(value));
+										controller.$setViewValue(toAngular(value));
 										callback(value);
 									});
 								};
 							}
-						}
-					}
 
-					elm.bind("$destroy", function() {
-						elm.select2("destroy");
-					});
+							elm.bind("$destroy", function() {
+								elm.select2("destroy");
+							});
 
-					attrs.$observe('disabled', function (value) {
-						elm.select2('enable', !value);
-					});
+							attrs.$observe('disabled', function (value) {
+								elm.select2('enable', !value);
+							});
 
-					attrs.$observe('readonly', function (value) {
-						elm.select2('readonly', !!value);
-					});
+							attrs.$observe('readonly', function (value) {
+								elm.select2('readonly', !!value);
+							});
 
-					if (attrs.ngMultiple) {
-						scope.$watch(attrs.ngMultiple, function(newVal) {
-							elm.select2(opts);
-						});
-					}
+							// Initialize the plugin late so that the injected DOM does not disrupt the template compiler
+							scope.$watch("select2Opts", function(current, old) {
+								$timeout(function () {
+									elm.select2(opts);
 
-					// Initialize the plugin late so that the injected DOM does not disrupt the template compiler
-					$timeout(function () {
-						elm.select2(opts);
+									// Set initial value - I'm not sure about this but it seems to need to be there
+									elm.val(controller.$viewValue);
 
-						// Set initial value - I'm not sure about this but it seems to need to be there
-						elm.val(controller.$viewValue);
-						// important!
-						controller.$render();
+									// important!
+									controller.$render();
 
-						// Not sure if I should just check for !isSelect OR if I should check for 'tags' key
-						if (!opts.initSelection && !isSelect) {
-							controller.$setViewValue(
-								convertToAngularModel(elm.select2('data'))
-							);
+									// Not sure if I should just check for !isSelect OR if I should check for 'tags' key
+									if (!opts.initSelection)
+									{
+										controller.$setViewValue(toAngular(elm.select2('data')));
+									}
+								});
+							}, true);
 						}
 					});
-				};
+				}
 			}
 		};
 	}]).

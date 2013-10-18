@@ -190,6 +190,43 @@ function php_datetime($phpDate)
 }
 
 /**
+ * Get an item from an object using "dot" notation.
+ *
+ * <code>
+ *		// Get the $object->user->name value from the array
+ *		$name = object_get($object, 'user.name');
+ *
+ *		// Return a default from if the specified item doesn't exist
+ *		$name = object_get($object, 'user.name', 'Taylor');
+ * </code>
+ *
+ * @param  array   $array
+ * @param  string  $key
+ * @param  mixed   $default
+ * @return mixed
+ */
+function object_get($object, $key, $default = null)
+{
+	if (is_null($key)) return $array;
+
+	// To retrieve the array item using dot syntax, we'll iterate through
+	// each segment in the key and look for that value. If it exists, we
+	// will return it, otherwise we will set the depth of the array and
+	// look for the next segment.
+	foreach (explode('.', $key) as $segment)
+	{
+		if (!is_object($object) or !property_exists($object, $segment))
+		{
+			return value($default);
+		}
+
+		$object = $object->{$segment};
+	}
+
+	return $object;
+}
+
+/**
  * Get an item from an array using "dot" notation.
  *
  * <code>

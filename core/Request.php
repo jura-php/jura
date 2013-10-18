@@ -164,35 +164,25 @@ class Request
 
 	public static function get($key, $default = "")
 	{
-		if (isset(static::$get[$key]))
-		{
-			return static::$get[$key];
-		}
-		else
-		{
-			return $default;
-		}
+		return array_get(static::$get, $key, $default);
 	}
 
 	public static function hasGet($key)
 	{
-		return isset(static::$get[$key]);
+		return array_get(static::$get, $key, null) != null;
 	}
 
 	public static function post($key, $default = "")
 	{
 		if (isset(static::$post[$key]))
 		{
-			return static::$post[$key];
+			return array_get(static::$post, $key, $default);
 		}
 		else
 		{
 			static::loadPostPayload();
 
-			if (isset(static::$postPayload->{$key}))
-			{
-				return static::$postPayload->{$key};
-			}
+			return object_get(static::$postPayload, $key, $default);
 		}
 
 		return $default;
@@ -206,7 +196,7 @@ class Request
 		{
 			static::loadPostPayload();
 
-			$has = isset(static::$postPayload->{$key});
+			$has = object_get(static::$postPayload, $key, null) != null;
 		}
 
 		return $has;
