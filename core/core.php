@@ -8,6 +8,12 @@ ini_set("default_charset","UTF-8");
 date_default_timezone_set("America/Sao_Paulo");
 chdir(J_PATH);
 
+if (version_compare(PHP_VERSION, "5.3.0") < 0)
+{
+	echo "PHP version is <b>" . PHP_VERSION . "</b>. Must be at least <b>5.3</b>";
+	die();
+}
+
 $globalUniqueID = 1;
 function uniqueID()
 {

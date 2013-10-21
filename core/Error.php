@@ -26,6 +26,16 @@ class Error
 			echo $response;
 		}
 
+		if (Config::item("errors", "email", false) && !Request::isLocal() && !Request::isPreview())
+		{
+			$e = new Email();
+			$e->from = Config::item("errors", "emailFrom", "dev@joy-interactive.com");
+			$e->to = Config::item("errors", "emailTo", "dev@joy-interactive.com");
+			$e->subject = URL::root() . " - erro!";
+			$e->content = $response;
+			$e->send();
+		}
+
 		return exit(1);
 	}
 
