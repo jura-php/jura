@@ -85,6 +85,7 @@ var Manager = angular.module('manager', ['manager.filters', 'manager.services', 
 				'number',
 				'readonly',
 				'text',
+				'textarea',
 				'time',
 				'toggle',
 				'upload'
