@@ -5,10 +5,11 @@
 	<!-- <div class="pure-menu pure-menu-open pure-menu-horizontal" id="header" ng-include="'partials/includes/header.html'"></div> -->
 
 	<div id="content">
+
 		<form class="pure-form pure-form-stacked" ng-submit="save(data)" name="form">
 			<ul class="actions">
 				<li  ng-repeat="button in module.buttons | fieldsByFlags">
-					<a class="pure-button custom-button" custom-button ng-click="doButtonAction(button, structure.user.access_token, actionFlag, data.id)"><i ng-class="button.icon"></i> {{button.label}} <i ng-show="button.loading" class="icon-spin icon-spinner"></i></a>
+					<a class="pure-button custom-button" custom-button ng-click="doButtonAction(button, structure.user.access_token, actionFlag, data.data.id)"><i ng-class="button.icon"></i> {{button.label}} <i ng-show="button.loading" class="icon-spin icon-spinner"></i></a>
 				</li>
 
 				<li class="divisor" ng-show="module.buttons.length > 0"></li>
@@ -17,7 +18,7 @@
 			</ul>
 
 			<div class="breadcrumb">
-				<h1 ng-show="!module.uniqueID"><i ng-class="module.icon"></i> {{acao}} <a href="#/{{module.uri}}">{{module.title}}</a> {{(data.id) && '#' + data.id || ''}} <loader /></h1>
+				<h1 ng-show="!module.uniqueID"><i ng-class="module.icon"></i> {{acao}} <a href="#/{{module.uri}}">{{module.title}}</a> {{(data.data.id) && '#' + data.data.id || ''}} <loader /></h1>
 				<h1 ng-show="module.uniqueID"><i ng-class="module.icon"></i> {{module.title}}<loader /></h1>
 			</div>
 
