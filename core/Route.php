@@ -93,7 +93,7 @@ class Route
 					}
 				}
 
-				require $path;
+				require_once $path;
 
 				$class = new $className();
 
