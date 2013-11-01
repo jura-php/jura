@@ -203,7 +203,7 @@ class Request
 		{
 			static::loadPostPayload();
 
-			$has = object_get(static::$postPayload, $key, null) != null;
+			$has = array_get(static::$postPayload, $key, null) != null;
 		}
 
 		return $has;
