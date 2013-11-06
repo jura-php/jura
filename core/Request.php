@@ -322,7 +322,7 @@ class Request
 		if (is_array($value))
 		{
 			array_map(function ($v) {
-				return static::clearValue($v);
+				return Request::clearValue($v);
 			}, $value);
 
 			return $value;
