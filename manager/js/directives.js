@@ -229,6 +229,7 @@ angular.module('manager.directives', []).
 			link: function(scope, elm, attrs, ngModel) {
 
 				scope.data.then(function(data){
+					data = data.data;
 					var opts = {
 						container: elm.attr('id'),
 						textarea: null,
