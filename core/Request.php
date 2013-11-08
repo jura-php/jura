@@ -172,8 +172,15 @@ class Request
 		return array_get(static::$get, $key, null) != null;
 	}
 
-	public static function post($key, $default = "")
+	public static function post($key = null, $default = "")
 	{
+		if (!$key)
+		{
+			static::loadPostPayload();
+
+			return array_merge(static::$post, static::$postPayload);
+		}
+
 		if (isset(static::$post[$key]))
 		{
 			return array_get(static::$post, $key, $default);
@@ -182,7 +189,7 @@ class Request
 		{
 			static::loadPostPayload();
 
-			return object_get(static::$postPayload, $key, $default);
+			return array_get(static::$postPayload, $key, $default);
 		}
 
 		return $default;
@@ -196,7 +203,7 @@ class Request
 		{
 			static::loadPostPayload();
 
-			$has = object_get(static::$postPayload, $key, null) != null;
+			$has = array_get(static::$postPayload, $key, null) != null;
 		}
 
 		return $has;
@@ -207,13 +214,13 @@ class Request
 		if (is_null(static::$postPayload))
 		{
 			$payload = @file_get_contents('php://input');
-			if ($payload && $payload = json_decode($payload))
+			if ($payload && $payload = json_decode($payload, true))
 			{
 				static::$postPayload = $payload;
 			}
 			else
 			{
-				static::$postPayload = new stdClass();
+				static::$postPayload = array();
 			}
 		}
 	}
@@ -315,7 +322,7 @@ class Request
 		if (is_array($value))
 		{
 			array_map(function ($v) {
-				return static::clearValue($v);
+				return Request::clearValue($v);
 			}, $value);
 
 			return $value;

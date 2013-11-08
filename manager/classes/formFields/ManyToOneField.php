@@ -36,6 +36,8 @@ class ManyToOneField extends ItemsField
 
 	public function init()
 	{
+		parent::init();
+
 		$flag = $this->module->flag;
 
 		if ($flag == "C" || $flag == "R" || $flag == "U")

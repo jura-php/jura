@@ -90,7 +90,6 @@ class ManyToManyField extends ItemsField
 
 	public function value()
 	{
-		
 		$id = $this->module->orm->field("id");
 		$ormRel = ORM::make($this->linkTableName);
 		$values = array();

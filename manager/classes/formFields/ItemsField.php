@@ -11,6 +11,9 @@ class ItemsField extends Field
 	private $resourceURL;
 	private $tmpValue;
 
+	private $initialized;
+	private $toAdd;
+
 	public function __construct($name, $label = null)
 	{
 		parent::__construct($name, $label);
@@ -20,6 +23,8 @@ class ItemsField extends Field
 		$this->items = array();
 		$this->resourceURL = 'fields/' . $this->type . uniqueID();
 		$this->validationLength = -1;
+		$this->initialized = false;
+		$this->toAdd = array();
 
 		// $that = $this;
 		// Router::register('GET', 'manager/api/' . $this->resourceURL, function () use ($that) {
@@ -35,12 +40,41 @@ class ItemsField extends Field
 		// });
 	}
 
+	public function init()
+	{
+		$this->initialized = true;
+		$this->runAdds();
+	}
+
+	private function runAdds()
+	{
+		if (!$this->initialized)
+		{
+			return;
+		}
+
+		foreach ($this->toAdd as $add)
+		{
+			$add = explode("#####", $add);
+
+			switch ($add[0])
+			{
+				case "fromSQL":
+					$this->addItemsFromSQL($add[1], $add[2], $add[3], ($add[4] == "") ? null : $add[4]);
+
+					break;
+			}
+		}
+
+		$this->toAdd = array();
+	}
+
 	public function addItemsFromArray($arr)
 	{
 		$this->items = array_unique(array_merge($this->items, $arr));
 	}
 
-	public function addItemsFromTable($tableName, $fieldValue = "id", $fieldLabel = "name", $orderBy = "[label]")
+	public function addItemsFromTable($tableName, $fieldValue = "id", $fieldLabel = "name", $orderBy = "[label]", $connName = null, $now = false)
 	{
 		if ($orderBy == "[label]")
 		{
@@ -48,11 +82,17 @@ class ItemsField extends Field
 		}
 		
 		$sql = "SELECT " . $fieldValue . " AS id, " . $fieldLabel . " AS name FROM " . J_TP . $tableName . " ORDER BY " . $orderBy;
-		$this->addItemsFromSQL($sql);
+		$this->addItemsFromSQL($sql, "id", "name", $connName, $now);
 	}
 
-	public function addItemsFromSQL($sql, $fieldValue = "id", $fieldLabel = "name", $connName = null)
+	public function addItemsFromSQL($sql, $fieldValue = "id", $fieldLabel = "name", $connName = null, $now = false)
 	{
+		if (!$this->initialized && !$now)
+		{
+			$this->toAdd[] = "fromSQL#####" . $sql . "#####" . $fieldValue . "#####" . $fieldLabel . "#####" . $connName;
+			return;
+		}
+
 		$rs = DB::conn($connName)->query($sql);
 
 		while (!$rs->EOF)

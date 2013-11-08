@@ -43,6 +43,46 @@ class Router
 		}
 	}
 
+	public static function restful($uri, $name)
+	{
+		$methods = array(
+			"restIndex#GET#/",
+			"restGet#GET#/(:num)",
+			"restNew#GET#/new",
+			"restCreate#POST#/",
+			"restUpdate#PUT#/(:num)",
+			"restDelete#DELETE#/(:num)"
+		);
+
+		$uri = trim($uri, "/");
+
+		$pieces = explode(DS, $name);
+		$className = $pieces[count($pieces) - 1] = ucfirst(array_last($pieces)) . "Controller";
+		$path = J_APPPATH . "controllers" . DS . trim(implode(DS, $pieces), DS) . EXT;
+
+		if (Request::isLocal())
+		{
+			if (!File::exists($path))
+			{
+				trigger_error("File <b>" . $path . "</b> doesn't exists");
+			}
+		}
+
+		require $path;
+
+		$instance = new $className();
+
+		foreach ($methods as $method)
+		{
+			$method = explode("#", $method);
+
+			if (method_exists($instance, $method[0]))
+			{
+				Router::register($method[1], $uri . $method[2], $name . "@" . $method[0]);
+			}
+		}
+	}
+
 	/**
 	 * Register a route with the router.
 	 *
