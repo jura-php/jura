@@ -71,6 +71,10 @@ angular.module('manager.directives', []).
 
 						var formatValue = function (key, value)
 						{
+							if(typeof value === 'object') {
+								value = value.label;
+							}
+
 							if (key == parseInt(key))
 							{
 								key = parseInt(key);
@@ -225,6 +229,7 @@ angular.module('manager.directives', []).
 			link: function(scope, elm, attrs, ngModel) {
 
 				scope.data.then(function(data){
+					data = data.data;
 					var opts = {
 						container: elm.attr('id'),
 						textarea: null,
@@ -440,7 +445,7 @@ angular.module('manager.directives', []).
 									{
 										$scope.refresh();
 									}
-									
+
 									alert(response.message)
 								} else {
 									alert(response.error_description)

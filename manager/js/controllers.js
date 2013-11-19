@@ -346,7 +346,7 @@ angular.module('manager.controllers', [])
 			if(!$scope.form.$valid || !$scope.button_save.can_save) return;
 			$scope.button_save = save_states['saving'];
 
-			Restangular.restangularizeElement(null, { data: model.data }, table + '/' + model.data.id).post().then(function(){
+			Restangular.restangularizeElement(null, { data: model.data }, table).post().then(function(){
 				$scope.button_save = save_states['saved'];
 				$location.path(table);
 			}, function(response){

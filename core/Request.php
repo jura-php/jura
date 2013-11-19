@@ -203,7 +203,7 @@ class Request
 		{
 			static::loadPostPayload();
 
-			$has = object_get(static::$postPayload, $key, null) != null;
+			$has = array_get(static::$postPayload, $key, null) != null;
 		}
 
 		return $has;
@@ -322,7 +322,7 @@ class Request
 		if (is_array($value))
 		{
 			array_map(function ($v) {
-				return static::clearValue($v);
+				return Request::clearValue($v);
 			}, $value);
 
 			return $value;
