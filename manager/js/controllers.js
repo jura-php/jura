@@ -131,11 +131,13 @@ angular.module('manager.controllers', [])
 		}
 
 		$scope.removeSelected = function(){
-			var to_delete = _.map($scope.checkboxes, function(val, key){
-				return (val) ? key : false;
-			}).join('-');
+			if (confirm('Deseja realmente remover os itens selecionados?')) {
+				var to_delete = _.map($scope.checkboxes, function(val, key){
+					return (val) ? key : false;
+				}).join('-');
 
-			Rest.doDELETE(to_delete).then(reset);
+				Rest.doDELETE(to_delete).then(reset);
+			}
 		}
 
 		$scope.prevent = function(event) {
