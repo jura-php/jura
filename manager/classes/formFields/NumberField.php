@@ -25,9 +25,8 @@ class NumberField extends Field
 
 				break;
 			case "float":
-				$this->validationPattern = "\d+(,\d{2})?";
+				$this->validationPattern = "\d+(,\d{0,10})?";
 				$this->validationLength = 20;
-				//TODO: Format, Unformat
 
 				break;
 			case "currency":
@@ -52,8 +51,12 @@ class NumberField extends Field
 		{
 			case "currency":
 				return number_format((float)$value, 2, ",", ".");
-				break;
 
+				break;
+			case "float":
+				return str_replace(".", ",", $value);
+
+				break;
 			default:
 				return $value;
 		}
@@ -66,6 +69,11 @@ class NumberField extends Field
 		{
 			case "currency":
 				return (float)str_replace(",", ".", str_replace(".", "", $value));
+
+				break;
+			case "float":
+				return str_replace(",", ".", $value);
+
 				break;
 
 			default:

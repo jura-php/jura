@@ -71,7 +71,10 @@ class ItemsField extends Field
 
 	public function addItemsFromArray($arr)
 	{
-		$this->items = array_unique(array_merge($this->items, $arr));
+		foreach ($arr as $k => $v)
+		{
+			$this->items[$k] = $v;
+		}
 	}
 
 	public function addItemsFromTable($tableName, $fieldValue = "id", $fieldLabel = "name", $orderBy = "[label]", $connName = null, $now = false)
