@@ -6,16 +6,12 @@ class PasswordField extends Field
 		parent::__construct($name, $label);
 
 		$this->type = "password";
+		$this->required = false;
 	}
 
 	public function format($value)
 	{
-		if ($this->module->flag == "L")
-		{
-			return ".";
-		}
-
-		return $value;
+		return "";
 	}
 
 	public function unformat($value)

@@ -88,7 +88,8 @@ var Manager = angular.module('manager', ['manager.filters', 'manager.services', 
 				'textarea',
 				'time',
 				'toggle',
-				'upload'
+				'upload',
+				'password'
 			];
 
 			var result_type = (action == 'list' || this.module.actionFlag == 'c' || $rootScope.hasFlag(field.flags, 'u')) ?  field.type : 'readonly';

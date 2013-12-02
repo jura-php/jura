@@ -503,6 +503,32 @@ angular.module('manager.directives', []).
 				}
 			}
 		};
+	}]).
+
+	directive('password', ['$timeout', function($timeout){
+		return {
+			restrict: 'A',
+			controller: function ($scope) {
+				$scope.showFields = function () {
+					$scope.change = true;
+				}
+			},
+			link: function(scope, elm, attrs) {
+				scope.data.then(function(data){
+					data = data.data;
+
+					scope.$watch(attrs.password, function(password){
+						console.log("change");
+
+						scope.field.validation.required = (password != "");
+
+						// $(scope.field.name + "-confirm-id").pattern = password;
+						// $(scope.field.name + "-confirm-id").attr('required', (password != ""));
+						// console.log(password);
+					});
+				});
+			}
+		}
 	}])
 
 

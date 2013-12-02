@@ -244,6 +244,7 @@ angular.module('manager.controllers', [])
 
 		$scope.save = function(model){
 			if(!$scope.form.$valid || !$scope.button_save.can_save) return;
+
 			$scope.button_save = save_states['saving'];
 
 			Restangular.restangularizeElement(null, { data: model.data }, table + '/' + model.data.id).put().then(function(){
@@ -261,10 +262,7 @@ angular.module('manager.controllers', [])
 				$scope.button_save = save_states['error'];
 			});
 		};
-
-
 	}])
-
 
 	.controller('new', ['$rootScope', '$scope', '$routeParams', '$location', 'Restangular', '$http', function($rootScope, $scope, $routeParams, $location, Restangular, $http) {
 
