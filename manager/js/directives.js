@@ -92,6 +92,11 @@ angular.module('manager.directives', []).
 								var results = [];
 
 								_.each(items, function (value, key) {
+
+									if(typeof value === 'object') {
+										value = value.label;
+									}
+
 									if (!info.term || value.toLowerCase().indexOf(info.term.toLowerCase()) != -1)
 									{
 										results.push(formatValue(key, value));
@@ -103,11 +108,17 @@ angular.module('manager.directives', []).
 
 							opts.initSelection = function(element, callback)
 							{
+
 								var id = $(element).val();
+								var value = items[id]
+
+								if(typeof value === 'object') {
+									value = value.label;
+								}
 
 								callback({
 									id: id,
-									text: items[id]
+									text: value
 								});
 							};
 
