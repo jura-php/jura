@@ -264,7 +264,7 @@ angular.module('manager.controllers', [])
 		};
 	}])
 
-	.controller('new', ['$rootScope', '$scope', '$routeParams', '$location', 'Restangular', '$http', function($rootScope, $scope, $routeParams, $location, Restangular, $http) {
+	.controller('new', ['$rootScope', '$scope', '$routeParams', '$location', 'Restangular', '$http', '$timeout', function($rootScope, $scope, $routeParams, $location, Restangular, $http, $timeout) {
 
 		if(!$rootScope.structure.user) return;
 
@@ -319,7 +319,7 @@ angular.module('manager.controllers', [])
 				var force = $routeParams.force.split(':');
 				$scope.data.then(function(data){
 					try {
-						data[force[0]] = parseInt(force[1], 10);
+						data.data[force[0]] = parseInt(force[1], 10);
 					} catch(e) {
 						console.error(e)
 					}
@@ -346,9 +346,18 @@ angular.module('manager.controllers', [])
 			if(!$scope.form.$valid || !$scope.button_save.can_save) return;
 			$scope.button_save = save_states['saving'];
 
-			Restangular.restangularizeElement(null, { data: model.data }, table).post().then(function(){
+			Restangular.restangularizeElement(null, { data: model.data }, table).post().then(function(response){
 				$scope.button_save = save_states['saved'];
-				$location.path(table);
+
+				if(module.redirectOnSave || !response.id){
+					$location.path(table);
+				} else {
+					$timeout(function(){
+						$location.path(table + '/edit/' + response.id);
+					}, 400)
+				}
+
+
 			}, function(response){
 				save_states['error']['label'] = response.data.error_description || 'Erro inesperado';
 				$scope.button_save = save_states['error'];

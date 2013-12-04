@@ -28,6 +28,7 @@ class FormModule extends Module
 		$this->orderBy = "";
 		$this->buttons = array();
 		$this->uniqueID = false;
+		$this->redirectOnSave = true;
 
 		$name = get_class($this);
 		$this->name = Str::lower(substr($name, 0, strlen($name) - 4));
@@ -42,6 +43,7 @@ class FormModule extends Module
 		$config["order"] = $this->order;
 		$config["orderBy"] = $this->orderBy;
 		$config["uniqueID"] = $this->uniqueID;
+		$config["redirectOnSave"] = $this->redirectOnSave;
 
 		$buttons = array();
 		foreach ($this->buttons as $button)
@@ -214,7 +216,7 @@ class FormModule extends Module
 
 			// echo ORM::lastSQL();
 			// die();
-			// 
+			//
 			$response = array(
 				"search" => $search,
 				"pagination" => array(

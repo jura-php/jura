@@ -35,6 +35,8 @@ angular.module('manager.directives', []).
 
 						var toAngular = function (select2Data)
 						{
+							if(!select2Data) return;
+
 							var model;
 							if (opts.multiple)
 							{
@@ -468,12 +470,12 @@ angular.module('manager.directives', []).
 									if (value.indexOf(":") > -1)
 									{
 										value = value.split(':');
-										value[1] = data[value[1]];
+										value[1] = data.data[value[1]];
 										value = value.join(':');
 									}
 									else
 									{
-										value = data[value];
+										value = data.data[value];
 									}
 
 									search[key] = value;

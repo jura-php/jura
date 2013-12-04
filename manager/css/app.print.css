@@ -3,10 +3,44 @@
 }
 
 #main {
-    margin-left: 0
+    margin-left: 0;
+    width: 100%;
 }
 
 
 #content .actions {
     display: none;
+}
+
+.select2-container .select2-choice {
+	border: none !important;
+	padding: 0 !important;
+	font-weight: bold !important;
+	background: transparent !important;
+	box-shadow: none !important;
+	font-size: 18px !important;
+}
+
+.select2-arrow {
+	display: none !important;
+}
+
+.pure-table {
+	width: 95% !important;
+}
+.markdown {
+	display: block;
+	float: left;
+	width: 600px;
+	border: none !important;
+	box-shadow: none !important;
+
+}
+
+.markdownHelp-help {
+	display: none;
+}
+
+input {
+	box-shadow: none !important;
 }
