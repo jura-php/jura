@@ -4,7 +4,9 @@
 var Manager = angular.module('manager', ['manager.filters', 'manager.services', 'manager.directives', 'manager.controllers', 'restangular', 'jdUpload', 'ngCookies'])
 	.config(['$routeProvider', 'RestangularProvider', function($routeProvider, Restangular) {
 
-		Restangular.setBaseUrl(config.api_url.replace(/\/$/, ""));
+		if(window.config) {
+			Restangular.setBaseUrl(config.api_url.replace(/\/$/, ""));
+		}
 
 		$routeProvider
 			.when('/login', {templateUrl: 'partials/login.html', controller: 'login'})
@@ -108,36 +110,41 @@ var Manager = angular.module('manager', ['manager.filters', 'manager.services', 
 	}]);
 
 
-
 $(function(){
-	$.get(config.api_url + 'structure')
-		.success(function(structure){
 
-			angular.module('structure', [])
-				.run(['$rootScope', '$location', function($rootScope, $location){
-					$rootScope.structure = structure;
-					$rootScope.redirectPath = $location.path();
+	function error(){
+		angular.module('structure', [])
+			.run(['$location', function($location){
+				$location.path('/error');
+			}])
 
-					if(!structure.user) {
-						$location.path('/login');
-					} else {
-						$location.path($rootScope.redirectPath || '/' + $rootScope.defaultModule().uri);
-					}
-				}])
+		angular.bootstrap(document, ['manager', 'structure']);
+	}
 
+	try {
+		$.get(config.api_url + 'structure')
+			.success(function(structure){
 
-			angular.bootstrap(document, ['manager', 'structure']);
+				angular.module('structure', [])
+					.run(['$rootScope', '$location', function($rootScope, $location){
+						$rootScope.structure = structure;
+						$rootScope.redirectPath = $location.path();
 
-		})
-		.error(function(){
-			angular.module('structure', [])
-				.run(['$location', function($location){
-					$location.path('/error');
+						if(!structure.user) {
+							$location.path('/login');
+						} else {
+							$location.path($rootScope.redirectPath || '/' + $rootScope.defaultModule().uri);
+						}
+					}])
 
-				}])
+				angular.bootstrap(document, ['manager', 'structure']);
 
-			angular.bootstrap(document, ['manager', 'structure']);
-		})
+			})
+			.error(error)
+
+	} catch (e){
+		error();
+	}
 })
 
 
