@@ -424,6 +424,11 @@ angular.module('manager.directives', []).
 					$scope.jdFinished = function(content, didUpload) {
 						var name = this.field.name;
 
+						if (!content)
+						{
+							return;
+						}
+
 						if (content.error) {
 							$scope.uploads.error = content.error_description;
 						} else {
