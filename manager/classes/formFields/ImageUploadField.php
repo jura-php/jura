@@ -174,6 +174,14 @@ class ImageUploadField extends UploadField
 							$im->load($tmpPath);
 						}
 
+						if (!array_key_exists("width", $sample)) {
+							$sample["width"] = 0;
+						}
+
+						if (!array_key_exists("height", $sample)) {
+							$sample["height"] = 0;
+						}
+
 						if ($sample["width"] != 0 || $sample["height"] != 0)
 						{
 							$im->resize($sample["width"], $sample["height"], $sample["resizeMethod"], $sample["background"]);
