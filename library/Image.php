@@ -16,7 +16,7 @@ class Image
 	public $width;
 	public $height;
 
-	private $resourceID = null;
+	public $resourceID = null;
 	private $sourceResourceID = null;
 	private $path = "";
 

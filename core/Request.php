@@ -284,6 +284,11 @@ class Request
 			$port = array_get(static::$server, "SERVER_PORT", "80");
 			$port = ($port == "80") ? "" : (":" . $port);
 
+			if (static::isPreview() && $port == ":8080")
+			{
+				$port = "";
+			}
+
 			$uri = static::fullURI();
 			$pathInfo = static::pathInfo();
 			if ($pathInfo != "/")

@@ -94,6 +94,9 @@ button {
     border-color: #ccc !important;
 }
 
+.pure-form-aligned input[type=text], .pure-form-aligned input[type=password], .pure-form-aligned input[type=email], .pure-form-aligned input[type=url], .pure-form-aligned input[type=date], .pure-form-aligned input[type=month], .pure-form-aligned input[type=time], .pure-form-aligned input[type=datetime], .pure-form-aligned input[type=datetime-local], .pure-form-aligned input[type=week], .pure-form-aligned input[type=number], .pure-form-aligned input[type=search], .pure-form-aligned input[type=tel], .pure-form-aligned input[type=color], .pure-form-aligned select, .pure-form-aligned label {
+    display: inline-block;
+}
 
 
 /**************/
@@ -332,4 +335,12 @@ button {
     width: 400px;
     padding-top: 100px;
     margin: 0 auto;
+}
+
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
 }

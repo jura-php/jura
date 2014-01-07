@@ -7,6 +7,8 @@ class ManyToOneField extends ItemsField
 
 	private $filterFields;
 
+	private $customSelect;
+
 	public $items;
 
 	public function __construct($name, $label = null, $tableName, $keyField = "id", $nameField = "name")
@@ -16,6 +18,8 @@ class ManyToOneField extends ItemsField
 		$this->relationTableName = $tableName;
 		$this->relationKeyField = $keyField;
 		$this->relationNameField = $nameField;
+
+		$this->customSelect = null;
 	}
 
 	public function addItemsFromArray($arr)
@@ -32,6 +36,11 @@ class ManyToOneField extends ItemsField
 		}
 
 		$this->filterFields[] = array($fieldName, $comparison);
+	}
+
+	public function customSelect($callback)
+	{
+		$this->customSelect = $callback;
 	}
 
 	public function init()
@@ -61,6 +70,11 @@ class ManyToOneField extends ItemsField
 		$this->module->orm
 				->select($this->relationTableName . "." . $this->relationNameField, $this->name)
 				->leftJoin($this->relationTableName, array($this->relationTableName . "." . $this->relationKeyField, "=", $this->module->orm->tableName . "." . $this->name));
+
+		if ($this->customSelect)
+		{
+			call_user_func($this->customSelect, $this->module->orm, $this, $this->relationTableName, $this->relationKeyField, $this->relationNameField);
+		}
 	}
 
 	public function filter($search)
@@ -71,17 +85,23 @@ class ManyToOneField extends ItemsField
 		{
 			foreach ($this->filterFields as $field)
 			{
+				$name = $field[0];
 				$comparation = $field[1];
+
+				if (strpos($name, ".") === false)
+				{
+					$name = $this->relationTableName . "." . $name;
+				}
 
 				switch ($comparation)
 				{
 					case "=":
 					default:
-						$this->module->orm->where($this->relationTableName . "." . $field[0], $search);
+						$this->module->orm->where($name, $search);
 
 						break;
 					case "%":
-						$this->module->orm->whereLike($this->relationTableName . "." . $field[0], "%" . $search . "%");
+						$this->module->orm->whereLike($name, "%" . $search . "%");
 
 						break;
 				}

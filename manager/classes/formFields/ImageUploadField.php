@@ -2,6 +2,7 @@
 class ImageUploadField extends UploadField
 {
 	protected $samples;
+	protected $customFilters;
 
 	public function __construct($name, $label, $path)
 	{
@@ -17,6 +18,8 @@ class ImageUploadField extends UploadField
 				"key" => "original"
 			)
 		);
+
+		$this->customFilters = null;
 	}
 
 	public function sample($key, $resizeMethod, $width = 0, $height = 0, $background = 0xFFFFFF)
@@ -38,6 +41,16 @@ class ImageUploadField extends UploadField
 			"height" => (int)$height,
 			"background" => $background
 		);
+	}
+
+	public function customFilter($callback)
+	{
+		if (is_null($this->customFilters))
+		{
+			$this->customFilters = array();
+		}
+
+		$this->customFilters[] = $callback;
 	}
 
 	protected function items()
@@ -169,10 +182,10 @@ class ImageUploadField extends UploadField
 
 					foreach ($this->samples as $k2 => $sample)
 					{
-						if ($k2 == 0)
-						{
+						//if ($k2 == 0)
+						//{
 							$im->load($tmpPath);
-						}
+						//}
 
 						if (!array_key_exists("width", $sample)) {
 							$sample["width"] = 0;
@@ -185,6 +198,14 @@ class ImageUploadField extends UploadField
 						if ($sample["width"] != 0 || $sample["height"] != 0)
 						{
 							$im->resize($sample["width"], $sample["height"], $sample["resizeMethod"], $sample["background"]);
+						}
+
+						if ($this->customFilters)
+						{
+							foreach ($this->customFilters as $filter)
+							{
+								call_user_func($filter, $im);
+							}
 						}
 
 						$fileName = $file["_name"];

@@ -23,4 +23,9 @@ class TitleField extends TextField
 	{
 
 	}
+
+	public function filter($search)
+	{
+
+	}
 }

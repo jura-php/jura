@@ -1,7 +1,7 @@
 <div upload>
 	<label>{{field.label}}</label>
 
-	<span ng-show="data.data[field.name].length < field.limit">
+	<span ng-show="data.data[field.name].length < field.limit" class="print-hide">
 		<input
 			jd-upload
 
@@ -26,23 +26,31 @@
 
 	<div class="form-error" ng-show="uploads.error">{{uploads.error}}</div>
 
-	<table class="pure-table pure-table-odd" ng-show="data.data[field.name].length > 0">
-		<thead>
-			<tr>
-				<th width="20%">Preview</th>
-				<th width="80%">Arquivo</th>
-				<th>Ações</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="(index, file) in data.data[field.name]">
-				<td><img ng-src="{{file.thumb}}" /></td>
-				<td>{{file.name}}</td>
-				<td>
-					<button ng-click="deleteFile(index, structure.user.access_token)" type="button" class="pure-button pure-button-error"><i class="icon-remove"></i></button>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+	<div ng-show="data.data[field.name].length > 0">
+		<br>
+		<table class="pure-table pure-table-odd print-hide">
+			<thead>
+				<tr>
+					<th width="20%">Preview</th>
+					<th class="print-hide" width="80%">Arquivo</th>
+					<th class="print-hide">Ações</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="(index, file) in data.data[field.name]">
+					<td><img ng-src="{{file.thumb}}" /></td>
+					<td class="print-hide">{{file.name}}</td>
+					<td class="print-hide">
+						<button ng-click="deleteFile(index, structure.user.access_token)" type="button" class="pure-button pure-button-error"><i class="icon-remove"></i></button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="hide print-show" ng-show="data.data[field.name].length > 0">
+			<div class="pure-u-1-5" ng-repeat="(index, file) in data.data[field.name]">
+				<img ng-src="{{file.thumb}}" />
+			</div>
+		</div>
+	</div>
 
 </div>

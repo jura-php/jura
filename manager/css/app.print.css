@@ -44,3 +44,11 @@
 input {
 	box-shadow: none !important;
 }
+
+.print-hide {
+	display: none;
+}
+
+.print-show {
+	display: block;
+}
