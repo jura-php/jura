@@ -296,6 +296,9 @@ class Request
 				$uri = substr($uri, 0, strpos($uri, $pathInfo));
 			}
 
+			$uri = explode("?", $uri);
+			$uri = $uri[0];
+
 			static::$rootURL = Str::finish($protocol . "://" . array_get(static::$server, "SERVER_NAME", "localhost") . $port . $uri, "/");
 		}
 

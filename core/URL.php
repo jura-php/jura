@@ -36,7 +36,14 @@ class URL
 	public static function to($uri = "/", $addManager = true)
 	{
 		$uri = trim($uri, "/");
-		return rtrim(static::root($addManager), "/") . "/" . (($uri != "") ? $uri . "/" : "");
+		$append = "/";
+
+		if (strpos($uri, ".") !== false || strpos($uri, "?") !== false)
+		{
+			$append = "";
+		}
+
+		return rtrim(static::root($addManager), "/") . "/" . (($uri != "") ? $uri . $append : "");
 	}
 
 	/**
