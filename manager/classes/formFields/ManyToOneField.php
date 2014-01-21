@@ -45,12 +45,24 @@ class ManyToOneField extends ItemsField
 
 	public function init()
 	{
+		$wasEmpty = count($this->toAdd) == 0;
+
 		parent::init();
 
 		$flag = $this->module->flag;
 
-		if ($flag == "C" || $flag == "R" || $flag == "U")
+
+
+		if ($wasEmpty && ($flag == "C" || $flag == "R" || $flag == "U"))
 		{
+
+			if ($this->relationTableName == "cidades_bairros")
+			{
+				count($this->toAdd);
+
+				die();
+			}
+
 			$this->addItemsFromTable($this->relationTableName, $this->relationKeyField, $this->relationNameField);
 		}
 	}

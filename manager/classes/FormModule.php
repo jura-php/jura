@@ -189,13 +189,21 @@ class FormModule extends Module
 
 			if ($orderBy != "")
 			{
-				if ($order == "ASC")
+				foreach ($that->fields as $field)
 				{
-					$entries->orderByAsc($orderBy);
-				}
-				else
-				{
-					$entries->orderByDesc($orderBy);
+					if ($orderBy == $field->name)
+					{
+						if ($order == "ASC")
+						{
+							$entries->orderByAsc($orderBy);
+						}
+						else
+						{
+							$entries->orderByDesc($orderBy);
+						}
+
+						break;
+					}
 				}
 			}
 

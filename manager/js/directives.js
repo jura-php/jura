@@ -103,6 +103,8 @@ angular.module('manager.directives', []).
 									}
 								});
 
+								results = _.sortBy(results, "text");
+
 								info.callback({ results: results });
 							};
 
@@ -131,6 +133,8 @@ angular.module('manager.directives', []).
 							_.each(items, function (value, key) {
 								results.push(formatValue(key, value));
 							});
+
+							results = _.sortBy(results, "text");
 
 							opts.data = results;
 						}

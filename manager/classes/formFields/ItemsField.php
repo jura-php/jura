@@ -12,7 +12,7 @@ class ItemsField extends Field
 	private $tmpValue;
 
 	private $initialized;
-	private $toAdd;
+	public $toAdd;
 
 	public function __construct($name, $label = null)
 	{
