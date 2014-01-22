@@ -35,6 +35,12 @@ class URL
 	 */
 	public static function to($uri = "/", $addManager = true)
 	{
+		if (strpos($uri, static::root($addManager)) === 0)
+		{
+			$len = strlen(static::root($addManager));
+			$uri = substr($uri, $len, strlen($uri) - $len);
+		}
+
 		$uri = trim($uri, "/");
 		$append = "/";
 
