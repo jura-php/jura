@@ -25,7 +25,7 @@ class NumberField extends Field
 
 				break;
 			case "float":
-				$this->validationPattern = "\d+(,\d{0,10})?";
+				$this->validationPattern = "-?\d+(,\d{0,10})?";
 				$this->validationLength = 20;
 
 				break;
