@@ -107,7 +107,14 @@ class Structure
 
 			foreach ($modules as &$module)
 			{
-				if (isset($module["class"]))
+				if ((is_string($module) && $module = "separator") || (array_search("separator", $module) !== false))
+				{
+					$module = array(
+						"menu" => "side",
+						"type" => "separator"
+					);
+				}
+				else if (isset($module["class"]))
 				{
 					$className = $module["class"];
 
@@ -124,13 +131,6 @@ class Structure
 
 					$objects[] = $c;
 					$module = $c->config($module);
-				}
-				else if ((is_string($module) && $module = "separator") || (array_search("separator", $module) !== false))
-				{
-					$module = array(
-						"menu" => "side",
-						"type" => "separator"
-					);
 				}
 			}
 
