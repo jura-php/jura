@@ -31,7 +31,7 @@ angular.module('manager.controllers', [])
 						'invalid_client' : 'Usuário ou senha inválida'
 					}
 
-					$scope.form.error = error_messages[error.error_description] || error.error_description;
+					$scope.form.error = error_messages[error.error_description] || error.error_description || "Usuário ou senha inválida";
 				})
 		}
 	}])
