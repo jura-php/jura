@@ -28,18 +28,23 @@
 
 	<div ng-show="data.data[field.name].length > 0">
 		<br>
-		<table class="pure-table pure-table-odd print-hide">
+		<table class="pure-table pure-table-odd print-hide" width="100%">
 			<thead>
 				<tr>
 					<th width="20%">Preview</th>
-					<th class="print-hide" width="80%">Arquivo</th>
+					<th class="print-hide" width="50%">Arquivo</th>
+					<th class="print-hide" width="20%">Ordem</th>
 					<th class="print-hide">Ações</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr ng-repeat="(index, file) in data.data[field.name]">
-					<td><img ng-src="{{file.thumb}}" /></td>
+					<td><img ng-src="{{file.thumb}}" width="100" height="75" /></td>
 					<td class="print-hide">{{file.name}}</td>
+					<td class="print-hide">
+						<button ng-click="sortUp(index, structure.user.access_token)" type="button" class="pure-button button-small" ng-class="{ invisible: index == 0 }"><i class="icon-long-arrow-up"></i></button>
+						<button ng-click="sortDown(index, structure.user.access_token)" type="button" class="pure-button button-small" ng-class="{ invisible: index >= (data.data[field.name].length - 1) }"><i class="icon-long-arrow-down"></i></button>
+					</td>
 					<td class="print-hide">
 						<button ng-click="deleteFile(index, structure.user.access_token)" type="button" class="pure-button pure-button-error"><i class="icon-remove"></i></button>
 					</td>

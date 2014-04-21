@@ -95,6 +95,10 @@ class UploadField extends Field
 					return Response::json($that->upload($flag, $id));
 
 					break;
+				case "sort":
+					return Response::json($that->sort(Request::post("from", -1), Request::post("to", -1)));
+
+					break;
 				case "delete":
 					return Response::json($that->delete((int)Request::post("index", -1)));
 
@@ -393,6 +397,30 @@ class UploadField extends Field
 		return array(
 			"error" => true,
 			"error_description" => "Index inválido"
+		);
+	}
+
+	public function sort($from, $to)
+	{
+		if ($from == -1 || $to == -1)
+		{
+			return array(
+				"error" => true,
+				"error_description" => "Index inválido"
+			);
+		}
+
+		$files = json_decode(Session::get($this->sessionKey), true);
+
+		$tmp = $files[$from];
+		$files[$from] = $files[$to];
+		$files[$to] = $tmp;
+
+		Session::set($this->sessionKey, json_encode($files));
+
+		return array(
+			"error" => false,
+			"items" => $this->items()
 		);
 	}
 }

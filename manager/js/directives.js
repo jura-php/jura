@@ -409,11 +409,32 @@ angular.module('manager.directives', []).
 					$scope.deleteFile = function(index, access_token){
 						var that = this;
 
-						$http.post(that.field.update_url + "/delete/" + ((data.data.id) ? data.data.id + "/U/" : "0/C/"), {index: index}, {params: {access_token: access_token}})
-							.success(function (content) {
-								$scope.data.$$v.data[that.field.name] = content.items;
-							})
+						$http
+						.post(that.field.update_url + "/delete/" + ((data.data.id) ? data.data.id + "/U/" : "0/C/"), {index: index}, {params: {access_token: access_token}})
+						.success(function (content) {
+							$scope.data.$$v.data[that.field.name] = content.items;
+						})
 					}
+
+					$scope.sortUp = function (index, access_token) {
+						var that = this;
+
+						$http
+						.post(that.field.update_url + "/sort/" + ((data.data.id) ? data.data.id + "/U/" : "0/C/"), { from: index, to: index - 1 }, {params: {access_token: access_token}})
+						.success(function (content) {
+							$scope.data.$$v.data[that.field.name] = content.items;
+						});
+					};
+
+					$scope.sortDown = function (index, access_token) {
+						var that = this;
+
+						$http
+						.post(that.field.update_url + "/sort/" + ((data.data.id) ? data.data.id + "/U/" : "0/C/"), { from: index, to: index + 1 }, {params: {access_token: access_token}})
+						.success(function (content) {
+							$scope.data.$$v.data[that.field.name] = content.items;
+						});
+					};
 
 					$scope.jdUploadURL = function () {
 						return this.field.update_url + "/upload/" + ((data.data.id) ? data.data.id + "/U/" : "0/C/");
