@@ -11,6 +11,7 @@ class FormModule extends Module
 	public $order;
 	public $orderBy;
 	public $name;
+	public $countField;
 
 	public $fields;
 	public $buttons;
@@ -19,6 +20,7 @@ class FormModule extends Module
 	{
 		$this->type = "form";
 		$this->flags = "LOFCRUD";
+		$this->countField = "id";
 
 		$this->tableName = "";
 		$this->fields = array();
@@ -142,7 +144,7 @@ class FormModule extends Module
 				});
 			}
 
-			$count = $that->orm->count('id');
+			$count = $that->orm->count($that->countField);
 
 			$pageCount = max(1, ceil($count / $that->pageSize));
 			$page = max(1, min($pageCount, $page));
