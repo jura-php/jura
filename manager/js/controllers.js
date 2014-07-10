@@ -6,6 +6,19 @@ angular.module('manager.controllers', [])
 
 	.controller('login', ['$rootScope', '$scope', '$routeParams', '$http', '$location', 'Restangular', function($rootScope, $scope, $routeParams, $http, $location, Restangular) {
 		$scope.form = {};
+
+		$(function () {
+			if ($.cookie("login-user"))
+			{
+				$scope.form.user = $.cookie("login-user");
+			}
+
+			if ($.cookie("login-pass"))
+			{
+				$scope.form.pass = $.cookie("login-pass");
+			}
+		});
+
 		$scope.send = function(){
 			$scope.form.error = '';
 
@@ -15,6 +28,12 @@ angular.module('manager.controllers', [])
 						.success(function(structure){
 							$rootScope.structure = structure;
 							$rootScope.structure.user = user;
+
+							if ($scope.form.save)
+							{
+								$.cookie("login-user", $scope.form.user, { expires: 365 * 2 });
+								$.cookie("login-pass", $scope.form.pass, { expires: 365 * 2 });
+							}
 
 							var uri = $rootScope.redirectPath;
 
