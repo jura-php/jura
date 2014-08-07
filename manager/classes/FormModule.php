@@ -68,12 +68,11 @@ class FormModule extends Module
 				$info["params"] = $button["params"];
 			}
 
-			// if ($button["type"] == "redirectWithParam")
-			// {
-			// 	$button["type"] = "redirect";
-			// 	$info["url"] = $button["callback"];
-			// 	$info["param"] = $button["params"];
-			// }
+			if ($button["type"] == "redirectOutside")
+			{
+				$info["url"] = $button["callback"];
+				$info["params"] = $button["params"];
+			}
 
 			$buttons[] = $info;
 		}
@@ -688,7 +687,7 @@ class FormModule extends Module
 				$flags = "L";
 			}
 		}
-		else if ($type == "redirect" || $type == "redirectWithParam" || $type == "request")
+		else if ($type == "redirect" || $type == "redirectWithParam" || $type == "request" || $type == "redirectOutside")
 		{
 			if (is_null($icon))
 			{

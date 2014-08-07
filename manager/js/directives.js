@@ -532,6 +532,26 @@ angular.module('manager.directives', []).
 						}
 					}
 
+					if(button.type == 'redirectOutside') {
+						$scope.data.then(function(data){
+							console.log(button);
+							var buttonURL = button.url.split(':');
+
+							var tmpUrl = 'http://';
+
+							_.each(buttonURL, function(value, key) {
+
+								if (data.data[value]) {
+									tmpUrl += data.data[value];
+								} else {
+									tmpUrl += value;
+								}
+							});
+
+							window.open(tmpUrl,'_blank');
+						});
+					}
+
 					//type print
 					if(button.type == 'print'){
 						window.print();
