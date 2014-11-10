@@ -401,11 +401,79 @@ angular.module('manager.directives', []).
 		}
 	}).
 
+	directive('ngEnter', function () {
+		return function (scope, element, attrs) {
+			element.bind("keydown keypress", function (event) {
+				if (event.which === 13) {
+					scope.$apply(function (){
+						scope.$eval(attrs.ngEnter);
+					});
+
+					event.preventDefault();
+				}
+			});
+		};
+	}).
+
+	directive('ngEscape', function () {
+		return function (scope, element, attrs) {
+			element.bind("keydown keypress", function (event) {
+				if (event.which === 27) {
+					scope.$apply(function (){
+						scope.$eval(attrs.ngEscape);
+					});
+
+					event.preventDefault();
+				}
+			});
+		};
+	}).
+
 	directive('upload', function(){
 		return {
 			restrict: 'AC',
-			controller: function($scope, $http){
+			controller: function($scope, $element, $http){
+				$scope.activeCaptions = [];
+				$scope.resetCaptions = [];
 				$scope.data.then(function(data){
+					var totalItems = data.data[$scope.field.name].length;
+					$scope.showOrder = totalItems > 1;
+
+					for (var i=0; i<totalItems; i++) {
+						$scope.activeCaptions[i] = false;
+					}
+					
+					for (var i=0; i<totalItems; i++) {
+						$scope.resetCaptions[i] = '';
+					}
+
+					$scope.cancelCaption = function(index) {
+						$scope.activeCaptions[index] = false;
+						return $scope.resetCaptions[index];
+					}
+
+					$scope.editCaption = function(index, file_caption) {
+						$scope.resetCaptions[index] = file_caption;
+						$scope.activeCaptions[index] = true;
+					}
+
+					$scope.saveCaption = function(index, file_caption, access_token) {
+						$scope.activeCaptions[index] = false;
+
+						var that = this;
+						//console.log('saving '+file_caption+' to index '+index);
+
+						$http
+						.post(that.field.update_url + "/caption/" + ((data.data.id) ? data.data.id + "/U/" : "0/C/"), {index: index, caption: file_caption}, {params: {access_token: access_token }})
+						.success(function (content) {
+							if (content) {
+								$scope.data.$$v.data[that.field.name] = content.items;
+								$scope.showOrder = (content.items.length > 1);
+							}
+						})
+
+					}
+
 					$scope.deleteFile = function(index, access_token){
 						var that = this;
 
@@ -413,27 +481,33 @@ angular.module('manager.directives', []).
 						.post(that.field.update_url + "/delete/" + ((data.data.id) ? data.data.id + "/U/" : "0/C/"), {index: index}, {params: {access_token: access_token}})
 						.success(function (content) {
 							$scope.data.$$v.data[that.field.name] = content.items;
+							$scope.showOrder = (content.items.length > 1);
 						})
 					}
 
 					$scope.sortUp = function (index, access_token) {
 						var that = this;
-
-						$http
-						.post(that.field.update_url + "/sort/" + ((data.data.id) ? data.data.id + "/U/" : "0/C/"), { from: index, to: index - 1 }, {params: {access_token: access_token}})
-						.success(function (content) {
-							$scope.data.$$v.data[that.field.name] = content.items;
-						});
+						if (index > 0) {
+							$http
+							.post(that.field.update_url + "/sort/" + ((data.data.id) ? data.data.id + "/U/" : "0/C/"), { from: index, to: index - 1 }, {params: {access_token: access_token}})
+							.success(function (content) {
+								$scope.data.$$v.data[that.field.name] = content.items;
+								$scope.showOrder = (content.items.length > 1);
+							});
+						}
 					};
 
 					$scope.sortDown = function (index, access_token) {
 						var that = this;
+						if (index < (data.data[that.field.name].length - 1)) {
 
-						$http
-						.post(that.field.update_url + "/sort/" + ((data.data.id) ? data.data.id + "/U/" : "0/C/"), { from: index, to: index + 1 }, {params: {access_token: access_token}})
-						.success(function (content) {
-							$scope.data.$$v.data[that.field.name] = content.items;
-						});
+							$http
+							.post(that.field.update_url + "/sort/" + ((data.data.id) ? data.data.id + "/U/" : "0/C/"), { from: index, to: index + 1 }, {params: {access_token: access_token}})
+							.success(function (content) {
+								$scope.data.$$v.data[that.field.name] = content.items;
+								$scope.showOrder = (content.items.length > 1);
+							});
+						}
 					};
 
 					$scope.jdUploadURL = function () {
@@ -458,6 +532,7 @@ angular.module('manager.directives', []).
 							$scope.uploads.error = content.error_description;
 						} else {
 							$scope.data.$$v.data[name] = content.items;
+							$scope.showOrder = (content.items.length > 1);
 						}
 					};
 
@@ -534,7 +609,6 @@ angular.module('manager.directives', []).
 
 					if(button.type == 'redirectOutside') {
 						$scope.data.then(function(data){
-							console.log(button);
 							var buttonURL = button.url.split(':');
 
 							var tmpUrl = 'http://';
@@ -581,7 +655,7 @@ angular.module('manager.directives', []).
 					data = data.data;
 
 					scope.$watch(attrs.password, function(password){
-						console.log("change");
+						//console.log("change");
 
 						scope.field.validation.required = (password != "");
 

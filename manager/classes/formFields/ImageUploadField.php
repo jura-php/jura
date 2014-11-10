@@ -10,6 +10,7 @@ class ImageUploadField extends UploadField
 		$this->type = "imageupload";
 		$this->acceptsMask = array("image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp");
 		$this->accepts("image/jpg,image/jpeg,image/png,image/gif,image/bmp");
+		$this->showFilename = false;
 
 		$this->samples = array(
 			array(
@@ -60,11 +61,14 @@ class ImageUploadField extends UploadField
 
 		foreach ($files as $file)
 		{
+			$caption = (array_key_exists("caption", $file) ? $file["caption"] : "");
+
 			if (array_key_exists("_tmpName", $file))
 			{
 				$items[] = array(
 					"path" => static::tmpRoot() . $file["_tmpName"],
 					"name" => $file["_name"],
+					"caption" => $caption,
 					"thumb" => URL::thumb("app/storage/tmp/" . $file["_tmpName"], 100, 100, Image::RESIZE_METHOD_FIT_NO_MARGING)
 				);
 			}
@@ -74,6 +78,7 @@ class ImageUploadField extends UploadField
 				$items[] = array(
 					"path" => static::storageRoot() . $first,
 					"name" => File::fileName($first),
+					"caption" => $caption,
 					"thumb" => URL::thumb("app/storage/" . $first, 100, 100, Image::RESIZE_METHOD_FIT_NO_MARGING)
 				);
 			}
@@ -209,6 +214,8 @@ class ImageUploadField extends UploadField
 						}
 
 						$fileName = $file["_name"];
+
+						
 						if ($sample["key"] != "original")
 						{
 							$fileName = File::removeExtension($file["_name"]) . "-" . $sample["key"] . "." . File::extension($file["_name"]);
@@ -218,6 +225,8 @@ class ImageUploadField extends UploadField
 						$im->save($unique);
 
 						$samples[$sample["key"]] = $path . File::fileName($unique);
+
+						$samples["caption"] = (array_key_exists('caption', $file) ? $file['caption'] : "");
 
 						$i++;
 					}
@@ -267,6 +276,28 @@ class ImageUploadField extends UploadField
 		return array(
 			"error" => true,
 			"error_description" => "Index inválido"
+		);
+	}
+
+	public function setCaption($index, $caption)
+	{
+		$files = json_decode(Session::get($this->sessionKey), true);
+
+		if ($index < 0 || $index >= count($files))
+		{
+			return array(
+				"error" => true,
+				"error_description" => "Index inválido"
+			);
+		}
+
+		$files[$index]['caption'] = $caption;
+
+		Session::set($this->sessionKey, json_encode($files));
+
+		return array(
+			"error" => false,
+			"items" => $this->items()
 		);
 	}
 

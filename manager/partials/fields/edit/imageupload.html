@@ -1,3 +1,48 @@
+<style>
+.image-upload-thumb-viewer {
+	width: 100px;
+	height: 75px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: cover;
+}
+
+button.disabled {
+	opacity: 0.1;
+	background: #eee;
+	cursor: default;
+}
+
+
+button.disabled:hover {
+	opacity: 0.1;
+	background: #eee;
+	cursor: default;
+}
+
+.caption-column {
+	width: 250px;
+}
+
+table.pure-table .caption-column input {
+	display: inline-block;
+	width: 180px;
+}
+
+table.pure-table .caption-column button {
+	display: inline-block;
+}
+
+table.pure-table .caption-column span {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+table.pure-table .caption-column span.disabled {
+	opacity: 0.3;
+}
+
+</style>
 <div upload>
 	<label>{{field.label}}</label>
 
@@ -19,7 +64,8 @@
 
 			type="file"
 			name="attachment[]"
-
+			id="{{field.name}}"
+			ng-has-caption="{{field.hasCaption}}"
 			ng-multiple="{{field.limit > 1}}"
 		/>
 	</span>
@@ -28,22 +74,31 @@
 
 	<div ng-show="data.data[field.name].length > 0">
 		<br>
-		<table class="pure-table pure-table-odd print-hide" width="100%">
+		<table class="pure-table pure-table-odd print-hide">
 			<thead>
 				<tr>
-					<th width="20%">Preview</th>
-					<th class="print-hide" width="50%">Arquivo</th>
-					<th class="print-hide" width="20%">Ordem</th>
+					<th style="width: 120px">Preview</th>
+					<th class="print-hide" ng-show="field.show_filename">Arquivo</th>
+					<th class="print-hide" ng-show="field.has_caption">Legenda</th>
+					<th class="print-hide" ng-show="showOrder">Ordem</th>
 					<th class="print-hide">Ações</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr ng-repeat="(index, file) in data.data[field.name]">
-					<td><img ng-src="{{file.thumb}}" width="100" height="75" /></td>
-					<td class="print-hide">{{file.name}}</td>
-					<td class="print-hide">
-						<button ng-click="sortUp(index, structure.user.access_token)" type="button" class="pure-button button-small" ng-class="{ invisible: index == 0 }"><i class="icon-long-arrow-up"></i></button>
-						<button ng-click="sortDown(index, structure.user.access_token)" type="button" class="pure-button button-small" ng-class="{ invisible: index >= (data.data[field.name].length - 1) }"><i class="icon-long-arrow-down"></i></button>
+					<td><div class="image-upload-thumb-viewer" style="background-image: url({{file.thumb}});">&nbsp;</div></td>
+					<td class="print-hide" ng-show="field.show_filename">{{file.name}}</td>
+					<td class="print-hide caption-column" ng-show="field.has_caption">
+						<span class="item-caption" id="{{field.name}}_caption_span_{{index}}" ng-show="!activeCaptions[index]" ng-click="editCaption(index, file.caption)">
+							<span class="disabled" ng-show="(file.caption == '')">(sem legenda)</span>
+							{{file.caption}}
+						</span>
+						<input type="text" class="file_caption" ng-model="file.caption" id="{{field.name}}_caption_{{index}}" ng-show="activeCaptions[index]" ng-escape="file.caption=cancelCaption(index); console.log(file.caption)" ng-enter="saveCaption(index, file.caption, structure.user.access_token)">
+						<button ng-click="saveCaption(index, file.caption, structure.user.access_token)" type="button" class="pure-button button-small" ng-show="activeCaptions[index]"><i class="icon-ok"></i></button>
+					</td>
+					<td class="print-hide" ng-show="showOrder">
+						<button ng-click="sortUp(index, structure.user.access_token)" type="button" class="pure-button button-small" ng-class="{ disabled: index == 0 }"><i class="icon-long-arrow-up"></i></button>
+						<button ng-click="sortDown(index, structure.user.access_token)" type="button" class="pure-button button-small" ng-class="{ disabled: index >= (data.data[field.name].length - 1) }"><i class="icon-long-arrow-down"></i></button>
 					</td>
 					<td class="print-hide">
 						<button ng-click="deleteFile(index, structure.user.access_token)" type="button" class="pure-button pure-button-error"><i class="icon-remove"></i></button>
@@ -51,11 +106,11 @@
 				</tr>
 			</tbody>
 		</table>
-		<div class="hide print-show" ng-show="data.data[field.name].length > 0">
+<!-- 		<div class="hide print-show" ng-show="data.data[field.name].length > 0">
 			<div class="pure-u-1-5" ng-repeat="(index, file) in data.data[field.name]">
 				<img ng-src="{{file.thumb}}" />
 			</div>
-		</div>
+		</div> -->
 	</div>
 
 </div>

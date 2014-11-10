@@ -3,6 +3,8 @@ class UploadField extends Field
 {
 	public $limit;
 	public $path;
+	public $hasCaption;
+	public $showFilename;
 
 	protected $sessionKey;
 	protected $accepts;
@@ -73,6 +75,7 @@ class UploadField extends Field
 		$this->sessionKey = "manager_" . $this->type . $id;
 		$this->updateURL = "fields/" . $this->type . $id;
 		$this->limit = 1;
+		$this->hasCaption = false;
 		$this->path = $path;
 		$this->defaultValue = array();
 		$this->accepts = array();
@@ -97,6 +100,10 @@ class UploadField extends Field
 					break;
 				case "sort":
 					return Response::json($that->sort(Request::post("from", -1), Request::post("to", -1)));
+
+					break;
+				case "caption":
+					return Response::json($that->setCaption((int)Request::post("index", -1), Request::post("caption")));
 
 					break;
 				case "delete":
@@ -134,6 +141,8 @@ class UploadField extends Field
 
 		return array_merge(array(
 			"limit" => $this->limit,
+			"has_caption" => $this->hasCaption,
+			"show_filename" => $this->showFilename,
 			"update_url" => "api/" . $this->updateURL,
 			"accepts" => implode(",", $this->accepts)
 		), $arr);
@@ -172,14 +181,16 @@ class UploadField extends Field
 			{
 				$items[] = array(
 					"path" => static::tmpRoot() . $file["_tmpName"],
-					"name" => $file["_name"]
+					"name" => $file["_name"],
+					"caption" => (array_key_exists("caption", $file) ? $file["caption"] : "")
 				);
 			}
 			else
 			{
 				$items[] = array(
 					"path" => static::storageRoot() . $file["path"],
-					"name" => File::fileName($file["path"])
+					"name" => File::fileName($file["path"]),
+					"caption" => (array_key_exists("caption", $file) ? $file["caption"] : "")
 				);
 			}
 		}
@@ -265,7 +276,8 @@ class UploadField extends Field
 					File::move(static::tmpPath() . $file["_tmpName"], $unique);
 
 					$files[$k] = array(
-						"path" => $path . File::fileName($unique)
+						"path" => $path . File::fileName($unique),
+						"caption" => (array_key_exists('caption', $file) ? $file['caption'] : "")
 					);
 				}
 			}
@@ -322,6 +334,7 @@ class UploadField extends Field
 				{
 					$files[] = array(
 						"_name" => $fileName . "." . $ext,
+						"caption" => "",
 						"_tmpName" => $destFile
 					);
 
@@ -423,5 +436,26 @@ class UploadField extends Field
 			"items" => $this->items()
 		);
 	}
-}
+
+	public function setCaption($index, $caption)
+	{
+		$files = json_decode(Session::get($this->sessionKey), true);
+
+		if ($index < 0 || $index >= count($files))
+		{
+			return array(
+				"error" => true,
+				"error_description" => "Index inválido"
+			);
+		}
+
+		$files[$index]['caption'] = $caption;
+
+		Session::set($this->sessionKey, json_encode($files));
+
+		return array(
+			"error" => false,
+			"items" => $this->items()
+		);
+	}}
 ?>

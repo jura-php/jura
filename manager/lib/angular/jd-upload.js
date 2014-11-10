@@ -31,8 +31,8 @@ angular.module('jdUpload', []).
 				scope.jdState = false;
 
 				function bindChange() {
-					if(scope.jdAutoSubmit) {
-						element.bind('change', function () {
+					if (scope.jdAutoSubmit) {
+						element.bind('change', function (e) {
 							scope.$apply(function(){
 								scope.jdState = true;
 							})
