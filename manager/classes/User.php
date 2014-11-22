@@ -9,7 +9,7 @@ class User
 		if (!isset($info["error"]))
 		{
 			$orm = ORM::make("manager_users")
-						->select(array("id", "name", "profile", "username", "email"))
+						->select(array("id", "name", "profile", "username", "email", "typeID"))
 						->where("id", "=", $info["userID"])
 						->findFirst();
 
@@ -30,8 +30,9 @@ class User
 		}
 
 		$orm = ORM::make("manager_users")
-					->select(array("id", "password"))
+					->select(array("id", "password","typeID"))
 					->where("username", "=", $user)
+					->whereEqual("active",'1')
 					->findFirst();
 
 		if ($orm)
@@ -39,6 +40,7 @@ class User
 			if ($orm->password == md5($pass))
 			{
 				$userID = $orm->id;
+				$typeID = $orm->typeID;
 
 				//Clear expired tokens for this client
 				ORM::make("manager_tokens")
@@ -49,6 +51,7 @@ class User
 				//Create token and return the json
 				$orm = ORM::make("manager_tokens");
 				$orm->userID = $userID;
+				$orm->typeID = $typeID;
 				$orm->token = md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
 				$orm->expirationDate = php_sql_datetime(time() + 3600); //one hour
 				$orm->insert();
@@ -61,7 +64,7 @@ class User
 					"scope" => "all"
 				);
 
-				return Response::json(array_merge($response, User::profile($userID)));
+				return Response::json(array_merge($response, User::profile($userID, $typeID)));
 			}
 			else
 			{
@@ -125,7 +128,7 @@ class User
 		Session::clear("j_manager_token");
 	}
 
-	public static function profile($userID = 0)
+	public static function profile($userID = 0, $typeID = -1)
 	{
 		if ($userID == 0)
 		{
@@ -134,15 +137,19 @@ class User
 			if (!isset($info["error"]))
 			{
 				$orm = ORM::make("manager_users")
-							->select(array("name", "username", "email"))
+							->select(array("name", "username", "email", "typeID"))
 							->where("id", "=", $info["userID"])
 							->findFirst();
 
 				if ($orm)
 				{
-					return array_merge($orm->asArray(), array(
-						"access_token" => $info["token"],
-						"gravatar_hash" => md5($orm->email))
+					return array_merge($orm->asArray(), 
+						array(
+							"access_token" => $info["token"],
+							"gravatar_hash" => md5($orm->email),
+							"typeID" => $orm->typeID,
+							"userID" => $info["userID"]
+						)
 					);
 				}
 			}
@@ -150,14 +157,16 @@ class User
 		else
 		{
 			$orm = ORM::make("manager_users")
-						->select(array("name", "username", "email"))
+						->select(array("name", "username", "email", "typeID"))
 						->where("id", "=", $userID)
 						->findFirst();
 
 			if ($orm)
 			{
 				return array_merge($orm->asArray(), array(
-					"gravatar_hash" => md5($orm->fields["email"]))
+					"gravatar_hash" => md5($orm->fields["email"]),
+					"typeID" => $typeID,
+					"userID" => $userID)
 				);
 			}
 		}
@@ -179,7 +188,7 @@ class User
 		if ($token != "")
 		{
 			$orm = ORM::make("manager_tokens")
-						->select(array("expirationDate", "userID"))
+						->select(array("expirationDate", "userID", "typeID"))
 						->where("token", "=", $token)
 						->findFirst();
 
@@ -190,6 +199,7 @@ class User
 				$result["token"] = $token;
 				$result["expirationDate"] = $time;
 				$result["userID"] = $orm->userID;
+				$result["typeID"] = $orm->typeID;
 
 				if (time() < $time)
 				{
