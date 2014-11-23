@@ -26,6 +26,7 @@ class Structure
 								`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 								`name` varchar(255) DEFAULT NULL,
 								`email` varchar(255) DEFAULT NULL,
+								`typeID` int(11) unsigned NULL,								
 								`username` varchar(255) DEFAULT NULL,
 								`password` varchar(40) DEFAULT NULL,
 								`active` int(11) DEFAULT NULL,
@@ -37,6 +38,7 @@ class Structure
 					$user->email = "dev@joy-interactive.com";
 					$user->username = "joy";
 					$user->password = "202cb962ac59075b964b07152d234b70";
+					$user->typeID = 1;
 					$user->active = 1;
 					$user->save();
 				}
