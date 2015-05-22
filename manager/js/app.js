@@ -126,6 +126,7 @@ $(function(){
 		$.get(config.api_url + 'structure')
 			.success(function(structure){
 				$rootScope.structure = structure;
+				$rootScope.$digest();
 			});
 	}
 
