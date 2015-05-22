@@ -6,6 +6,9 @@ class Module
 	protected $icon = "icon-group";
 	protected $default = false;
 
+	protected $tagVisible = false;
+	protected $tag = "";
+
 	public function __construct()
 	{
 
@@ -17,6 +20,8 @@ class Module
 		$config["title"] = $this->title;
 		$config["icon"] = $this->icon;
 		$config["default"] = $this->default;
+		$config['tag'] = $this->tag;
+		$config['tagVisible'] = $this->tagVisible;
 
 		if (!isset($config["menu"]))
 		{

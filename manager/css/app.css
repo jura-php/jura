@@ -348,3 +348,20 @@ button {
 .invisible {
     visibility: hidden;
 }
+
+.tag {
+    font-size: 10px;
+    background: #333;
+    color: #fff;
+    font-weight: normal;
+    padding: 0px 12px;
+    border-radius: 10px;
+    box-sizing: border-box;
+    height: 24px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: bottom;
+    margin-left: 5px;
+    position: absolute;
+    right: 15px;
+}

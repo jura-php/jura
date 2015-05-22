@@ -122,6 +122,13 @@ $(function(){
 		angular.bootstrap(document, ['manager', 'structure']);
 	}
 
+	var structureUpdate = function($rootScope) {
+		$.get(config.api_url + 'structure')
+			.success(function(structure){
+				$rootScope.structure = structure;
+			});
+	}
+
 	try {
 		$.get(config.api_url + 'structure')
 			.success(function(structure){
@@ -130,6 +137,8 @@ $(function(){
 					.run(['$rootScope', '$location', function($rootScope, $location){
 						$rootScope.structure = structure;
 						$rootScope.redirectPath = $location.path();
+
+						setInterval(function() { structureUpdate($rootScope) }, 10000);
 
 						if(!structure.user) {
 							$location.path('/login');
