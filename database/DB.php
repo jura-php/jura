@@ -7,8 +7,8 @@ class DB
 	{
 		if (!defined("J_TP"))
 		{
-			$keys = array_keys(Config::group("databases"));
-			if (count($keys) > 0)
+			$keys = @array_keys(Config::group("databases"));
+			if (is_array($keys) && count($keys) > 0)
 			{
 				$name = $keys[0];
 				$config = Config::item("databases", $name);

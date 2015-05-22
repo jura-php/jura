@@ -48,6 +48,7 @@ class Structure
 					DB::query("CREATE TABLE `" . J_TP . "manager_tokens` (
 								`id` int(40) NOT NULL AUTO_INCREMENT,
 								`userID` int(11) DEFAULT NULL,
+								`typeID` int(11) DEFAULT NULL,
 								`token` varchar(100) DEFAULT NULL,
 								`expirationDate` datetime DEFAULT NULL,
 								PRIMARY KEY (`id`)
