@@ -7,7 +7,7 @@
 <div class="pure-menu pure-menu-open">
 	<ul>
 		<li ng-repeat="m in structure.modules | filter:{menu: 'side'}" ng-class="m.type">
-			<a href="#/{{m.uri}}" ng-class="{active: m.uri == module.uri}"><i ng-class="m.icon"></i> {{m.title}}</a>
+			<a href="#/{{m.uri}}" ng-class="{active: m.uri == module.uri}"><i ng-class="m.icon"></i> {{m.title}} <span class="tag" ng-show="m.tagVisible">{{m.tag}}</span></a>
 		</li>
 	</ul>
 </div>

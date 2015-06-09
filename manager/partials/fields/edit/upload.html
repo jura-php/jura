@@ -36,7 +36,7 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="(index, file) in data.data[field.name]">
-				<td>{{file.name}}</td>
+				<td><a href="{{file.path}}" target="_blank">{{file.name}}</a></td>
 				<td class="print-hide">
 						<button ng-click="sortUp(index, structure.user.access_token)" type="button" class="pure-button button-small" ng-class="{ invisible: index == 0 }"><i class="icon-long-arrow-up"></i></button>
 						<button ng-click="sortDown(index, structure.user.access_token)" type="button" class="pure-button button-small" ng-class="{ invisible: index >= (data.data[field.name].length - 1) }"><i class="icon-long-arrow-down"></i></button>
