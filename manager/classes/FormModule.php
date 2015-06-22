@@ -770,7 +770,7 @@ class FormModule extends Module
 
 						foreach ($fields as $field)
 						{
-							$labels[] = $field->label;
+							$labels[] = utf8_decode($field->label);
 						}
 
 						$out = fopen('php://output', 'w');
@@ -785,7 +785,7 @@ class FormModule extends Module
 
 							foreach ($fields as $field)
 							{
-								$values[] = $field->value();
+								$values[] = utf8_decode($field->value());
 							}
 
 							fputcsv($out, $values);
