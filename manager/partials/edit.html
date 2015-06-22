@@ -14,7 +14,7 @@
 
 				<li class="divisor" ng-show="module.buttons.length > 0"></li>
 
-				<li><button need-flag="u" class="pure-button" ng-class="button_save.button_class" type="submit">{{button_save.label}} <i ng-show="button_save.icon_class" ng-class="button_save.icon_class"></i></button></li>
+				<li><button need-flag="u" class="pure-button pure-button-save" ng-class="button_save.button_class" type="submit">{{button_save.label}} <i ng-show="button_save.icon_class" ng-class="button_save.icon_class"></i></button></li>
 			</ul>
 
 			<div class="breadcrumb">
@@ -22,8 +22,13 @@
 				<h1 ng-show="module.uniqueID"><i ng-class="module.icon"></i> {{module.title}}<loader /></h1>
 			</div>
 
-			<fieldset ng-show="data">
-				<div class="pure-control-group" ng-repeat="field in module.fields | fieldsByFlags" ng-include="partialFieldPath(field, 'edit')"></div>
+			<fieldset ng-show="data" ng-init="selectedGroup = 0; selectedGroupName=module.groups[0]">
+				<a href="" ng-repeat="(groupID, group) in module.groups" ng-click="$parent.selectedGroup = groupID; $parent.selectedGroupName = group" class="pure-tab" ng-show="group" ng-class="{ selected : ($parent.selectedGroup == groupID)}">{{group}}</a>
+
+				<div class="form-pure-group" ng-repeat="(groupID, group) in module.groups" ng-class="{ 'screen-hidden' : ($parent.selectedGroup != groupID) }">
+					<div class="group-title-label" ng-show="group">{{group}}</div>
+					<div class="pure-control-group" ng-repeat="field in module.fields | fieldsByFlags | filter : {group:groupID} : strict" ng-include="partialFieldPath(field, 'edit')"></div>
+				</div>
 			</fieldset>
 		</form>
 

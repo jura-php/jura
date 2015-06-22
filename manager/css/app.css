@@ -101,6 +101,49 @@ button {
 
 /**************/
 
+.pure-tab {
+    display: inline-block;
+    padding: 13px 30px;
+    margin-top: 10px;
+    margin-left: -1px;
+    border: 1px solid #999;
+    text-decoration: none;
+    color: #666;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+    .pure-tab:first-child {
+        margin-left: 0px;
+    }
+
+    .pure-tab.selected {
+        background: #999;
+        color: #fff;
+    }
+
+.form-pure-group {
+    margin-top: 20px;
+}
+
+.group-title-label {
+    font-size: 20px;
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+@media print {
+    .pure-tab {
+        display: none;
+    }
+}
+
+@media screen {
+    .screen-hidden {
+        display: none;
+    }
+}
+
 
 #side {
     width: 250px;

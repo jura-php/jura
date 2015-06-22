@@ -1,6 +1,8 @@
 <?php
 class NumberField extends Field
 {
+	public $currencyPrefix = "R$";
+
 	public function __construct($name, $label = null)
 	{
 		parent::__construct($name, $label);
@@ -50,7 +52,7 @@ class NumberField extends Field
 		switch ($this->validationType)
 		{
 			case "currency":
-				return number_format((float)$value, 2, ",", ".");
+				return $this->currencyPrefix.' '.number_format((float)$value, 2, ",", ".");
 
 				break;
 			case "float":
@@ -68,7 +70,7 @@ class NumberField extends Field
 		switch ($this->validationType)
 		{
 			case "currency":
-				return (float)str_replace(",", ".", str_replace(".", "", $value));
+				return (float)str_replace(",", ".", str_replace(".", "", str_replace($this->currencyPrefix, '', $value)));
 
 				break;
 			case "float":

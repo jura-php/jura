@@ -14,7 +14,10 @@ class FormModule extends Module
 	public $countField;
 
 	public $fields;
+	public $fieldGroups;
 	public $buttons;
+
+	public $useListORM = false;
 
 	public function __construct()
 	{
@@ -24,6 +27,7 @@ class FormModule extends Module
 
 		$this->tableName = "";
 		$this->fields = array();
+		$this->fieldGroups = array();
 		$this->pageSize = 20;
 		$this->orm = null;
 		$this->order = "ASC";
@@ -31,6 +35,9 @@ class FormModule extends Module
 		$this->buttons = array();
 		$this->uniqueID = false;
 		$this->redirectOnSave = true;
+		$this->useListORM = false;
+
+		$this->fieldGroups[0] = "";
 
 		$name = get_class($this);
 		$this->name = Str::lower(substr($name, 0, strlen($name) - 4));
@@ -46,6 +53,7 @@ class FormModule extends Module
 		$config["orderBy"] = $this->orderBy;
 		$config["uniqueID"] = $this->uniqueID;
 		$config["redirectOnSave"] = $this->redirectOnSave;
+		$config["groups"] = $this->fieldGroups;
 
 		$buttons = array();
 		foreach ($this->buttons as $button)
@@ -126,7 +134,9 @@ class FormModule extends Module
 				if ($field->hasFlag(array("L", "F")))
 				{
 					$field->init();
-					$field->select();
+					if (!$that->useListORM) {
+						$field->select();
+					}
 				}
 			}
 
@@ -161,7 +171,9 @@ class FormModule extends Module
 				{
 					$fields[] = $field;
 
-					$field->select();
+					if (!$that->useListORM) {
+						$field->select();
+					}
 
 					if ($field->hasFlag("L") && $withExtraData && $extraData = $field->extraData())
 					{
@@ -418,9 +430,17 @@ class FormModule extends Module
 			}
 
 			$fields = array();
-			$that->orm = $that->orm = ORM::make($that->tableName)
-						->select("id");
+
 			$hasUpdateFlag = false;
+
+			if ($that->useListORM) {
+				$that->orm = $that->listORM();
+			} else {
+				$that->orm = ORM::make($that->tableName)->select("id");
+			}
+
+			// $that->orm->findFirst($id);
+
 
 			foreach ($that->fields as $field)
 			{
@@ -430,7 +450,7 @@ class FormModule extends Module
 
 					$fields[] = $field;
 
-					if ($field->includeOnSQL())
+					if ($field->includeOnSQL() && !$that->useListORM)
 					{
 						$that->orm->select($field->name);
 					}

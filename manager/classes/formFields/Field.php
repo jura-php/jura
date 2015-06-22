@@ -12,8 +12,11 @@ class Field
 	public $validationPattern;
 	public $validationTitle;
 	public $validationLength;
+	public $fieldGroup;
 
 	public $module;
+
+	public $includeOnSQL = true;
 
 	public function __construct($name, $label = null)
 	{
@@ -22,6 +25,7 @@ class Field
 		$this->flags = "";
 		$this->type = "text";
 		$this->defaultValue = "";
+		$this->fieldGroup = 0;
 
 		$this->required = true;
 		$this->validationPattern = ".*";
@@ -48,6 +52,7 @@ class Field
 			"name" => $this->name,
 			"label" => $this->label,
 			"flags" => $this->flags,
+			"group" => $this->fieldGroup,
 			"validation" => array(
 				"required" => $this->required,
 				"pattern" => $this->validationPattern,
@@ -74,7 +79,7 @@ class Field
 
 	public function includeOnSQL()
 	{
-		return true;
+		return $this->includeOnSQL;
 	}
 
 	public function save($value)
