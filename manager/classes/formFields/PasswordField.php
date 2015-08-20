@@ -19,9 +19,9 @@ class PasswordField extends Field
 		if (!empty($value))
 		{
 			return md5($value);
+		} else {
+			return $this->module->orm->field($this->name);
 		}
-
-		return "";
 	}
 }
 ?>

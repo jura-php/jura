@@ -110,20 +110,22 @@ class Structure
 
 			foreach ($modules as &$module)
 			{
-				if ((is_string($module) && $module = "separator") || (array_search("separator", $module) !== false))
+				// dump($module);
+				
+				if ((is_string($module) && $module == "separator") || (array_key_exists("class", $module) && $module['class'] == "separator"))//array_search("separator", $module) !== false))
 				{
 					$module = array(
 						"menu" => "side",
 						"type" => "separator"
 					);
 				}
-				else if (isset($module["class"]))
+				else if (array_key_exists("class", $module))
 				{
 					$className = $module["class"];
 
 					include_once J_MANAGERPATH . "modules/" . $className . ".php";
 
-					if (isset($module["params"]))
+					if (array_key_exists("params",$module))
 					{
 						$c = new $className($module["params"]);
 					}

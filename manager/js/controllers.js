@@ -262,6 +262,7 @@ angular.module('manager.controllers', [])
 
 
 		$scope.save = function(model){
+			console.log('saving...');
 			if(!$scope.form.$valid || !$scope.button_save.can_save) return;
 
 			$scope.button_save = save_states['saving'];
@@ -278,7 +279,17 @@ angular.module('manager.controllers', [])
 				}
 			}, function(response){
 				save_states['error']['label'] = response.data.error_description || 'Erro inesperado';
+
+				var alert_message = response.data.error_alert || false;
 				$scope.button_save = save_states['error'];
+
+				if (alert_message !== false) {
+					alert(alert_message);
+				}
+
+				$timeout(function() {
+					$scope.button_save = save_states['ready'];	
+				}, 1000);				
 			});
 		};
 	}])
@@ -376,10 +387,20 @@ angular.module('manager.controllers', [])
 					}, 400)
 				}
 
-
 			}, function(response){
 				save_states['error']['label'] = response.data.error_description || 'Erro inesperado';
 				$scope.button_save = save_states['error'];
+
+				var alert_message = response.data.error_alert || false;
+
+				if (alert_message !== false) {
+					alert(alert_message);
+				}
+
+				$timeout(function() {
+					$scope.button_save = save_states['ready'];	
+				}, 1000);
+
 			});
 		}
 

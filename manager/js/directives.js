@@ -18,12 +18,42 @@ angular.module('manager.directives', []).
 		}
 	}]).
 
+	directive('ngMask', function ($filter) {
+		return {
+			require: '?ngModel',
+			restrict: 'A',
+			link: function (scope, elem, attr, ctrl) {
+				var lastMask = "";
+
+				attr.$observe('ngMask', function(value) {
+					var mask = value || "";
+
+					$(elem).unmask(lastMask);
+
+					if (mask !== "") {
+						$(elem).mask(mask);
+						lastMask = mask;
+
+						var evt = function(e) {
+							scope.$eval(attr.ngModel + "='" + $(elem).val()+"'");
+							scope.$apply();
+						}
+
+						elem.bind('blur', evt);
+					}
+
+				});
+			}
+		};
+	}).	
+
 	directive('itemsField', ["Restangular", "$timeout", "$http", "$q", "$rootScope", function(Restangular, $timeout, $http, $q, $rootScope){
 		return {
 			restrict: 'A',
 			require: 'ngModel',
 			compile: function (tElm, tAttrs) {
 				return function (scope, elm, attrs, controller) {
+
 					scope.data.then(function (data) {
 						var items = data.extraData[scope.field.name];
 						var size = _.size(items);
@@ -110,7 +140,6 @@ angular.module('manager.directives', []).
 
 							opts.initSelection = function(element, callback)
 							{
-
 								var id = $(element).val();
 								var value = items[id]
 
@@ -158,7 +187,7 @@ angular.module('manager.directives', []).
 								} else {
 									if (angular.isObject(controller.$viewValue)) {
 										elm.select2('data', controller.$viewValue);
-									} else if (!controller.$viewValue) {
+									} else if (!controller.$viewValue && controller.$viewValue !== 0) {
 										elm.select2('data', null);
 									} else {
 										elm.select2('val', controller.$viewValue);

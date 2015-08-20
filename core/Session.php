@@ -3,11 +3,30 @@ class Session
 {
 	private static $initialized = false;
 
-	private static function init()
+	public static function init()
 	{
 		if (!static::$initialized)
 		{
+			$sessionTimeLimit = 20 * 60;
+
+			session_set_cookie_params($sessionTimeLimit);
 			session_start();
+
+
+			// Verify if session already is valid
+
+			$keyDiscardTime = '___discard_after___';
+
+			$now = time();
+			if (isset($_SESSION[$keyDiscardTime]) && $now > $_SESSION[$keyDiscardTime]) {
+				// this session has worn out its welcome; kill it and start a brand new one
+				session_unset();
+				session_destroy();
+				session_start();
+			}
+
+			// either new or old, it should live at most for another hour
+			$_SESSION[$keyDiscardTime] = $now + $sessionTimeLimit;			
 
 			static::$initialized = true;
 
@@ -183,4 +202,7 @@ class Session
 		return $default;
 	}
 }
+
+Session::init();
+
 ?>

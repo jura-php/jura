@@ -286,6 +286,7 @@ class FormModule extends Module
 					$field->init();
 
 					$value = $field->unformat(Request::post("data." . $field->name, $field->defaultValue));
+					
 					if ($return = $field->save($value))
 					{
 						return $return;
@@ -293,27 +294,29 @@ class FormModule extends Module
 				}
 			}
 
-			if ($return = $that->save())
-			{
+			$return = $that->save() || false;
+
+			if ($return !== false) {
 				return $return;
-			}
+			} else {
 
-			$that->orm->update($id);
+				$that->orm->update($id);
 
-			foreach ($that->fields as $field)
-			{
-				if ($field->hasFlag("L") && $field->hasFlag("U"))
+				foreach ($that->fields as $field)
 				{
-					if ($return = $field->afterSave())
+					if ($field->hasFlag("L") && $field->hasFlag("U"))
 					{
-						return $return;
+						if ($return = $field->afterSave())
+						{
+							return $return;
+						}
 					}
 				}
-			}
 
-			if ($return = $that->afterSave())
-			{
-				return $return;
+				if ($return = $that->afterSave())
+				{
+					return $return;
+				}
 			}
 		});
 
@@ -419,6 +422,14 @@ class FormModule extends Module
 				return $token;
 			}
 
+			if ($that->uniqueID && $that->uniqueID != $id) {
+				Response::code(403);
+				return Response::json(array(
+					"error" => true,
+					"error_description" => "Operação não permitida."
+				));
+			}
+
 			$that->flag = "R";
 
 			if (!$that->hasFlag($that->flag))
@@ -500,6 +511,14 @@ class FormModule extends Module
 			if (($token = User::validateToken()) !== true)
 			{
 				return $token;
+			}
+
+			if ($that->uniqueID && $that->uniqueID != $id) {
+				Response::code(403);
+				return Response::json(array(
+					"error" => true,
+					"error_description" => "Operação não permitida."
+				));
 			}
 
 			$that->flag = "U";

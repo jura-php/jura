@@ -5,6 +5,7 @@ class Field
 	public $label;
 	public $flags;
 	public $type;
+	public $mask;
 
 	public $defaultValue;
 
@@ -25,6 +26,7 @@ class Field
 		$this->flags = "";
 		$this->type = "text";
 		$this->defaultValue = "";
+		$this->mask = "";
 		$this->fieldGroup = 0;
 
 		$this->required = true;
@@ -57,7 +59,8 @@ class Field
 				"required" => $this->required,
 				"pattern" => $this->validationPattern,
 				"title" => $validationTitle,
-				"length" => $this->validationLength
+				"length" => $this->validationLength,
+				"mask" => $this->mask
 			)
 		);
 	}

@@ -1,2 +1,2 @@
 <label>{{field.label}}</label>
-<input date="data.data[field.name]" name="{{field.name}}" type="text" class="pure-input-1" ng-required="field.validation.required" pattern="{{field.validation.pattern}}" title="{{field.validation.title | label}}" />
+<input ng-model="data.data[field.name]" name="{{field.name}}" type="text" class="pure-input-1" ng-required="field.validation.required" pattern="{{field.validation.pattern}}" title="{{field.validation.title | label}}" ng-mask="99/99/9999" />

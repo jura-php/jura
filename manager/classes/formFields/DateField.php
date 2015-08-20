@@ -7,7 +7,7 @@ class DateField extends Field
 
 		$this->type = "date";
 		$this->defaultValue = date("Y-m-d");
-
+		$this->mask = "99/99/9999";
 		$this->validationLength = 10;
 	}
 
