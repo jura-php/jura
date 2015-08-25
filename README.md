@@ -1,7 +1,5 @@
-Repositório com apenas os arquivos de sistema do **Framework J**.
+# Jura Framework
+> Micro PHP Framework with built-in CMS generator
 
-**IMPORTANTE:** Usar este repositório apenas como **submodule** dos projetos.
-
-Repositório de seed: [https://bitbucket.org/joyinteractive/joy-seed]()
-
-Repositório de desenvolvimento: [https://bitbucket.org/joyinteractive/joy-lib-j-dev]()
+## Getting started
+Please refer to [https://github.com/jura-php/jura-seed]()
